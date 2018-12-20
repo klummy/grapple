@@ -1,9 +1,11 @@
 {
   "defaultSeverity": "error",
   "extends": [
+    "tslint-react",
     "tslint:recommended",
     "tslint-config-prettier"
   ],
+
   "jsRules": {},
   "rules": {
     "eofline": false,
@@ -13,7 +15,21 @@
     "ordered-imports": [true],
     "object-literal-sort-keys": true,
     "no-var-requires": false,
-    "interface-name": [true, "always-prefix"]
+    "interface-name": [true, "always-prefix"],
+    "member-ordering": [true, {
+      "alphabetize": true
+    }],
+
+    "jsx-no-bind": true,
+    "jsx-no-lambda": false,
+    "jsx-curly-spacing": [true, "always"],
+    "jsx-boolean-value": true,
+    "jsx-key": true,
+    "jsx-no-string-ref": true,
+    "jsx-self-close": true,
+    "jsx-wrap-multiline": true
   },
-  "rulesDirectory": []
+  "rulesDirectory": [
+
+  ]
 }
