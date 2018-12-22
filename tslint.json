@@ -19,6 +19,9 @@
     "member-ordering": [true, {
       "alphabetize": true
     }],
+    "no-console": {
+      "severity": "warn"
+    },
     "no-unused-variable": true,
     "no-any": true,
     "no-reference": true,

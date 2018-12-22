@@ -10,13 +10,16 @@ const projectsReducer = (state: IProject = initialState, { payload, type }: IRed
 
   switch (type) {
     case ADD_PROTO_TO_PROJECT:
-      state.protos.push(payload as IProto)
+      const payloadProto = (payload as IProto)
+      const existsAlready = state.protos.find((proto) => proto.path === payloadProto.path)
+
+      if (!existsAlready) {
+        state.protos.push(payloadProto)
+      }
 
       return state
 
     case NEW_PROJECT:
-      // tslint:disable-next-line no-console
-      console.log('New project => ');
       return state
 
     default:

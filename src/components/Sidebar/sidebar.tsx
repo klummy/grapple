@@ -6,8 +6,9 @@ import { Nav } from './sidebar.components';
 import { ISidebarProps, ISidebarState } from './sidebar.types';
 
 import logger from '../../libs/logger';
-import { validateProto } from '../../libs/utils';
+import { validateProto } from '../../services/protos';
 
+import { IStoreState } from 'types';
 import * as projectActions from '../../store/projects/projects.actions';
 
 class Sidebar extends React.Component<ISidebarProps, ISidebarState> {
@@ -31,7 +32,6 @@ class Sidebar extends React.Component<ISidebarProps, ISidebarState> {
       })
     }
 
-    // event.stopPropagation()
     event.preventDefault()
   }
 
@@ -44,14 +44,10 @@ class Sidebar extends React.Component<ISidebarProps, ISidebarState> {
 
       validateProto(proto)
         .then(() => {
-          this.props.addProtoToProject({
-            lastModified: proto.lastModified,
-            name: proto.name,
-            path: proto.path,
-          })
+          this.props.addProtoToProject(proto)
         })
         .catch(err => {
-          logger.warn('Proto validation failed')
+          logger.warn('Proto validation failed: ', err)
         })
         .finally(() => {
           this.setState({
@@ -62,6 +58,8 @@ class Sidebar extends React.Component<ISidebarProps, ISidebarState> {
   }
 
   render() {
+    const { protos } = this.props
+
     return (
       <Nav
         dragInProgress={ this.state.dragInProgress }
@@ -69,14 +67,30 @@ class Sidebar extends React.Component<ISidebarProps, ISidebarState> {
         onDragOver={ (e) => this.handleDragOver(e) }
         onDrop={ (e) => this.handleOnDrop(e) }
       >
+
+        {
+          Array.isArray(protos) && protos.length > 0 && (
+            <ul>
+              {
+                protos.map(proto => (<li key={ proto.name }>{ proto.name }</li>))
+              }
+            </ul>
+          )
+        }
+
+
         <span>Shows</span>
       </Nav>
     );
   }
 }
 
+const mapStateToProps = (state: IStoreState) => ({
+  protos: state.projects.protos
+})
+
 const mapDispatchToProps = {
   addProtoToProject: (e: IProto) => projectActions.addProtoToProject(e)
 }
 
-export default connect(null, mapDispatchToProps)(Sidebar);
+export default connect(mapStateToProps, mapDispatchToProps)(Sidebar);
