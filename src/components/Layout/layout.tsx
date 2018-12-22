@@ -1,18 +1,8 @@
 import * as React from 'react';
 
-import styled from 'styled-components';
 import Sidebar from '../Sidebar';
 
-const LayoutContainer = styled.div`
-  background-color: red;
-  display: flex;
-  height: 100vh;
-  overflow-y: hidden;
-`
-
-const MainContainer = styled.div`
-  flex: 1;
-`
+import { LayoutContainer } from './layout.components';
 
 const Layout: React.SFC<{}> = ({ children }) => {
   return (
@@ -20,7 +10,7 @@ const Layout: React.SFC<{}> = ({ children }) => {
       <Sidebar />
 
       <main>
-        {children}
+        { children }
       </main>
     </LayoutContainer>
   );

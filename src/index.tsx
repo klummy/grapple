@@ -1,12 +1,18 @@
 import * as React from 'react';
 import ReactDOM from 'react-dom';
+import { Provider } from "react-redux";
 
 import Layout from './components/Layout';
 
+import store from './store';
+
 const App = () => (
-  <Layout>
-    <h1>Yellow</h1>
-  </Layout>
+  <Provider store={ store }>
+    <Layout>
+      <h1>Yellow</h1>
+    </Layout>
+
+  </Provider>
 )
 
 ReactDOM.render(<App />, document.getElementById('root'))
