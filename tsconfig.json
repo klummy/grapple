@@ -18,5 +18,7 @@
     "declaration": true,
     "jsx": "react",
     "strict": true
-  }
+  },
+
+  "extends": "./node_modules/electron-webpack/tsconfig-base.json"
 }
