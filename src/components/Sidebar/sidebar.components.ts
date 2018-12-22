@@ -7,3 +7,11 @@ export const Nav = styled.nav`
   transition: background-color .2s ease-in-out;
   width: 200px;
 `
+
+export const NavProtoList = styled.ul`
+
+`
+
+export const NavProtoItem = styled.a`
+  text-transform: capitalize;
+`

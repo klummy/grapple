@@ -17,3 +17,8 @@ export const validateProto = (proto: IProto) => {
     }
   });
 }
+
+/**
+ * Return a human friendly proto name
+ */
+export const humanFriendlyProtoName = (proto: IProto): string => proto.name.replace('.proto', '')
