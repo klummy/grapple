@@ -1,8 +1,16 @@
-import { combineReducers } from "redux";
+import { combineReducers, Reducer } from "redux";
 import projects from './projects/projects.reducer';
 
-const reducers = combineReducers({
+const appReducers = combineReducers({
   projects
 })
 
-export default reducers;
+const rootReducer: Reducer = (state, action) => {
+  if (action.type === 'REHYDRATE_STORE') {
+    state = action.payload
+  }
+
+  return appReducers(state, action)
+}
+
+export default rootReducer;

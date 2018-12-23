@@ -2,7 +2,7 @@ import Store from 'electron-store';
 
 import logger from '../libs/logger';
 
-export default () => {
+export const createStorage = () => {
   const storageOpts = {}
 
   const store = new Store(storageOpts)
@@ -33,3 +33,7 @@ export default () => {
 
   }
 }
+
+const storage = createStorage()
+
+export default storage;

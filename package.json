@@ -46,6 +46,7 @@
   },
   "dependencies": {
     "@grpc/proto-loader": "^0.3.0",
+    "electron-store": "^2.0.0",
     "react": "^16.6.3",
     "react-dom": "^16.6.3",
     "react-redux": "^6.0.0",
