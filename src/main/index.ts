@@ -6,7 +6,7 @@ import { format as formatUrl } from 'url';
 
 const isDev = process.env.NODE_ENV !== 'production'
 
-let mainWindow: any
+let mainWindow: BrowserWindow | null
 
 const createMainWindow = () => {
   const window = new BrowserWindow({

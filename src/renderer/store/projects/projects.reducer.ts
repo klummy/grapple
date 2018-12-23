@@ -1,9 +1,9 @@
 import initialState from './projects.state';
 import { ADD_PROTO_TO_PROJECT, NEW_PROJECT } from './projects.types';
 
-import { IProject } from 'types/projects';
-import { IProto } from 'types/protos';
 import { IReduxAction } from '../../types';
+import { IProject } from '../../types/projects';
+import { IProto } from '../../types/protos';
 
 const projectsReducer = (state: IProject = initialState, { payload, type }: IReduxAction) => {
 

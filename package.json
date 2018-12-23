@@ -20,7 +20,6 @@
     "@types/redux-logger": "^3.0.6",
     "@types/styled-components": "^4.1.4",
     "colors": "^1.3.3",
-    "concurrently": "^4.1.0",
     "electron": "^4.0.0-beta.9",
     "electron-builder": "^20.38.3",
     "electron-reload": "^1.4.0",
@@ -47,18 +46,15 @@
   },
   "dependencies": {
     "@grpc/proto-loader": "^0.3.0",
-    "components": "^0.1.0",
-    "electron-store": "^2.0.0",
-    "libs": "^0.1.2",
     "react": "^16.6.3",
     "react-dom": "^16.6.3",
     "react-redux": "^6.0.0",
+    "react-router-dom": "^4.3.1",
     "redux": "^4.0.1",
     "redux-logger": "^3.0.6",
     "redux-persist": "^5.10.0",
     "redux-persist-electron-storage": "^2.0.0",
     "source-map-support": "^0.5.9",
-    "store": "^2.0.12",
     "styled-components": "^4.1.3"
   }
 }

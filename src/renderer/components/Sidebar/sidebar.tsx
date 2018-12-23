@@ -8,8 +8,8 @@ import { ISidebarProps, ISidebarState } from './sidebar.types';
 import logger from '../../libs/logger';
 import { humanFriendlyProtoName, validateProto } from '../../services/protos';
 
-import { IStoreState } from 'types';
 import * as projectActions from '../../store/projects/projects.actions';
+import { IStoreState } from '../../types';
 
 class Sidebar extends React.Component<ISidebarProps, ISidebarState> {
   state = {
@@ -41,10 +41,15 @@ class Sidebar extends React.Component<ISidebarProps, ISidebarState> {
 
     for (const file of event.dataTransfer.files) {
       const proto = (file as unknown as IProto)
+      const { lastModified, path } = proto
 
       validateProto(proto)
         .then(() => {
-          this.props.addProtoToProject(proto)
+          this.props.addProtoToProject({
+            lastModified,
+            name: humanFriendlyProtoName(proto),
+            path,
+          })
         })
         .catch(err => {
           logger.warn('Proto validation failed: ', err)
@@ -74,9 +79,9 @@ class Sidebar extends React.Component<ISidebarProps, ISidebarState> {
               {
                 protos.map(proto => (
                   <NavProtoItem key={ proto.name }>
-                    <NavProtoItem href="">
-                      { humanFriendlyProtoName(proto) }
-                    </NavProtoItem>
+                    <a href="">
+                      { proto.name }
+                    </a>
                   </NavProtoItem>)
                 )
               }

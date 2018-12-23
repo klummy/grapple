@@ -12,6 +12,6 @@ export const NavProtoList = styled.ul`
 
 `
 
-export const NavProtoItem = styled.a`
+export const NavProtoItem = styled.li`
   text-transform: capitalize;
 `

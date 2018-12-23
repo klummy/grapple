@@ -1,4 +1,7 @@
-import { ADD_PROTO_TO_PROJECT, IProject, IProto, NEW_PROJECT } from "./projects.types";
+import { ADD_PROTO_TO_PROJECT, NEW_PROJECT } from "./projects.types";
+
+import { IProject, } from '../../types/projects';
+import { IProto, } from '../../types/protos';
 
 export const newProject = (project: IProject) => ({
   payload: project,
