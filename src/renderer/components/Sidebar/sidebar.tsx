@@ -2,7 +2,7 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 
 import { IProto } from '../../types/protos';
-import { Nav, NavProtoItem, NavProtoList } from './sidebar.components';
+import { Nav, NavProtoItem, NavProtoItemLink, NavProtoList } from './sidebar.components';
 import { ISidebarProps, ISidebarState } from './sidebar.types';
 
 import logger from '../../libs/logger';
@@ -79,18 +79,15 @@ class Sidebar extends React.Component<ISidebarProps, ISidebarState> {
               {
                 protos.map(proto => (
                   <NavProtoItem key={ proto.name }>
-                    <a href="">
+                    <NavProtoItemLink href="">
                       { proto.name }
-                    </a>
+                    </NavProtoItemLink>
                   </NavProtoItem>)
                 )
               }
             </NavProtoList>
           )
         }
-
-
-        <span>Shows</span>
       </Nav>
     );
   }
