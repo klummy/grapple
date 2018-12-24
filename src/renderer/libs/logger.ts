@@ -4,21 +4,21 @@ import colors from 'colors';
 class Logger {
   debug(...args: any) {
     console.error(
-      colors.bgMagenta('Debug - '),
+      colors.bgMagenta('Debug |'),
       ...args
     );
   }
 
   error(...args: any) {
     console.error(
-      colors.red('Error - '),
+      colors.red('Error |'),
       ...args
     );
   }
 
   info(...args: any) {
     console.info(
-      colors.grey('Info - '),
+      colors.grey('Info |'),
       ...args
     );
   }

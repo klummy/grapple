@@ -2,16 +2,16 @@ import * as React from 'react';
 
 import Sidebar from '../Sidebar';
 
-import { LayoutContainer } from './layout.components';
+import { LayoutContainer, MainContainer } from './layout.components';
 
 const Layout: React.SFC<{}> = ({ children }) => {
   return (
     <LayoutContainer>
       <Sidebar />
 
-      <main>
+      <MainContainer>
         { children }
-      </main>
+      </MainContainer>
     </LayoutContainer>
   );
 }

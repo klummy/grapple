@@ -7,6 +7,6 @@ export const LayoutContainer = styled.div`
   overflow-y: hidden;
 `
 
-// const MainContainer = styled.div`
-//   flex: 1;
-// `
+export const MainContainer = styled.div`
+  flex: 1;
+`

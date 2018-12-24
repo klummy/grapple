@@ -4,6 +4,7 @@ import { Provider } from "react-redux";
 
 import config from 'common/config';
 import Layout from './components/Layout';
+import Main from './components/Main';
 import logger from './libs/logger';
 import store from './store';
 import storage from './store/storage';
@@ -18,10 +19,10 @@ class App extends React.Component<{}, {}> {
       .then((item) => {
         if (item) {
           logger.info('Rehydrating store from user preferences')
-          const newState = (item as IStoreState)
+          const payload = (item as IStoreState)
 
           store.dispatch({
-            payload: newState,
+            payload,
             type: 'REHYDRATE_STORE',
           })
         } else {
@@ -37,7 +38,7 @@ class App extends React.Component<{}, {}> {
     return (
       <Provider store={ store }>
         <Layout>
-          <h1>Yellow</h1>
+          <Main />
         </Layout>
       </Provider>
     );

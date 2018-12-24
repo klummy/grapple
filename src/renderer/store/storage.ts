@@ -9,14 +9,14 @@ export const createStorage = () => {
 
   return {
     getItem: (key: string) => {
-      logger.info('getItem => ', key)
+      logger.info(`Retrieving item with key: ${key}: `)
       return new Promise((resolve) => {
         resolve(store.get(key))
       })
     },
 
     removeItem: (key: string): Promise<void> => {
-      logger.info('removeItem => ', key)
+      logger.info(`Deleting item with key: ${key}: `)
 
       return new Promise((resolve) => {
         resolve(store.delete(key))
@@ -25,7 +25,7 @@ export const createStorage = () => {
 
     // tslint:disable-next-line:no-any
     setItem: (key: string, item: any): Promise<void> => {
-      logger.info('setItem => ', key, item)
+      logger.info(`Setting item with key: ${key}: `, item)
       return new Promise((resolve) => {
         resolve(store.set(key, item))
       })
