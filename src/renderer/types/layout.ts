@@ -7,5 +7,6 @@ export interface ITab {
 }
 
 export interface ILayout {
+  activeTab: string
   tabs: Array<ITab>
 }

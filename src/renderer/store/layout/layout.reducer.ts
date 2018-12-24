@@ -4,7 +4,7 @@ import { IProto } from '../..//types/protos';
 import { IReduxAction } from '../../types';
 import { ILayout, ITab } from '../../types/layout';
 import initialState from './layout.state';
-import { CLOSE_TAB, NEW_TAB } from './layout.types';
+import { CLOSE_TAB, NEW_TAB, SWITCH_TAB } from './layout.types';
 
 const layoutReducer = (state: ILayout = initialState, { payload, type }: IReduxAction): ILayout => {
   switch (type) {
@@ -30,6 +30,12 @@ const layoutReducer = (state: ILayout = initialState, { payload, type }: IReduxA
       return {
         ...state,
         tabs: state.tabs.filter(tabItem => tabItem.id !== targetTab.id)
+      }
+
+    case SWITCH_TAB:
+      return {
+        ...state,
+        activeTab: (payload as ITab).id || ''
       }
 
     default:

@@ -1,21 +1,20 @@
 import * as React from 'react';
 
 import { CloseIcon, TabItemComponent, TitleComponent } from './tab.components';
+import { ITabItemProps } from './tab.types';
 
-import { ITab } from '../../types/layout';
-
-interface ITabItemProps extends ITab {
-  closeTab: (tab: ITab) => void
-  tab: ITab
-}
-
-const Tab: React.SFC<ITabItemProps> = ({ tab, closeTab }) => {
+const Tab: React.SFC<ITabItemProps> = ({ active, tab, closeTab, renameTab, switchTab }) => {
   const { name, } = tab
 
+  // TODO: Implement tab renaming
+
   return (
-    <TabItemComponent>
+    <TabItemComponent
+      active={ active }
+      onClick={ () => switchTab(tab) }
+    >
       <TitleComponent>
-        { name || 'Untitled Request Untitled Request Untitled Request' }
+        { name || 'Untitled Request' }
       </TitleComponent>
 
       <CloseIcon className="ti-close" onClick={ () => closeTab(tab) } />

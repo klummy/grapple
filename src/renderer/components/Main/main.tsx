@@ -9,18 +9,27 @@ import Tab from '../../components/Tab';
 import { OuterWrapper, TabListContainer } from './main.components';
 
 export interface IMainProps {
+  activeTab: string
   closeTab: (tab: ITab) => void
+  renameTab: (tab: ITab) => void
+  switchTab: (tab: ITab) => void
   tabs: Array<ITab>
 }
 
-const Main: React.SFC<IMainProps> = ({ closeTab, tabs }) => {
+const Main: React.SFC<IMainProps> = ({ activeTab, closeTab, renameTab, switchTab, tabs }) => {
   return (
     <OuterWrapper>
       <TabListContainer>
         {
           Array.isArray(tabs) && tabs.length > 0 &&
           tabs.map((tab =>
-            <Tab key={ tab.id } closeTab={ closeTab } tab={ tab } />
+            <Tab
+              active={ activeTab === tab.id }
+              closeTab={ closeTab }
+              key={ tab.id }
+              renameTab={ renameTab }
+              switchTab={ switchTab }
+              tab={ tab } />
           ))
         }
       </TabListContainer>
@@ -29,11 +38,14 @@ const Main: React.SFC<IMainProps> = ({ closeTab, tabs }) => {
 }
 
 const mapStateToProps = (state: IStoreState) => ({
+  activeTab: state.layout.activeTab,
   tabs: state.layout.tabs
 })
 
 const mapDispatchToProps = {
-  closeTab: (tab: ITab) => layoutActions.closeTab(tab)
+  closeTab: (tab: ITab) => layoutActions.closeTab(tab),
+  renameTab: (tab: ITab) => layoutActions.renameTab(tab),
+  switchTab: (tab: ITab) => layoutActions.switchTab(tab)
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Main);

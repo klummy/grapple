@@ -1,3 +1,4 @@
 export default {
+  activeTab: '',
   tabs: []
 };
