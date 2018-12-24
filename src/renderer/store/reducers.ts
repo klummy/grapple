@@ -1,7 +1,10 @@
 import { combineReducers, Reducer } from "redux";
+
+import layout from './layout/layout.reducer';
 import projects from './projects/projects.reducer';
 
 const appReducers = combineReducers({
+  layout,
   projects
 })
 

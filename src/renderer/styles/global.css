@@ -1,0 +1,8 @@
+@import url('https://fonts.googleapis.com/css?family=Open+Sans');
+
+@import url('https://cdn.jsdelivr.net/gh/lykmapipo/themify-icons@0.1.2/css/themify-icons.css');
+
+body {
+  color: #666;
+  font-family: 'Open Sans', sans-serif;
+}

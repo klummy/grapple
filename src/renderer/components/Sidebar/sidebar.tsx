@@ -8,6 +8,7 @@ import { ISidebarProps, ISidebarState } from './sidebar.types';
 import logger from '../../libs/logger';
 import { humanFriendlyProtoName, validateProto } from '../../services/protos';
 
+import * as layoutActions from '../../store/layout/layout.actions';
 import * as projectActions from '../../store/projects/projects.actions';
 import { IStoreState } from '../../types';
 
@@ -62,6 +63,14 @@ class Sidebar extends React.Component<ISidebarProps, ISidebarState> {
     }
   }
 
+  newTabHandler(e: React.MouseEvent, proto: IProto) {
+    e.preventDefault()
+
+    const { addTab } = this.props
+
+    addTab(proto)
+  }
+
   render() {
     const { protos } = this.props
 
@@ -79,7 +88,7 @@ class Sidebar extends React.Component<ISidebarProps, ISidebarState> {
               {
                 protos.map(proto => (
                   <NavProtoItem key={ proto.name }>
-                    <NavProtoItemLink href="">
+                    <NavProtoItemLink href="" onClick={ (e) => this.newTabHandler(e, proto) }>
                       { proto.name }
                     </NavProtoItemLink>
                   </NavProtoItem>)
@@ -98,7 +107,8 @@ const mapStateToProps = (state: IStoreState) => ({
 })
 
 const mapDispatchToProps = {
-  addProtoToProject: (e: IProto) => projectActions.addProtoToProject(e)
+  addProtoToProject: (e: IProto) => projectActions.addProtoToProject(e),
+  addTab: (proto: IProto) => layoutActions.addTab(proto),
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Sidebar);

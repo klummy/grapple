@@ -1,3 +1,4 @@
+import { ILayout } from "./layout";
 import { IProject } from "./projects";
 
 
@@ -7,5 +8,6 @@ export interface IReduxAction {
 }
 
 export interface IStoreState {
+  layout: ILayout
   projects: IProject
 }
