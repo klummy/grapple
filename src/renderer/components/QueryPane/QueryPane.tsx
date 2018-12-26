@@ -10,10 +10,11 @@ import { IProto } from '../../types/protos';
 
 import AddressBar from './AddressBar';
 import {
-  QueryPaneContainer
+  QueryPaneContainer,
+  QueryPanEmptyStateContainer
 } from './QueryPane.components';
 
-// NOTE: All the tab data shouldn't be here but set in the tab itself. e.g. serviceAddress
+// TODO: NOTE: All the tab data shouldn't be here but set in the tab itself. e.g. serviceAddress
 
 export interface IQueryPaneProps {
   activeTab: string
@@ -140,12 +141,16 @@ class QueryPane extends React.Component<IQueryPaneProps, IQueryPaneState> {
   }
 
   render() {
-    const pageData = this.state.pageData
+    const { pageData } = this.state
 
     if (!pageData) {
+      logger.warn('Page data empty, possible error in data.')
+
       return (
         // TODO: Empty State
-        <div>Undone empty state</div>
+        <QueryPanEmptyStateContainer>
+          Undone empty state
+        </QueryPanEmptyStateContainer>
       )
     }
 
