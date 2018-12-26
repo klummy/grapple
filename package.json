@@ -52,6 +52,7 @@
     "cuid": "^2.1.4",
     "electron-store": "^2.0.0",
     "lodash.throttle": "^4.1.1",
+    "protobufjs": "^6.8.8",
     "react": "^16.6.3",
     "react-dom": "^16.6.3",
     "react-redux": "^6.0.0",

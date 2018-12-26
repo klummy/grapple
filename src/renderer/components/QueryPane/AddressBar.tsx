@@ -29,8 +29,14 @@ const Button = styled.button`
   border: none;
   border-radius: 3px;
   color: var(--secondary-color-grey);
+  cursor: pointer;
   font-size: 13px;
   padding: 0 20px;
+  transition: opacity .3s ease-in-out;
+
+  &:hover {
+    opacity: .8;
+  }
 `
 
 export interface IAddressBarProps {
@@ -39,9 +45,9 @@ export interface IAddressBarProps {
 
 const AddressBar: React.SFC<IAddressBarProps> = ({ handleSetAddress }) => {
   return (
-    <Form action="" onSubmit={ (e) => handleSetAddress(e) }>
+    <Form action="" onSubmit={ e => handleSetAddress(e) }>
       <Input type="url" name="address" placeholder="Service Address" />
-      <Button type="submit">Set</Button>
+      <Button type="submit">Send</Button>
     </Form>
   );
 }

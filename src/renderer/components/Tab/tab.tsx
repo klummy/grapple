@@ -17,7 +17,10 @@ const Tab: React.SFC<ITabItemProps> = ({ active, tab, closeTab, renameTab, switc
         { name || 'Untitled Request' }
       </TitleComponent>
 
-      <CloseIcon className="ti-close" onClick={ () => closeTab(tab) } />
+      <CloseIcon className="ti-close" onClick={ (e) => {
+        e.stopPropagation()
+        closeTab(tab)
+      } } />
     </TabItemComponent>
   );
 }

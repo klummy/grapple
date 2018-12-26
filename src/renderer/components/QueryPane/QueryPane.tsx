@@ -1,18 +1,19 @@
-import * as grpc from '@grpc/grpc-js';
 import * as protoLoader from '@grpc/proto-loader';
+import protobufjs from 'protobufjs';
 import * as React from 'react';
 import { connect } from 'react-redux';
 
-import logger from '../../libs/logger';
+// import logger from '../../libs/logger';
 import { IStoreState } from '../../types';
 import { ITab } from '../../types/layout';
-import { IProto } from '../../types/protos';
 
+import logger from '../../libs/logger';
+import { loadFields } from '../../services/grpc';
 import AddressBar from './AddressBar';
 import {
-  QueryPaneContainer,
-  QueryPanEmptyStateContainer
+  QueryPaneContainer
 } from './QueryPane.components';
+import QueryPaneParams from './QueryParams';
 
 // TODO: NOTE: All the tab data shouldn't be here but set in the tab itself. e.g. serviceAddress
 
@@ -22,20 +23,18 @@ export interface IQueryPaneProps {
 }
 
 export interface IQueryPaneState {
+  requestFields: {
+    [k: string]: protobufjs.Field
+  }
   serviceAddress: string
-  pageData: IProto
   pkgDef: protoLoader.PackageDefinition
 }
 
 class QueryPane extends React.Component<IQueryPaneProps, IQueryPaneState> {
 
   state = {
-    pageData: {
-      lastModified: 0,
-      name: '',
-      path: ''
-    },
     pkgDef: {},
+    requestFields: {},
     serviceAddress: 'localhost:9284', // TODO: Test serviceAddress, replace with empty string
   }
 
@@ -57,75 +56,26 @@ class QueryPane extends React.Component<IQueryPaneProps, IQueryPaneState> {
    */
   loadTabData() {
     const { activeTab, tabs } = this.props
-    const { serviceAddress } = this.state
 
     const currentTab = tabs.find(tab => tab.id === activeTab)
 
     if (!currentTab || !currentTab.proto) { return }
 
-    // TODO: Load proto details here
-    const { proto } = currentTab
-    protoLoader.load(proto.path, {
-      defaults: true,
-      enums: String,
-      keepCase: true,
-      longs: String,
-      oneofs: true
-    })
-      .then(pkgDef => {
-        const pkgObject = grpc.loadPackageDefinition(pkgDef)
+    const {
+      proto,
+      service = { originalName: '' }
+    } = currentTab
 
-        const serviceIndex = Object.keys(pkgObject)[0]
-        const serviceName = Object.keys(pkgObject[serviceIndex])[0]
-
-        const credentials = grpc.credentials.createInsecure()
-        const options = {
-          'grpc.keepalive_time_ms': 15000,
-          'grpc.max_reconnect_backoff_ms': 1000,
-          'grpc.min_reconnect_backoff_ms': 1000,
-        };
-
-
-        const client = new pkgObject[serviceIndex][serviceName](serviceAddress, credentials, options)
-
-        console.log('serviceAddress => ', serviceAddress);
-
-        console.log('pkgObject => ', pkgObject);
-
-        console.log('client => ', client);
-
-        const sampleProject = {
-          applications: [],
-          // created: {},
-          id: 1345,
-          // modified: {},
-          name: 'nom',
-          owner: 'owner',
-        }
-
-        logger.info('Waiting for client connection to be ready')
-        client.waitForReady(50000, (err: Error) => {
-          logger.info('Connection ready')
-
-          // tslint:disable-next-line no-any
-          client.CreateProject(sampleProject, (error: Error, response: any) => {
-            console.log('error => ', error);
-            console.log('response => ', response);
-          })
-        })
-
+    // tslint:disable-next-line:no-any
+    loadFields(proto.path, (service as any).path)
+      .then(({ requestFields }) => {
         this.setState({
-          pkgDef
+          requestFields
         })
       })
       .catch(err => {
-        logger.error('Error loading Proto file - ', err)
-        // TODO: Display error
+        logger.error('Error loading fields for proto', err)
       })
-
-    this.setState({
-      pageData: proto
-    })
   }
 
   componentDidUpdate(prevProps: IQueryPaneProps, prevState: IQueryPaneState) {
@@ -141,24 +91,24 @@ class QueryPane extends React.Component<IQueryPaneProps, IQueryPaneState> {
   }
 
   render() {
-    const { pageData } = this.state
+    const { requestFields } = this.state
 
-    if (!pageData) {
-      logger.warn('Page data empty, possible error in data.')
+    // if (!pageData) {
+    //   logger.warn('Page data empty, possible error in data.')
 
-      return (
-        // TODO: Empty State
-        <QueryPanEmptyStateContainer>
-          Undone empty state
-        </QueryPanEmptyStateContainer>
-      )
-    }
+    //   return (
+    //     // TODO: Empty State
+    //     <QueryPanEmptyStateContainer>
+    //       Undone empty state
+    //     </QueryPanEmptyStateContainer>
+    //   )
+    // }
 
     return (
       <QueryPaneContainer>
         <AddressBar handleSetAddress={ (e) => this.handleSetAddress(e) } />
 
-        { pageData.name }
+        <QueryPaneParams fields={ requestFields } />
       </QueryPaneContainer>
     );
   }

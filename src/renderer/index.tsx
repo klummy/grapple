@@ -1,16 +1,21 @@
+import * as grpc from '@grpc/grpc-js';
 import * as React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from "react-redux";
 
-import config from 'common/config';
+import config from '../common/config';
 import Layout from './components/Layout';
 import Main from './components/Main';
 import logger from './libs/logger';
 import store from './store';
 import storage from './store/storage';
+import { IStoreState } from './types';
+
 import './styles/global.css';
 import './styles/normalize.css';
-import { IStoreState } from './types';
+
+// Set the gRPC logger to use our custom logger
+grpc.setLogger(logger)
 
 class App extends React.Component<{}, {}> {
   componentDidMount() {
@@ -36,7 +41,7 @@ class App extends React.Component<{}, {}> {
 
   render() {
     return (
-      <Provider store={ store }>
+      <Provider store={store}>
         <Layout>
           <Main />
         </Layout>
