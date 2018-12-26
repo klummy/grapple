@@ -6,17 +6,18 @@ import { ITabItemProps } from './tab.types';
 export const TabItemComponent: any = styled.li`
   align-items: center;
   border-right: 1px solid #eee;
-  background-color: ${(props: ITabItemProps) => props.active && '#eee'};
+  background-color: ${(props: ITabItemProps) => props.active ? 'rgba(8, 178, 227, .5)' : 'rgba(239, 233, 244, 1)'};
   cursor: pointer;
   display: flex;
   flex-shrink: 0;
   height: 100%;
+  opacity: .7;
   padding: 0 20px;
-  transition: background-color .3s ease-in-out;
+  transition: opacity .3s ease-in-out;
   width:  200px;
 
   &:hover {
-    background-color: rgba(102, 102, 102, .1);
+    opacity: .9;
   }
 `
 
@@ -27,10 +28,6 @@ export const TitleComponent = styled.span`
   text-overflow: ellipsis;
   transition: opacity .3s ease-in-out;
   white-space: nowrap;
-
-  &:hover {
-    opacity: .6;
-  }
 `
 
 export const CloseIcon = styled.span`

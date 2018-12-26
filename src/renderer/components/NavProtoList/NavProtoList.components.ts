@@ -36,13 +36,14 @@ export const NavProtoItemServicesList = styled.ul`
 `
 
 export const NavProtoItemServicesItem = styled.li`
-  color: rgba(102, 102, 102, .85);
   cursor: pointer;
   font-size: 13px;
+  opacity: .7;
   padding: 10px 20px;
-  transition: background-color .3s ease-in;
+  transition: all .3s ease-in-out;
 
   &:hover {
     background-color: rgba(151,151,151,0.20);
+    opacity: .9;
   }
 `

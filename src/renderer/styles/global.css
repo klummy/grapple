@@ -2,7 +2,13 @@
 
 @import url('https://cdn.jsdelivr.net/gh/lykmapipo/themify-icons@0.1.2/css/themify-icons.css');
 
+@import './variables.css';
+
+* {
+  box-sizing: border-box;
+}
+
 body {
-  color: #666;
+  color: var(--text-color-default);
   font-family: 'Open Sans', sans-serif;
 }

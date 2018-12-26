@@ -60,7 +60,8 @@ class Sidebar extends React.Component<ISidebarProps, ISidebarState> {
         })
         .finally(() => {
           this.setState({
-            actionInProgress: false
+            actionInProgress: false,
+            dragInProgress: false
           })
         })
     }

@@ -1,15 +1,5 @@
-import * as React from 'react';
+import styled from 'styled-components'
 
-
-export interface IAddressBarProps {
-  handleSetAddress: (e: React.FormEvent) => void
-}
-
-export const AddressBar: React.SFC<IAddressBarProps> = ({ handleSetAddress }) => {
-  return (
-    <form action="" onSubmit={ (e) => handleSetAddress(e) }>
-      <input type="url" name="address" placeholder="Service Address" />
-      <button type="submit">Set</button>
-    </form>
-  );
-}
+export const QueryPaneContainer = styled.div`
+  padding: 20px;
+`

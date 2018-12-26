@@ -7,7 +7,11 @@ import logger from '../../libs/logger';
 import { IStoreState } from '../../types';
 import { ITab } from '../../types/layout';
 import { IProto } from '../../types/protos';
-import { AddressBar } from './QueryPane.components';
+
+import AddressBar from './AddressBar';
+import {
+  QueryPaneContainer
+} from './QueryPane.components';
 
 // NOTE: All the tab data shouldn't be here but set in the tab itself. e.g. serviceAddress
 
@@ -146,11 +150,11 @@ class QueryPane extends React.Component<IQueryPaneProps, IQueryPaneState> {
     }
 
     return (
-      <div>
+      <QueryPaneContainer>
         <AddressBar handleSetAddress={ (e) => this.handleSetAddress(e) } />
 
         { pageData.name }
-      </div>
+      </QueryPaneContainer>
     );
   }
 }
