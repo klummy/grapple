@@ -9,18 +9,24 @@ export const NavProtoItemContainer = styled.div`
   padding-bottom: 15px;
 `
 
+export const NavProtoItemHeaderContainer = styled.div`
+  align-items: center;
+  display: flex;
+  padding: 20px 10px 10px;
+`
+
 export const NavProtoItemHeader = styled.h2`
   color: inherit;
-  display: block;
   font-size: 15px;
   font-weight: 400;
   height: 100%;
   margin: 0;
   overflow: hidden;
-  padding: 20px 10px 10px;
-  text-decoration: none;
   text-overflow: ellipsis;
-  width: 100%;
+`
+
+export const NavProtoItemHeaderIcon = styled.span`
+  margin-left: auto;
 `
 
 export const NavProtoItemServicesList = styled.ul`
