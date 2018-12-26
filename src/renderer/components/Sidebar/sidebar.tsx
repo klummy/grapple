@@ -1,12 +1,14 @@
+import { MethodDefinition } from '@grpc/proto-loader';
 import * as React from 'react';
 import { connect } from 'react-redux';
 
 import { IProto } from '../../types/protos';
-import { Nav, NavProtoItem, NavProtoItemLink, NavProtoList } from './sidebar.components';
+import { Nav, } from './sidebar.components';
 import { ISidebarProps, ISidebarState } from './sidebar.types';
 
 import logger from '../../libs/logger';
 import { humanFriendlyProtoName, validateProto } from '../../services/protos';
+import NavProtoList from '../NavProtoList';
 
 import * as layoutActions from '../../store/layout/layout.actions';
 import * as projectActions from '../../store/projects/projects.actions';
@@ -45,11 +47,12 @@ class Sidebar extends React.Component<ISidebarProps, ISidebarState> {
       const { lastModified, path } = proto
 
       validateProto(proto)
-        .then(() => {
+        .then((pkgDef) => {
           this.props.addProtoToProject({
             lastModified,
             name: humanFriendlyProtoName(proto),
             path,
+            pkgDef
           })
         })
         .catch(err => {
@@ -63,12 +66,12 @@ class Sidebar extends React.Component<ISidebarProps, ISidebarState> {
     }
   }
 
-  newTabHandler(e: React.MouseEvent, proto: IProto) {
+  newTabHandler(e: React.MouseEvent, proto: IProto, service: MethodDefinition<{}, {}>) {
     e.preventDefault()
 
     const { addTab } = this.props
 
-    addTab(proto)
+    addTab(proto, service)
   }
 
   render() {
@@ -81,22 +84,9 @@ class Sidebar extends React.Component<ISidebarProps, ISidebarState> {
         onDragOver={ (e) => this.handleDragOver(e) }
         onDrop={ (e) => this.handleOnDrop(e) }
       >
-
-        {
-          Array.isArray(protos) && protos.length > 0 && (
-            <NavProtoList>
-              {
-                protos.map(proto => (
-                  <NavProtoItem key={ proto.name }>
-                    <NavProtoItemLink href="" onClick={ (e) => this.newTabHandler(e, proto) }>
-                      { proto.name }
-                    </NavProtoItemLink>
-                  </NavProtoItem>)
-                )
-              }
-            </NavProtoList>
-          )
-        }
+        <NavProtoList
+          newTabHandler={ (e, proto, service) => this.newTabHandler(e, proto, service) }
+          protos={ protos } />
       </Nav>
     );
   }
@@ -108,7 +98,7 @@ const mapStateToProps = (state: IStoreState) => ({
 
 const mapDispatchToProps = {
   addProtoToProject: (e: IProto) => projectActions.addProtoToProject(e),
-  addTab: (proto: IProto) => layoutActions.addTab(proto),
+  addTab: (proto: IProto, service: MethodDefinition<{}, {}>) => layoutActions.addTab({ proto, service }),
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Sidebar);

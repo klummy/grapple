@@ -9,12 +9,15 @@ import { CLOSE_TAB, NEW_TAB, SWITCH_TAB } from './layout.types';
 const layoutReducer = (state: ILayout = initialState, { payload, type }: IReduxAction): ILayout => {
   switch (type) {
     case NEW_TAB:
-      const proto = (payload as IProto)
+      const tabData = (payload as ITab)
+
+      const { proto, service } = tabData
 
       const tabs: Array<ITab> = Array.from(state.tabs)
       const tab = {
         id: cuid(),
-        proto
+        proto,
+        service
       }
 
       tabs.push(tab)

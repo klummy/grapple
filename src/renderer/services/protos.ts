@@ -1,11 +1,12 @@
 import * as protoLoader from '@grpc/proto-loader';
 
+import { PackageDefinition } from '@grpc/grpc-js/build/src/make-client';
 import { IProto } from '../types/protos';
 
 /**
  * Validate a proto file
  */
-export const validateProto = (proto: IProto) => {
+export const validateProto = (proto: IProto): Promise<PackageDefinition> => {
 
   return new Promise((resolve, reject) => {
     const options = {}
