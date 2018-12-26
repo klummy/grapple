@@ -27,7 +27,11 @@ const TabList: React.SFC<ITabListProps> = ({ activeTab, closeTab, renameTab, swi
             closeTab={ closeTab }
             key={ tab.id }
             renameTab={ renameTab }
-            switchTab={ switchTab }
+            switchTab={ () => {
+              if (activeTab !== tab.id) {
+                switchTab(tab)
+              }
+            } }
             tab={ tab } />
         ))
       }
