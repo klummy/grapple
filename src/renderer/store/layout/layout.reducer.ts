@@ -1,6 +1,5 @@
 import cuid from 'cuid';
 
-import { IProto } from '../..//types/protos';
 import { IReduxAction } from '../../types';
 import { ILayout, ITab } from '../../types/layout';
 import initialState from './layout.state';
@@ -14,8 +13,10 @@ const layoutReducer = (state: ILayout = initialState, { payload, type }: IReduxA
       const { proto, service } = tabData
 
       const tabs: Array<ITab> = Array.from(state.tabs)
+      const id = cuid()
+
       const tab = {
-        id: cuid(),
+        id,
         proto,
         service
       }
@@ -24,6 +25,7 @@ const layoutReducer = (state: ILayout = initialState, { payload, type }: IReduxA
 
       return {
         ...state,
+        activeTab: id,
         tabs
       }
 

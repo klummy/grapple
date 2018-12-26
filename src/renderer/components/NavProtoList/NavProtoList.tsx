@@ -41,8 +41,6 @@ const NavProtoItem: React.SFC<INavProtoItemProps> = ({ proto, newTabHandler }) =
       })
     })
 
-  console.log('services => ', services);
-
   return (
     <NavProtoItemContainer>
       <NavProtoItemHeader>
