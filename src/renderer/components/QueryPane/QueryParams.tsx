@@ -1,14 +1,11 @@
 import * as React from 'react';
 
 import { ICustomFields } from '../../services/grpc';
+import QueryParamBuilder from './QueryParamBuilder';
 
-export interface IQueryPaneParamsProps {
-  fields?: ICustomFields
-}
-
-export interface IQueryPaneParamsState { }
-
-class QueryPaneParams extends React.Component<IQueryPaneParamsProps, IQueryPaneParamsState> {
+class QueryPaneParams extends React.Component<{
+  fields?: Array<ICustomFields>
+}, {}> {
   render() {
     const { fields } = this.props
 
@@ -18,20 +15,7 @@ class QueryPaneParams extends React.Component<IQueryPaneParamsProps, IQueryPaneP
 
     return (
       <React.Fragment>
-
-        <div>
-
-          <ul>
-            {
-              Object.keys(fields).map(key => {
-                const field = fields[key]
-
-                return <li key={ field.name }>{ field.name } - { field.type }</li>
-              })
-            }
-          </ul>
-        </div>
-
+        <QueryParamBuilder fields={ fields } />
       </React.Fragment>
     );
   }

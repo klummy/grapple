@@ -12,13 +12,13 @@ export interface ICustomFields {
   name: string
   nested?: Array<ICustomFields>
   type: string
-  values?: Enum["values"]
+  values?: Enum["valuesById"]
 }
 
 const lookupField = (root: protobufjs.Root, type: string): {
   nested?: Array<ICustomFields>,
   type: string
-  values?: Enum["values"]
+  values?: Enum["valuesById"]
 } => {
   // Handle for basic types
 
@@ -66,7 +66,7 @@ const lookupField = (root: protobufjs.Root, type: string): {
 
     return {
       type: grpcTypes.enum,
-      values: enumVal.values,
+      values: enumVal.valuesById,
     }
   } catch (error) {
     logger.warn(`Enum lookup failed for type - ${type} - `, error)
