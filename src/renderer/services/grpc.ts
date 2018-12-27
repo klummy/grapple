@@ -21,7 +21,6 @@ const lookupField = (root: protobufjs.Root, type: string): {
   values?: Enum["valuesById"]
 } => {
   // Handle for basic types
-
   const fieldType = grpcTypes[type]
   if (fieldType) {
     return {
@@ -29,6 +28,7 @@ const lookupField = (root: protobufjs.Root, type: string): {
     }
   }
 
+  // Handle for nested types
   try {
     const nestedType = root.lookupType(type)
 
@@ -60,6 +60,7 @@ const lookupField = (root: protobufjs.Root, type: string): {
     logger.warn('Error looking up type, attempting enum lookup', type, error)
   }
 
+  // Handle enums
   try {
     let enumVal = root.lookupEnum(type)
     enumVal = (enumVal as Enum)
@@ -71,8 +72,6 @@ const lookupField = (root: protobufjs.Root, type: string): {
   } catch (error) {
     logger.warn(`Enum lookup failed for type - ${type} - `, error)
   }
-
-  // TODO: Handle imported files here
 
   return {
     type
@@ -113,7 +112,17 @@ export const loadFields = (protoPath: string, serviceName: string): Promise<{
         reject(err)
       }
 
-      const { root, } = protobufjs.parse(data)
+      const parsed = protobufjs.parse(data)
+
+      let { root } = parsed
+      const { imports } = parsed
+
+      if (imports && imports.length > 0) {
+        // Load all imports
+        imports.forEach((importItem) => {
+          root = root.loadSync(importItem, { keepCase: true })
+        })
+      }
 
       const method = root.lookup(
         serviceName.substring(1, serviceName.length).replace('/', '.'))
