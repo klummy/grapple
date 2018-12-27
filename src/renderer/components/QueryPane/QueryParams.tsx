@@ -1,12 +1,9 @@
-import protobufjs from 'protobufjs';
 import * as React from 'react';
 
-import QueryPaneParamsTab from './QueryPaneParamsTab';
+import { ICustomFields } from '../../services/grpc';
 
 export interface IQueryPaneParamsProps {
-  fields: {
-    [k: string]: protobufjs.Field
-  }
+  fields?: ICustomFields
 }
 
 export interface IQueryPaneParamsState { }
@@ -22,7 +19,7 @@ class QueryPaneParams extends React.Component<IQueryPaneParamsProps, IQueryPaneP
     return (
       <React.Fragment>
 
-        <QueryPaneParamsTab title='Params'>
+        <div>
 
           <ul>
             {
@@ -33,10 +30,7 @@ class QueryPaneParams extends React.Component<IQueryPaneParamsProps, IQueryPaneP
               })
             }
           </ul>
-        </QueryPaneParamsTab>
-
-        { /* <QueryPaneParamsTab title='Credentials'>
-        </QueryPaneParamsTab> */ }
+        </div>
 
       </React.Fragment>
     );

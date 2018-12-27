@@ -1,5 +1,4 @@
 import * as protoLoader from '@grpc/proto-loader';
-import protobufjs from 'protobufjs';
 import * as React from 'react';
 import { connect } from 'react-redux';
 
@@ -8,7 +7,7 @@ import { IStoreState } from '../../types';
 import { ITab } from '../../types/layout';
 
 import logger from '../../libs/logger';
-import { loadFields } from '../../services/grpc';
+import { ICustomFields, loadFields } from '../../services/grpc';
 import AddressBar from './AddressBar';
 import {
   QueryPaneContainer
@@ -23,9 +22,7 @@ export interface IQueryPaneProps {
 }
 
 export interface IQueryPaneState {
-  requestFields: {
-    [k: string]: protobufjs.Field
-  }
+  requestFields?: Array<ICustomFields>
   serviceAddress: string
   pkgDef: protoLoader.PackageDefinition
 }
@@ -34,7 +31,7 @@ class QueryPane extends React.Component<IQueryPaneProps, IQueryPaneState> {
 
   state = {
     pkgDef: {},
-    requestFields: {},
+    requestFields: undefined,
     serviceAddress: 'localhost:9284', // TODO: Test serviceAddress, replace with empty string
   }
 
@@ -68,9 +65,9 @@ class QueryPane extends React.Component<IQueryPaneProps, IQueryPaneState> {
 
     // tslint:disable-next-line:no-any
     loadFields(proto.path, (service as any).path)
-      .then(({ requestFields }) => {
+      .then(({ fields }) => {
         this.setState({
-          requestFields
+          requestFields: fields
         })
       })
       .catch(err => {

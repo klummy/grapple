@@ -2,8 +2,8 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import styled from 'styled-components'
 
-import { ITab } from 'renderer/types/layout';
 import { IStoreState } from '../../types';
+import { ITab } from '../../types/layout';
 import QueryPane from '../QueryPane';
 // import Results from '../Results';
 

@@ -4,7 +4,7 @@ import colors from 'colors';
 class Logger {
   debug(...args: any) {
     console.error(
-      colors.bgMagenta('Debug |'),
+      colors.blue('Debug |'),
       ...args
     );
   }
