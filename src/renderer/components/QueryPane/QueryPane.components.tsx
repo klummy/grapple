@@ -10,5 +10,5 @@ export const QueryPanEmptyStateContainer = styled.div`
 `
 
 export const QueryPaneContainer = styled.div`
-  padding: 20px;
+  padding: 20px 20px 0px;
 `

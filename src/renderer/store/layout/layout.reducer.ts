@@ -5,6 +5,8 @@ import { ILayout, ITab } from '../../types/layout';
 import initialState from './layout.state';
 import { CLOSE_TAB, NEW_TAB, SWITCH_TAB } from './layout.types';
 
+import { capitalizaFirstLetter } from '../../libs/utils';
+
 const layoutReducer = (state: ILayout = initialState, { payload, type }: IReduxAction): ILayout => {
   switch (type) {
     case NEW_TAB:
@@ -15,8 +17,15 @@ const layoutReducer = (state: ILayout = initialState, { payload, type }: IReduxA
       const tabs: Array<ITab> = Array.from(state.tabs)
       const id = cuid()
 
+      let name = ''
+
+      if (proto && service) {
+        name = `${service.originalName} - ${capitalizaFirstLetter(proto.name)}`
+      }
+
       const tab = {
         id,
+        name,
         proto,
         service
       }

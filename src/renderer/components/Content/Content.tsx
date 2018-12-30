@@ -5,7 +5,7 @@ import styled from 'styled-components'
 import { IStoreState } from '../../types';
 import { ITab } from '../../types/layout';
 import QueryPane from '../QueryPane';
-// import Results from '../Results';
+import Results from '../Results';
 
 const EmptyStateContainer = styled.div`
   align-items: center;
@@ -22,9 +22,9 @@ export interface IContentProps {
 }
 
 const Content: React.SFC<IContentProps> = ({ activeTab, tabs }) => {
-  const tabExists = tabs.find(tab => tab.id === activeTab)
+  const tab = tabs.find(t => t.id === activeTab)
 
-  if (!tabExists) {
+  if (!tab) {
     return (
       <EmptyStateContainer>
         Empty
@@ -35,7 +35,7 @@ const Content: React.SFC<IContentProps> = ({ activeTab, tabs }) => {
   return (
     <React.Fragment>
       <QueryPane />
-      { /* <Results /> */}
+      <Results queryResult={ JSON.stringify(tab, null, 2) } />
     </React.Fragment>
   );
 }

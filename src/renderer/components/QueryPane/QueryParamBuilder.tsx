@@ -15,7 +15,7 @@ const QueryParamTable = styled.table`
   display: flex;
   flex-direction: column;
   margin: 20px 0;
-  max-height: 400px;
+  max-height: 300px;
   overflow-y: auto;
   padding: 0;
   width: 50%;
