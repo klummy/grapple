@@ -10,8 +10,8 @@ let mainWindow: BrowserWindow | null
 
 const createMainWindow = () => {
   const window = new BrowserWindow({
-    height: 700,
-    width: 800,
+    height: 1000,
+    width: 1200,
   })
 
   if (isDev) {
@@ -58,4 +58,10 @@ app.on('activate', () => {
 
 app.on('ready', () => {
   mainWindow = createMainWindow()
+
+  if (process.platform === 'darwin') {
+    mainWindow.setFullScreen(true)
+  } else {
+    mainWindow.maximize()
+  }
 })

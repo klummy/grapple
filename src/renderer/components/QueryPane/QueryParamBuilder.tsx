@@ -4,29 +4,120 @@ import styled from 'styled-components'
 import { ICustomFields as ICustomField } from '../../services/grpc';
 import { grpcTypes } from '../../services/grpc-constants';
 import {
-  Form,
   Input,
-  InputGroup,
   Select
 } from '../GenericComponents';
 
-const QueryParamContainerForm = styled(Form)`
+const tableBorder = '1px solid rgba(239, 233, 244, 1)'
+
+const QueryParamTable = styled.table`
+  background-color: #fff;
+  display: flex;
   flex-direction: column;
-  padding: 20px 0;
+  margin: 20px 0;
+  max-height: 400px;
+  overflow-y: auto;
+  padding: 0;
+  width: 50%;
+
+  select {
+    border: none;
+  }
+
+  tr + tr,
+  tbody tr:first-child {
+    border-top: none;
+  }
+
+  td, th {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  td:first-child,
+  th:first-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 200px;
+  }
+
+  td:first-child {
+    border-right: ${tableBorder};
+  }
+
+  td:last-child,
+  th:last-child {
+    flex: 1;
+  }
 `
+
+const TableHead = styled.thead`
+  flex: 1;
+  width: 100%;
+
+  tr {
+    background-color: #eee;
+  }
+`
+
+const TableBody = styled.tbody`
+  flex: 1;
+`
+
+
+const TableRow = styled.tr`
+  align-items: center;
+  border-bottom: ${tableBorder};
+  border-top: ${tableBorder};
+  display: flex;
+  height: 40px;
+  width: 100%;
+
+  td:first-child {
+    padding-left: ${(props: IFieldProps) => props.isNested && '30px'};
+  }
+`
+
+const TableTh = styled.th`
+  text-align: left;
+  text-transform: capitalize;
+
+  &:first-child {
+    width: 200px;
+  }
+
+  &:last-child {
+    flex: 1;
+  }
+`
+
+const TableCell = styled.td`
+  text-transform: capitalize;
+`
+
+const QueryInput = styled(Input)`
+  border: none;
+  padding-left: 0;
+  padding-right: 0;
+  width: 100%;
+`
+
+interface IFieldProps {
+  isNested?: boolean
+}
 
 class QueryParamBuilder extends React.Component<{
   fields: Array<ICustomField>
 }, {}> {
   renderInput(field: ICustomField) {
-    const { defaultValue, name, type, values } = field
+    const { defaultValue, fullName, name, type, values } = field
 
     switch (type) {
       case grpcTypes.string:
       case grpcTypes.int32:
       case grpcTypes.number:
         return (
-          <Input type={ type } defaultValue={ defaultValue } name={ name } />
+          <QueryInput type={ type } defaultValue={ defaultValue } name={ `${fullName}-${name}` } />
         )
 
       case grpcTypes.enum:
@@ -44,7 +135,7 @@ class QueryParamBuilder extends React.Component<{
         })
 
         return (
-          <Select name={ name }>
+          <Select name={ `${fullName}-${name}` }>
             {
               valueKeys.map(key => {
                 const text = values[key]
@@ -68,44 +159,67 @@ class QueryParamBuilder extends React.Component<{
     }
   }
 
-  renderField(field: ICustomField) {
+  renderField(field: ICustomField, fieldProps?: IFieldProps) {
     const { nested } = field
     if (Array.isArray(nested) && nested.length > 0) {
       return (
         <React.Fragment key={ field.id }>
-          <h6>{ field.name }</h6>
+          <TableRow>
+            <TableTh>
+              { field.name }
+            </TableTh>
+          </TableRow>
 
           {
-            nested.map(item => this.renderField(item))
+            nested.map(item => this.renderField(item, { isNested: true }))
           }
         </React.Fragment>
       )
     }
 
+    const isNested = fieldProps && fieldProps.isNested
+
     return (
-      <InputGroup key={ field.id }>
-        <label>{ field.name }</label>
-        { this.renderInput(field) }
-      </InputGroup>
+      <TableRow key={ field.id } isNested={ isNested }>
+        <TableCell>
+          { field.name }
+        </TableCell>
+
+        <TableCell>
+          { this.renderInput(field) }
+        </TableCell>
+      </TableRow>
     )
   }
 
   render() {
-    const fields = this.props.fields.sort((a, b) => {
-      const aName = a.name || ''
-      const bName = b.name || ''
+    const fields = this.props.fields
+      .sort((a, b) => {
+        const aName = a.name || ''
+        const bName = b.name || ''
 
-      return aName.localeCompare(bName, 'en', {
-        sensitivity: 'base'
+        return aName.localeCompare(bName, 'en', {
+          sensitivity: 'base'
+        })
       })
-    })
 
     return (
-      <QueryParamContainerForm>
-        {
-          Object.keys(fields).map(key => this.renderField(fields[key]))
-        }
-      </QueryParamContainerForm>
+      <QueryParamTable>
+
+        <TableHead>
+          <TableRow>
+            <TableTh>Key</TableTh>
+            <TableTh>Value</TableTh>
+          </TableRow>
+        </TableHead>
+
+        <TableBody>
+          {
+            Object.keys(fields).map(key => this.renderField(fields[key]))
+          }
+        </TableBody>
+
+      </QueryParamTable>
     );
   }
 }

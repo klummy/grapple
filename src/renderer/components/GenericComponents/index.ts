@@ -13,6 +13,7 @@ export const Form = styled.form`
 export const InputGroup = styled.div`
   align-items: center;
   display: flex;
+  max-width: 50%;
   padding: 10px 0;
   width: 100%;
 
