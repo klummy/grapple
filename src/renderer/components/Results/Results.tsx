@@ -1,4 +1,4 @@
-import * as monaco from 'monaco-editor';
+import Prism from 'prismjs';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import styled from 'styled-components'
@@ -6,12 +6,19 @@ import styled from 'styled-components'
 import { IStoreState } from '../../types';
 import { ITab } from '../../types/layout';
 
+import 'prismjs/plugins/line-numbers/prism-line-numbers';
+import 'prismjs/plugins/line-numbers/prism-line-numbers.css';
+import 'prismjs/themes/prism-twilight.css';
+
 const ResultOuterContainer = styled.div`
   padding: 0 20px 10px;
 `
 
-const ResultContainer = styled.div`
+const ResultContainer = styled.pre`
   background-color: #fff;
+  border: none !important;
+  border-radius: 0 !important;
+  font-size: 12px;
   height: 500px;
   overflow-y: auto;
 `
@@ -23,45 +30,36 @@ interface IResultsProps {
 }
 
 interface IResultsState {
-  editor?: monaco.editor.IStandaloneCodeEditor
+  highlightedMarkup: string
 }
 
 class Results extends React.Component<IResultsProps, IResultsState> {
-  updateEditorValue() {
-    const editor = this.state.editor
-
-    if (editor) {
-      editor.setValue(this.props.queryResult)
-    }
+  state = {
+    highlightedMarkup: ''
   }
 
   componentDidUpdate(prevProps: IResultsProps) {
     if (prevProps.queryResult !== this.props.queryResult) {
-      this.updateEditorValue()
+      this.highlightResults()
     }
   }
 
+  highlightResults() {
+    Prism.highlightAll()
+  }
+
   componentDidMount() {
-    const editorContainer = document.getElementById('gEditorContainer')
-
-    if (editorContainer) {
-      const editor = monaco.editor.create(editorContainer, {
-        language: 'json',
-        readOnly: true,
-        theme: 'vs-dark',
-        value: this.props.queryResult
-      })
-
-      this.setState({
-        editor
-      })
-    }
+    this.highlightResults()
   }
 
   render() {
     return (
       <ResultOuterContainer>
-        <ResultContainer id="gEditorContainer" />
+        <ResultContainer id="gEditorContainer" className="line-numbers">
+          <code className="language-js">
+            { this.props.queryResult }
+          </code>
+        </ResultContainer>
       </ResultOuterContainer>
     );
   }

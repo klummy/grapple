@@ -7,8 +7,12 @@ import { IStoreState } from '../../types';
 import { ITab } from '../../types/layout';
 
 import logger from '../../libs/logger';
-import { ICustomFields, loadFields } from '../../services/grpc';
-import AddressBar from './AddressBar';
+import { dispatchRequest, ICustomFields, loadFields } from '../../services/grpc';
+import {
+  Button,
+  Form as AddressBarContainer,
+  Input,
+} from '../GenericComponents';
 import {
   QueryPaneContainer
 } from './QueryPane.components';
@@ -23,29 +27,41 @@ export interface IQueryPaneProps {
 
 export interface IQueryPaneState {
   requestFields?: Array<ICustomFields>
-  serviceAddress: string
   pkgDef: protoLoader.PackageDefinition
 }
 
 class QueryPane extends React.Component<IQueryPaneProps, IQueryPaneState> {
+  constructor(props: IQueryPaneProps) {
+    super(props)
+    this.addressRef = React.createRef()
+  }
+
+  // tslint:disable-next-line:no-any
+  addressRef: React.RefObject<any>
 
   state = {
     pkgDef: {},
     requestFields: undefined,
-    serviceAddress: 'localhost:9284', // TODO: Test serviceAddress, replace with empty string
   }
 
   /**
-   * Set the service serviceAddress
+   * Make the request
    */
-  handleSetAddress(event: React.FormEvent) {
+  handleDispatchRequest(event: React.MouseEvent) {
     event.preventDefault()
 
-    const serviceAddress = (event.target as HTMLElement).querySelector("input")
+    const input = this.addressRef.current
 
-    this.setState({
-      serviceAddress: (serviceAddress && serviceAddress.value) || ''
-    })
+    const serviceAddress = (input && input.value) || 'localhost:9284' // TODO: Test serviceAddress, remove
+
+    // TODO: Move all related data (including the service address into the tab)
+    const tab = this.props.tabs.find(t => t.id === this.props.activeTab)
+
+    const payload = {}
+
+    if (tab) {
+      dispatchRequest(tab, serviceAddress, payload)
+    }
   }
 
   /**
@@ -84,26 +100,20 @@ class QueryPane extends React.Component<IQueryPaneProps, IQueryPaneState> {
   componentDidMount() {
     const { activeTab } = this.props
 
-    if (activeTab) { this.loadTabData() }
+    if (activeTab) {
+      this.loadTabData()
+    }
   }
 
   render() {
     const { requestFields } = this.state
 
-    // if (!pageData) {
-    //   logger.warn('Page data empty, possible error in data.')
-
-    //   return (
-    //     // TODO: Empty State
-    //     <QueryPanEmptyStateContainer>
-    //       Undone empty state
-    //     </QueryPanEmptyStateContainer>
-    //   )
-    // }
-
     return (
       <QueryPaneContainer>
-        <AddressBar handleSetAddress={ (e) => this.handleSetAddress(e) } />
+        <AddressBarContainer as="div" action="">
+          <Input type="url" name="address" placeholder="Service Address" ref={ this.addressRef } />
+          <Button onClick={ e => this.handleDispatchRequest(e) }>Send Request</Button>
+        </AddressBarContainer>
 
         <QueryPaneParams fields={ requestFields } />
       </QueryPaneContainer>

@@ -1,7 +1,9 @@
+import grpc from '@grpc/grpc-js';
 import fs from 'fs';
 import protobufjs, { Enum } from 'protobufjs';
 
 import logger from '../libs/logger';
+import { ITab } from '../types/layout';
 import { grpcTypes } from "./grpc-constants";
 
 export interface ICustomFields {
@@ -137,6 +139,70 @@ export const loadFields = (protoPath: string, serviceName: string): Promise<{
       resolve({
         fields,
       })
+    })
+
+  });
+}
+
+// tslint:disable-next-line:no-any
+export const dispatchRequest = (tab: ITab, serviceAddress: string, payload: any): Promise<any> => {
+
+  return new Promise((resolve, reject) => {
+    const { service, proto } = tab
+
+    if (!service || !proto) {
+      reject(Error(`Tab doesn't contain crucial data ${JSON.stringify(tab)}`))
+      return
+    }
+
+    const pkgDef = proto.pkgDef
+
+    if (!pkgDef) {
+      reject(Error("Package definitions absent from proto"))
+      return
+    }
+
+    const pkgObject = grpc.loadPackageDefinition(pkgDef)
+
+    const serviceIndex = Object.keys(pkgObject)[0]
+    const serviceName = Object.keys(pkgObject[serviceIndex])[0]
+
+    const servicePath = (service.path.match(/\.[^.]*$/) || [''])[0].replace('.', '')
+    const serviceMethod = servicePath.split('/')[1]
+
+    const options = {
+      'grpc.keepalive_time_ms': 150000
+    };
+
+    // TODO: Allow for setting credentials
+    const credentials = grpc.credentials.createInsecure()
+
+    const client = new pkgObject[serviceIndex][serviceName](serviceAddress, credentials, options)
+
+    console.log('pkgObject => ', pkgObject);
+    console.log('serviceIndex => ', serviceIndex);
+    console.log('serviceName => ', serviceName);
+
+    console.log('client => ', client);
+
+    logger.info('Waiting for client connection to be ready')
+    client.waitForReady(50000000, (err: Error) => {
+      // if (err) {
+      //   console.log('err => ', serviceAddress, err);
+      //   reject(err)
+      //   return
+      // }
+
+      logger.info('Connection ready')
+
+      // tslint:disable-next-line no-any
+      client[serviceMethod](payload, (error: Error, response: any) => {
+        console.log('error => ', error);
+        console.log('response => ', response);
+      })
+
+      logger.info('Closing client connection')
+      client.close()
     })
 
   });
