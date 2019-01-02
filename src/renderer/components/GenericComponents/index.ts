@@ -29,7 +29,7 @@ export const InputGroup = styled.div`
 `
 
 export const Input = styled.input`
-  border: 1px solid rgba(72, 77, 109, .6);
+  border: 1px solid rgba(72, 77, 109, .3);
   border-radius: 3px;
   flex: 1;
   font-size: 13px;

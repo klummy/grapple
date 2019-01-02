@@ -1,4 +1,5 @@
-import grpc from '@grpc/grpc-js';
+import * as grpc from '@grpc/grpc-js';
+import * as protoLoader from '@grpc/proto-loader';
 import fs from 'fs';
 import protobufjs, { Enum } from 'protobufjs';
 
@@ -155,55 +156,54 @@ export const dispatchRequest = (tab: ITab, serviceAddress: string, payload: any)
       return
     }
 
-    const pkgDef = proto.pkgDef
+    protoLoader.load(proto.path, {
+      defaults: true,
+      enums: String,
+      keepCase: true,
+      longs: String,
+      oneofs: true
+    })
+      .then(pkgDef => {
+        const pkgObject = grpc.loadPackageDefinition(pkgDef)
 
-    if (!pkgDef) {
-      reject(Error("Package definitions absent from proto"))
-      return
-    }
+        const serviceIndex = Object.keys(pkgObject)[0]
+        const serviceName = Object.keys(pkgObject[serviceIndex])[0]
+        const servicePath = (service.path.match(/\.[^.]*$/) || [''])[0].replace('.', '')
+        const serviceMethod = servicePath.split('/')[1]
 
-    const pkgObject = grpc.loadPackageDefinition(pkgDef)
+        const credentials = grpc.credentials.createInsecure()
+        const options = {
+          'grpc.keepalive_time_ms': 15000,
+          'grpc.max_reconnect_backoff_ms': 1000,
+          'grpc.min_reconnect_backoff_ms': 1000,
+        };
 
-    const serviceIndex = Object.keys(pkgObject)[0]
-    const serviceName = Object.keys(pkgObject[serviceIndex])[0]
+        const client = new pkgObject[serviceIndex][serviceName]('0.0.0.0:9284', credentials, options)
 
-    const servicePath = (service.path.match(/\.[^.]*$/) || [''])[0].replace('.', '')
-    const serviceMethod = servicePath.split('/')[1]
+        console.log('serviceAddress => ', serviceAddress);
 
-    const options = {
-      'grpc.keepalive_time_ms': 150000
-    };
+        logger.info('Waiting for client connection to be ready')
+        client.waitForReady(50000, (err: Error) => {
+          if (err) {
+            logger.error('Error connecting to address', serviceAddress, err)
+            reject(err)
+            return
+          }
 
-    // TODO: Allow for setting credentials
-    const credentials = grpc.credentials.createInsecure()
+          logger.info('Connection to server')
+          console.log('err => ', err);
 
-    const client = new pkgObject[serviceIndex][serviceName](serviceAddress, credentials, options)
+          // tslint:disable-next-line no-any
+          client[serviceMethod](payload, (error: Error, response: any) => {
+            console.log('error => ', error);
+            console.log('response => ', response);
+          })
 
-    console.log('pkgObject => ', pkgObject);
-    console.log('serviceIndex => ', serviceIndex);
-    console.log('serviceName => ', serviceName);
-
-    console.log('client => ', client);
-
-    logger.info('Waiting for client connection to be ready')
-    client.waitForReady(50000000, (err: Error) => {
-      // if (err) {
-      //   console.log('err => ', serviceAddress, err);
-      //   reject(err)
-      //   return
-      // }
-
-      logger.info('Connection ready')
-
-      // tslint:disable-next-line no-any
-      client[serviceMethod](payload, (error: Error, response: any) => {
-        console.log('error => ', error);
-        console.log('response => ', response);
+          logger.info('Closing client connection')
+          client.close()
+        })
       })
 
-      logger.info('Closing client connection')
-      client.close()
-    })
 
   });
 }
