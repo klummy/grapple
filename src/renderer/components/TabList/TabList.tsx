@@ -11,12 +11,12 @@ import { TabListContainer } from './TabList.components';
 export interface ITabListProps {
   activeTab: string
   closeTab: (tab: ITab) => void
-  renameTab: (tab: ITab) => void
+  updateTab: (tab: ITab) => void
   switchTab: (tab: ITab) => void
   tabs: Array<ITab>
 }
 
-const TabList: React.SFC<ITabListProps> = ({ activeTab, closeTab, renameTab, switchTab, tabs }) => {
+const TabList: React.SFC<ITabListProps> = ({ activeTab, closeTab, updateTab, switchTab, tabs }) => {
   return (
     <TabListContainer>
       {
@@ -26,7 +26,7 @@ const TabList: React.SFC<ITabListProps> = ({ activeTab, closeTab, renameTab, swi
             active={ activeTab === tab.id }
             closeTab={ closeTab }
             key={ tab.id }
-            renameTab={ renameTab }
+            updateTab={ updateTab }
             switchTab={ () => {
               if (activeTab !== tab.id) {
                 switchTab(tab)
@@ -46,8 +46,8 @@ const mapStateToProps = (state: IStoreState) => ({
 
 const mapDispatchToProps = {
   closeTab: (tab: ITab) => layoutActions.closeTab(tab),
-  renameTab: (tab: ITab) => layoutActions.renameTab(tab),
-  switchTab: (tab: ITab) => layoutActions.switchTab(tab)
+  switchTab: (tab: ITab) => layoutActions.switchTab(tab),
+  updateTab: (tab: ITab) => layoutActions.updateTab(tab),
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(TabList);

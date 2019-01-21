@@ -35,7 +35,7 @@ const Content: React.SFC<IContentProps> = ({ activeTab, tabs }) => {
   return (
     <React.Fragment>
       <QueryPane />
-      <Results queryResult={ JSON.stringify(tab, null, 2) } />
+      <Results queryResult={ JSON.stringify(tab.results, null, 2) } />
     </React.Fragment>
   );
 }

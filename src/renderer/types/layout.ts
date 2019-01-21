@@ -3,9 +3,11 @@ import { MethodDefinition } from '@grpc/proto-loader';
 import { IProto } from "./protos";
 
 export interface ITab {
+  address?: string
   id?: string
   name?: string
   proto?: IProto
+  queries?: object
   results?: object
   service?: MethodDefinition<{}, {}>
 }

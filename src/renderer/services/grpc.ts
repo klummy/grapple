@@ -1,11 +1,13 @@
 import * as grpc from '@grpc/grpc-js';
 import * as protoLoader from '@grpc/proto-loader';
 import fs from 'fs';
+
 import protobufjs, { Enum } from 'protobufjs';
 
 import logger from '../libs/logger';
 import { ITab } from '../types/layout';
 import { grpcTypes } from "./grpc-constants";
+
 
 export interface ICustomFields {
   // tslint:disable-next-line:no-any
@@ -167,41 +169,36 @@ export const dispatchRequest = (tab: ITab, serviceAddress: string, payload: any)
         const pkgObject = grpc.loadPackageDefinition(pkgDef)
 
         const serviceIndex = Object.keys(pkgObject)[0]
-        const serviceName = Object.keys(pkgObject[serviceIndex])[0]
         const servicePath = (service.path.match(/\.[^.]*$/) || [''])[0].replace('.', '')
-        const serviceMethod = servicePath.split('/')[1]
+        const [serviceName, serviceMethodFull] = servicePath.split('/')
+        const serviceMethod = serviceMethodFull.charAt(0).toLowerCase() + serviceMethodFull.slice(1)
 
+        // TODO: Allow for secured credentials with credentials passed by user
         const credentials = grpc.credentials.createInsecure()
-        const options = {
-          'grpc.keepalive_time_ms': 15000,
-          'grpc.max_reconnect_backoff_ms': 1000,
-          'grpc.min_reconnect_backoff_ms': 1000,
-        };
 
-        const client = new pkgObject[serviceIndex][serviceName]('0.0.0.0:9284', credentials, options)
+        // tslint:disable-next-line:no-any
+        const serviceProto = pkgObject[serviceIndex] as any
+        const client = new serviceProto[serviceName](serviceAddress, credentials)
 
-        console.log('serviceAddress => ', serviceAddress);
-
-        logger.info('Waiting for client connection to be ready')
-        client.waitForReady(50000, (err: Error) => {
-          if (err) {
-            logger.error('Error connecting to address', serviceAddress, err)
-            reject(err)
-            return
-          }
-
-          logger.info('Connection to server')
-          console.log('err => ', err);
-
-          // tslint:disable-next-line no-any
-          client[serviceMethod](payload, (error: Error, response: any) => {
-            console.log('error => ', error);
-            console.log('response => ', response);
-          })
-
+        /**
+         * Close the client after a successful/failed request
+         */
+        const cleanupClient = () => {
           logger.info('Closing client connection')
           client.close()
-        })
+        }
+
+        client[serviceMethod](payload, (err: Error, response: object) => {
+          if (err) {
+            logger.warn('gRPC request failed with error ', err)
+            cleanupClient()
+            reject(err)
+          } else {
+            logger.info('gRPC request successful', response)
+            cleanupClient()
+            resolve(response)
+          }
+        });
       })
 
 

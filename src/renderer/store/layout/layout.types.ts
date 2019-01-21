@@ -4,4 +4,4 @@ export const CLOSE_TAB = 'CLOSE_TAB'
 
 export const SWITCH_TAB = 'SWITCH_TAB'
 
-export const RENAME_TAB = 'RENAME_TAB'
+export const UPDATE_TAB = 'UPDATE_TAB'

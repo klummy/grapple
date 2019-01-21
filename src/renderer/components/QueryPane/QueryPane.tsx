@@ -1,8 +1,8 @@
-import * as protoLoader from '@grpc/proto-loader';
 import * as React from 'react';
 import { connect } from 'react-redux';
 
 // import logger from '../../libs/logger';
+import * as layoutActions from '../../store/layout/layout.actions';
 import { IStoreState } from '../../types';
 import { ITab } from '../../types/layout';
 
@@ -18,16 +18,15 @@ import {
 } from './QueryPane.components';
 import QueryPaneParams from './QueryParams';
 
-// TODO: NOTE: All the tab data shouldn't be here but set in the tab itself. e.g. serviceAddress
-
 export interface IQueryPaneProps {
   activeTab: string
+  currentTab: ITab,
   tabs: Array<ITab>
+  updateTab: (tab: ITab) => void
 }
 
 export interface IQueryPaneState {
   requestFields?: Array<ICustomFields>
-  pkgDef: protoLoader.PackageDefinition
 }
 
 class QueryPane extends React.Component<IQueryPaneProps, IQueryPaneState> {
@@ -40,7 +39,6 @@ class QueryPane extends React.Component<IQueryPaneProps, IQueryPaneState> {
   addressRef: React.RefObject<any>
 
   state = {
-    pkgDef: {},
     requestFields: undefined,
   }
 
@@ -52,15 +50,41 @@ class QueryPane extends React.Component<IQueryPaneProps, IQueryPaneState> {
 
     const input = this.addressRef.current
 
-    const serviceAddress = (input && input.value) || 'localhost:9284' // TODO: Test serviceAddress, remove
+    const serviceAddress = (input && input.value)
 
-    // TODO: Move all related data (including the service address into the tab)
-    const tab = this.props.tabs.find(t => t.id === this.props.activeTab)
+    if (!serviceAddress) {
+      // TODO: Flash notification here
+      // TODO: Validate that serviceAddress is a valid URL
+      // TODO: Grey out button and disable it if no serviceAddress
+      return
+    }
+
+    const { currentTab } = this.props
 
     const payload = {}
 
-    if (tab) {
-      dispatchRequest(tab, serviceAddress, payload)
+    if (currentTab) {
+      const { updateTab } = this.props
+
+      updateTab({
+        ...currentTab,
+        address: serviceAddress
+      })
+
+      dispatchRequest(currentTab, serviceAddress, payload)
+        .then(results => {
+          // Update the tab with the request data
+          updateTab({
+            ...currentTab,
+            results
+          })
+        })
+        .catch((err: Error) => {
+          logger.error('Error during dispatch ', err)
+        })
+        .finally(() => {
+          // TODO: Clear loading indications and show appropriate notifications
+        })
     }
   }
 
@@ -68,9 +92,7 @@ class QueryPane extends React.Component<IQueryPaneProps, IQueryPaneState> {
    * Load the data for the tab when the app is loaded or the tab switched
    */
   loadTabData() {
-    const { activeTab, tabs } = this.props
-
-    const currentTab = tabs.find(tab => tab.id === activeTab)
+    const { currentTab, } = this.props
 
     if (!currentTab || !currentTab.proto) { return }
 
@@ -94,6 +116,12 @@ class QueryPane extends React.Component<IQueryPaneProps, IQueryPaneState> {
   componentDidUpdate(prevProps: IQueryPaneProps, prevState: IQueryPaneState) {
     if (this.props.activeTab !== prevProps.activeTab) {
       this.loadTabData()
+
+      // Clear/set the address when the tab is changed
+      if (this.addressRef.current) {
+        const { currentTab } = this.props
+        this.addressRef.current.value = (currentTab.address) || ''
+      }
     }
   }
 
@@ -107,11 +135,18 @@ class QueryPane extends React.Component<IQueryPaneProps, IQueryPaneState> {
 
   render() {
     const { requestFields } = this.state
+    const { currentTab } = this.props
 
     return (
       <QueryPaneContainer>
         <AddressBarContainer as="div" action="">
-          <Input type="url" name="address" placeholder="Service Address" ref={ this.addressRef } />
+          <Input
+            type="url"
+            name="address"
+            placeholder="Service Address"
+            ref={ this.addressRef }
+            defaultValue={ currentTab.address }
+          />
           <Button onClick={ e => this.handleDispatchRequest(e) }>Send Request</Button>
         </AddressBarContainer>
 
@@ -123,7 +158,12 @@ class QueryPane extends React.Component<IQueryPaneProps, IQueryPaneState> {
 
 const mapStateToProps = (state: IStoreState) => ({
   activeTab: state.layout.activeTab,
+  currentTab: state.layout.tabs.find(tab => tab.id === state.layout.activeTab) || {},
   tabs: state.layout.tabs,
 })
 
-export default connect(mapStateToProps)(QueryPane);
+const mapDispatchToProps = ({
+  updateTab: (tab: ITab) => layoutActions.updateTab(tab)
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(QueryPane);

@@ -3,13 +3,13 @@ import cuid from 'cuid';
 import { IReduxAction } from '../../types';
 import { ILayout, ITab } from '../../types/layout';
 import initialState from './layout.state';
-import { CLOSE_TAB, NEW_TAB, SWITCH_TAB } from './layout.types';
+import { CLOSE_TAB, NEW_TAB, SWITCH_TAB, UPDATE_TAB } from './layout.types';
 
 import { capitalizaFirstLetter } from '../../libs/utils';
 
 const layoutReducer = (state: ILayout = initialState, { payload, type }: IReduxAction): ILayout => {
   switch (type) {
-    case NEW_TAB:
+    case NEW_TAB: {
       const tabData = (payload as ITab)
 
       const { proto, service } = tabData
@@ -37,6 +37,7 @@ const layoutReducer = (state: ILayout = initialState, { payload, type }: IReduxA
         activeTab: id,
         tabs
       }
+    }
 
     case CLOSE_TAB:
       const targetTab = (payload as ITab)
@@ -45,6 +46,24 @@ const layoutReducer = (state: ILayout = initialState, { payload, type }: IReduxA
         ...state,
         tabs: state.tabs.filter(tabItem => tabItem.id !== targetTab.id)
       }
+
+    case UPDATE_TAB: {
+      const updatedTab = (payload as ITab)
+
+      // TODO: Consider refactoring
+      const tabs = [...state.tabs].map(tab => {
+        if (tab.id === updatedTab.id) {
+          return updatedTab
+        }
+
+        return tab
+      })
+
+      return {
+        ...state,
+        tabs
+      }
+    }
 
     case SWITCH_TAB:
       return {

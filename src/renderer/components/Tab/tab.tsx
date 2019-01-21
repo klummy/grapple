@@ -3,10 +3,8 @@ import * as React from 'react';
 import { CloseIcon, TabItemComponent, TitleComponent } from './tab.components';
 import { ITabItemProps } from './tab.types';
 
-const Tab: React.SFC<ITabItemProps> = ({ active, tab, closeTab, renameTab, switchTab }) => {
+const Tab: React.SFC<ITabItemProps> = ({ active, tab, closeTab, switchTab }) => {
   const { name, } = tab
-
-  // TODO: Implement tab renaming
 
   return (
     <TabItemComponent
