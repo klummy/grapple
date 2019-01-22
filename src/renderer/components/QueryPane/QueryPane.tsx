@@ -16,7 +16,7 @@ import {
 import {
   QueryPaneContainer
 } from './QueryPane.components';
-import QueryPaneParams from './QueryParams';
+import QueryParamBuilder from './QueryParamBuilder';
 
 export interface IQueryPaneProps {
   activeTab: string
@@ -42,6 +42,40 @@ class QueryPane extends React.Component<IQueryPaneProps, IQueryPaneState> {
     requestFields: undefined,
   }
 
+  generatePayload(): object {
+    const queryContainer = document.getElementById('queryParams')
+    if (!queryContainer) {
+      return {}
+    }
+
+    const inputs = queryContainer.querySelectorAll('[data-query-item]')
+    const payload = {}
+
+    inputs.forEach((input) => {
+      // tslint:disable-next-line:no-any
+      const inputElement = input as any
+
+      const inputName = inputElement.name
+      const inputValue = inputElement.value
+
+      // If it's nested field, put each value under the parent; else assign the name to the value
+      if (inputName.includes('/')) {
+        const [parent, self] = inputName.split('/')
+
+        // TODO: This won't work well for multiple nested levels. Only the first level, revisit (will likely need a recursive function)
+        payload[parent] = {
+          ...payload[parent],
+          [self]: inputValue
+        }
+      } else {
+        payload[inputName] = inputValue
+      }
+
+    })
+
+    return payload
+  }
+
   /**
    * Make the request
    */
@@ -61,14 +95,15 @@ class QueryPane extends React.Component<IQueryPaneProps, IQueryPaneState> {
 
     const { currentTab } = this.props
 
-    const payload = {}
+    const payload = this.generatePayload()
 
     if (currentTab) {
       const { updateTab } = this.props
 
       updateTab({
         ...currentTab,
-        address: serviceAddress
+        address: serviceAddress,
+        queryData: payload
       })
 
       dispatchRequest(currentTab, serviceAddress, payload)
@@ -150,7 +185,10 @@ class QueryPane extends React.Component<IQueryPaneProps, IQueryPaneState> {
           <Button onClick={ e => this.handleDispatchRequest(e) }>Send Request</Button>
         </AddressBarContainer>
 
-        <QueryPaneParams fields={ requestFields } />
+        {
+          requestFields &&
+          <QueryParamBuilder fields={ requestFields } />
+        }
       </QueryPaneContainer>
     );
   }

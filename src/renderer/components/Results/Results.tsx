@@ -20,6 +20,7 @@ const ResultContainer = styled.pre`
   border: none !important;
   border-radius: 0 !important;
   font-size: 12px;
+  height: 100%;
   overflow-y: auto;
 `
 

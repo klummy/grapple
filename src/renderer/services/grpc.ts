@@ -180,27 +180,35 @@ export const dispatchRequest = (tab: ITab, serviceAddress: string, payload: any)
         const serviceProto = pkgObject[serviceIndex] as any
         const client = new serviceProto[serviceName](serviceAddress, credentials)
 
+
         /**
          * Close the client after a successful/failed request
+         * NOTE: This may need to be revisted after streaming is implemented
          */
         const cleanupClient = () => {
           logger.info('Closing client connection')
           client.close()
         }
 
-        client[serviceMethod](payload, (err: Error, response: object) => {
-          if (err) {
-            logger.warn('gRPC request failed with error ', err)
-            cleanupClient()
-            reject(err)
-          } else {
-            logger.info('gRPC request successful', response)
-            cleanupClient()
-            resolve(response)
-          }
-        });
+        try {
+          client[serviceMethod](payload, (err: Error, response: object) => {
+            if (err) {
+              logger.warn('gRPC request failed with error ', err)
+              cleanupClient()
+              reject(err)
+            } else {
+              logger.info('gRPC request successful', response)
+              cleanupClient()
+              resolve(response)
+            }
+          });
+        } catch (error) {
+          reject(error)
+        }
+
       })
-
-
+      .catch(err => {
+        reject(err)
+      })
   });
 }

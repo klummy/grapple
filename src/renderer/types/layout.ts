@@ -7,7 +7,7 @@ export interface ITab {
   id?: string
   name?: string
   proto?: IProto
-  queries?: object
+  queryData?: object
   results?: object
   service?: MethodDefinition<{}, {}>
 }

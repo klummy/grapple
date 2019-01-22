@@ -1,123 +1,56 @@
 import * as React from 'react';
-import styled from 'styled-components'
 
 import { ICustomFields as ICustomField } from '../../services/grpc';
 import { grpcTypes } from '../../services/grpc-constants';
 import {
-  Input,
   Select
 } from '../GenericComponents';
 
-const tableBorder = '1px solid rgba(239, 233, 244, 1)'
-
-const QueryParamTable = styled.table`
-  background-color: #fff;
-  display: flex;
-  flex-direction: column;
-  margin: 20px 0;
-  max-height: 300px;
-  overflow-y: auto;
-  padding: 0;
-  width: 50%;
-
-  select {
-    border: none;
-  }
-
-  tr + tr,
-  tbody tr:first-child {
-    border-top: none;
-  }
-
-  td, th {
-    padding-left: 10px;
-    padding-right: 10px;
-  }
-
-  td:first-child,
-  th:first-child {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    width: 200px;
-  }
-
-  td:first-child {
-    border-right: ${tableBorder};
-  }
-
-  td:last-child,
-  th:last-child {
-    flex: 1;
-  }
-`
-
-const TableHead = styled.thead`
-  flex: 1;
-  width: 100%;
-
-  tr {
-    background-color: #eee;
-  }
-`
-
-const TableBody = styled.tbody`
-  flex: 1;
-`
-
-
-const TableRow = styled.tr`
-  align-items: center;
-  border-bottom: ${tableBorder};
-  border-top: ${tableBorder};
-  display: flex;
-  height: 40px;
-  width: 100%;
-
-  td:first-child {
-    padding-left: ${(props: IFieldProps) => props.isNested && '30px'};
-  }
-`
-
-const TableTh = styled.th`
-  text-align: left;
-  text-transform: capitalize;
-
-  &:first-child {
-    width: 200px;
-  }
-
-  &:last-child {
-    flex: 1;
-  }
-`
-
-const TableCell = styled.td`
-  text-transform: capitalize;
-`
-
-const QueryInput = styled(Input)`
-  border: none;
-  padding-left: 0;
-  padding-right: 0;
-  width: 100%;
-`
-
-interface IFieldProps {
-  isNested?: boolean
-}
+import { connect } from 'react-redux';
+import { IStoreState } from '../../types';
+import { ITab } from '../../types/layout';
+import {
+  QueryInput,
+  QueryParamTable,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  TableTh
+} from './QueryParamBuilder.components';
+import { IFieldProps } from './shared';
 
 class QueryParamBuilder extends React.Component<{
+  currentTab?: ITab
   fields: Array<ICustomField>
 }, {}> {
-  renderInput(field: ICustomField) {
+  renderInput(field: ICustomField, parentName: string | undefined) {
     const { defaultValue, fullName, name, type, values } = field
+    const { currentTab } = this.props
+
+    const inputName = parentName ? `${parentName}/${name}` : name
+
+    const sharedProps = {
+      'data-field-name': fullName,
+      'data-parent-name': parentName,
+      'data-query-item': true
+    }
+
+    const storedQueryData = currentTab && currentTab.queryData || {}
+
+    const defaultInputValue = defaultValue || (parentName ? (storedQueryData[parentName] && storedQueryData[parentName][name]) : storedQueryData[name])
 
     switch (type) {
       case grpcTypes.string:
       case grpcTypes.int32:
       case grpcTypes.number:
         return (
-          <QueryInput type={ type } defaultValue={ defaultValue } name={ `${fullName}-${name}` } />
+          <QueryInput
+            type={ type }
+            defaultValue={ defaultInputValue }
+            name={ inputName }
+            { ...sharedProps }
+          />
         )
 
       case grpcTypes.enum:
@@ -135,21 +68,20 @@ class QueryParamBuilder extends React.Component<{
         })
 
         return (
-          <Select name={ `${fullName}-${name}` }>
+          < Select name={ inputName } { ...sharedProps } >
             {
               valueKeys.map(key => {
                 const text = values[key]
 
                 return (
-                  <option value={ key } key={ key } defaultValue={ defaultValue }>
-                    { text.substring(0, 1) }
+                  <option value={ key } key={ key } defaultValue={ defaultInputValue }>
+                    { text.substring(0, 1).toUpperCase() }
                     { text.substring(1, text.length).toLowerCase() }
                   </option>
                 )
-              }
-              )
+              })
             }
-          </Select>
+          </Select >
         )
 
       default:
@@ -171,13 +103,19 @@ class QueryParamBuilder extends React.Component<{
           </TableRow>
 
           {
-            nested.map(item => this.renderField(item, { isNested: true }))
+            nested.map(item => this.renderField(
+              item,
+              {
+                isNested: true,
+                parentName: field.name,
+              }))
           }
         </React.Fragment>
       )
     }
 
     const isNested = fieldProps && fieldProps.isNested
+    const parentName = fieldProps && fieldProps.parentName
 
     return (
       <TableRow key={ field.id } isNested={ isNested }>
@@ -186,7 +124,7 @@ class QueryParamBuilder extends React.Component<{
         </TableCell>
 
         <TableCell>
-          { this.renderInput(field) }
+          { this.renderInput(field, parentName) }
         </TableCell>
       </TableRow>
     )
@@ -204,7 +142,7 @@ class QueryParamBuilder extends React.Component<{
       })
 
     return (
-      <QueryParamTable>
+      <QueryParamTable id="queryParams">
 
         <TableHead>
           <TableRow>
@@ -224,4 +162,8 @@ class QueryParamBuilder extends React.Component<{
   }
 }
 
-export default QueryParamBuilder;
+const mapStateToProps = (state: IStoreState) => ({
+  currentTab: state.layout.tabs.find(tab => tab.id === state.layout.activeTab)
+})
+
+export default connect(mapStateToProps)(QueryParamBuilder);

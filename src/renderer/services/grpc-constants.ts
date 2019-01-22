@@ -4,5 +4,5 @@ export const grpcTypes = {
   int32: 'number',
   int64: 'number',
   number: 'number',
-  string: 'string',
+  string: 'text',
 }
