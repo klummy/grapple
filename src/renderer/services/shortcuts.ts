@@ -20,7 +20,7 @@ const shortcuts = [
 
 interface IShortcut {
   action?: IReduxAction,
-  handler?: () => void,
+  handler?: (event?: object) => void,
   key: string,
   label: string,
   modifier: shortcutModifiers

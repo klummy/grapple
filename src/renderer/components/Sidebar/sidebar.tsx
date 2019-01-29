@@ -1,4 +1,8 @@
 import { MethodDefinition } from '@grpc/proto-loader';
+import { PackageDefinition } from "@grpc/proto-loader";
+import * as electron from 'electron';
+import fs from 'fs';
+import * as nodePath from 'path';
 import * as React from 'react';
 import { connect } from 'react-redux';
 
@@ -10,6 +14,7 @@ import logger from '../../libs/logger';
 import { humanFriendlyProtoName, validateProto } from '../../services/protos';
 import NavProtoList from '../NavProtoList';
 
+import { attachIndividualShortcut, shortcutModifiers } from '../../services/shortcuts';
 import * as layoutActions from '../../store/layout/layout.actions';
 import * as projectActions from '../../store/projects/projects.actions';
 import { IStoreState } from '../../types';
@@ -38,33 +43,82 @@ class Sidebar extends React.Component<ISidebarProps, ISidebarState> {
     event.preventDefault()
   }
 
+  /**
+   * Handle successful file drop
+   * @param event
+   */
   handleOnDrop(event: React.DragEvent<HTMLElement>) {
     event.persist()
     event.preventDefault()
 
     for (const file of event.dataTransfer.files) {
       const proto = (file as unknown as IProto)
-      const { lastModified, path } = proto
-
-      validateProto(proto)
-        .then((pkgDef) => {
-          this.props.addProtoToProject({
-            lastModified,
-            name: humanFriendlyProtoName(proto),
-            path,
-            pkgDef
-          })
-        })
-        .catch(err => {
-          logger.warn('Proto validation failed: ', err)
-        })
-        .finally(() => {
-          this.setState({
-            actionInProgress: false,
-            dragInProgress: false
-          })
-        })
+      this.loadProto(proto)
     }
+  }
+
+  /**
+   * Handle opening a Proto file from the file picker dialog
+   */
+  handleOpenFromDialog() {
+    const { dialog } = electron.remote
+
+    const self = this
+
+    // TODO: In user preferences, allow user to specify root project folder
+    // TODO: Remember last folder user loaded protos from (under user preference)
+    dialog.showOpenDialog({
+      filters: [
+        {
+          extensions: ["proto"],
+          name: "Protos",
+        }
+      ],
+      properties: ['openFile', 'multiSelections']
+    }, (filePaths) => {
+      filePaths.forEach(filePath => {
+        fs.stat(filePath, (err, stats) => {
+          if (err) {
+            logger.error('Error getting stats for filePath', filePath, err)
+            // TODO: Show error notification
+            return
+          }
+
+          const proto = {
+            lastModified: stats.mtime.getTime(),
+            name: nodePath.basename(filePath),
+            path: filePath,
+          }
+
+          self.loadProto(proto)
+        })
+      })
+    })
+  }
+
+  loadProto(proto: IProto) {
+    const { lastModified, path } = proto
+
+    validateProto(proto)
+      .then((pkgDef) => {
+        // TODO: Check to make sure that the proto path hasn't already been added
+
+        this.props.addProtoToProject({
+          lastModified,
+          name: humanFriendlyProtoName(proto),
+          path,
+          pkgDef: (pkgDef as PackageDefinition)
+        })
+      })
+      .catch(err => {
+        logger.warn('Proto validation failed: ', err)
+      })
+      .finally(() => {
+        this.setState({
+          actionInProgress: false,
+          dragInProgress: false
+        })
+      })
   }
 
   newTabHandler(e: React.MouseEvent, proto: IProto, service: MethodDefinition<{}, {}>) {
@@ -73,6 +127,16 @@ class Sidebar extends React.Component<ISidebarProps, ISidebarState> {
     const { addTab } = this.props
 
     addTab(proto, service)
+  }
+
+  componentDidMount() {
+    // Attach shortcut for opening proto file(s) from the file system dialog
+    attachIndividualShortcut({
+      handler: this.handleOpenFromDialog.bind(this),
+      key: 'o',
+      label: 'Open dialog',
+      modifier: shortcutModifiers.general,
+    })
   }
 
   render() {
@@ -88,6 +152,9 @@ class Sidebar extends React.Component<ISidebarProps, ISidebarState> {
         <NavProtoList
           newTabHandler={ (e, proto, service) => this.newTabHandler(e, proto, service) }
           protos={ protos } />
+
+        { /* TODO: Style button below */ }
+        <button onClick={ () => this.handleOpenFromDialog() }>Open File</button>
       </Nav>
     );
   }
