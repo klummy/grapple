@@ -7,6 +7,7 @@ import config from '../common/config';
 import Layout from './components/Layout';
 import Main from './components/Main';
 import logger from './libs/logger';
+import { registerGlobalShortcuts } from './services/shortcuts';
 import store from './store';
 import storage from './store/storage';
 import { IStoreState } from './types';
@@ -20,6 +21,7 @@ grpc.setLogger(logger)
 class App extends React.Component<{}, {}> {
   componentDidMount() {
 
+    // Rehydrate previous user config data if it exists
     storage.getItem(config.storage.main)
       .then((item) => {
         if (item) {
@@ -37,11 +39,14 @@ class App extends React.Component<{}, {}> {
       .catch(err => {
         logger.error('Error loading persisted store - ', err)
       })
+
+    // Attach application shortcuts
+    registerGlobalShortcuts(store.dispatch)
   }
 
   render() {
     return (
-      <Provider store={store}>
+      <Provider store={ store }>
         <Layout>
           <Main />
         </Layout>

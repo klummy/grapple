@@ -1,4 +1,4 @@
-import { ITab } from "../..//types/layout";
+import { ITab } from "../../types/layout";
 import { CLOSE_TAB, NEW_TAB, SWITCH_TAB, UPDATE_TAB } from "./layout.types";
 
 export const addTab = (payload: ITab) => ({
@@ -6,7 +6,7 @@ export const addTab = (payload: ITab) => ({
   type: NEW_TAB
 })
 
-export const closeTab = (payload: ITab) => ({
+export const closeTab = (payload?: ITab) => ({
   payload,
   type: CLOSE_TAB
 })

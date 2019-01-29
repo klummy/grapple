@@ -3,7 +3,7 @@ import { IProject } from "./projects";
 
 
 export interface IReduxAction {
-  payload: object;
+  payload?: object;
   type: string;
 }
 

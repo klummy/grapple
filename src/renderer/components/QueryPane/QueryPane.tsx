@@ -8,6 +8,7 @@ import { ITab } from '../../types/layout';
 
 import logger from '../../libs/logger';
 import { dispatchRequest, ICustomFields, loadFields } from '../../services/grpc';
+import { attachIndividualShortcut, shortcutModifiers, unregisterShortcut } from '../../services/shortcuts';
 import {
   Button,
   Form as AddressBarContainer,
@@ -79,8 +80,10 @@ class QueryPane extends React.Component<IQueryPaneProps, IQueryPaneState> {
   /**
    * Make the request
    */
-  handleDispatchRequest(event: React.MouseEvent) {
-    event.preventDefault()
+  handleDispatchRequest(event?: React.MouseEvent) {
+    if (event) {
+      event.preventDefault()
+    }
 
     const input = this.addressRef.current
 
@@ -90,6 +93,7 @@ class QueryPane extends React.Component<IQueryPaneProps, IQueryPaneState> {
       // TODO: Flash notification here
       // TODO: Validate that serviceAddress is a valid URL
       // TODO: Grey out button and disable it if no serviceAddress
+      logger.warn('No input provided')
       return
     }
 
@@ -163,9 +167,22 @@ class QueryPane extends React.Component<IQueryPaneProps, IQueryPaneState> {
   componentDidMount() {
     const { activeTab } = this.props
 
+
     if (activeTab) {
       this.loadTabData()
+
+      // Attach a shortcut for making requests
+      attachIndividualShortcut({
+        handler: this.handleDispatchRequest.bind(this),
+        key: 'enter',
+        label: 'Send Request',
+        modifier: shortcutModifiers.general,
+      })
     }
+  }
+
+  componentWillUnmount() {
+    unregisterShortcut('enter')
   }
 
   render() {
