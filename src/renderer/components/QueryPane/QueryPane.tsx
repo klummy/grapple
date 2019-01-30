@@ -8,6 +8,7 @@ import { ITab } from '../../types/layout';
 
 import logger from '../../libs/logger';
 import { dispatchRequest, ICustomFields, loadFields } from '../../services/grpc';
+import { attachIndividualShortcut, shortcutModifiers, unregisterShortcut } from '../../services/shortcuts';
 import {
   Button,
   Form as AddressBarContainer,
@@ -79,8 +80,10 @@ class QueryPane extends React.Component<IQueryPaneProps, IQueryPaneState> {
   /**
    * Make the request
    */
-  handleDispatchRequest(event: React.MouseEvent) {
-    event.preventDefault()
+  handleDispatchRequest(event?: React.MouseEvent) {
+    if (event) {
+      event.preventDefault()
+    }
 
     const input = this.addressRef.current
 
@@ -90,6 +93,7 @@ class QueryPane extends React.Component<IQueryPaneProps, IQueryPaneState> {
       // TODO: Flash notification here
       // TODO: Validate that serviceAddress is a valid URL
       // TODO: Grey out button and disable it if no serviceAddress
+      logger.warn('No input provided')
       return
     }
 
@@ -100,11 +104,7 @@ class QueryPane extends React.Component<IQueryPaneProps, IQueryPaneState> {
     if (currentTab) {
       const { updateTab } = this.props
 
-      updateTab({
-        ...currentTab,
-        address: serviceAddress,
-        queryData: payload
-      })
+      this.saveTabData(serviceAddress, payload)
 
       dispatchRequest(currentTab, serviceAddress, payload)
         .then(results => {
@@ -148,6 +148,23 @@ class QueryPane extends React.Component<IQueryPaneProps, IQueryPaneState> {
       })
   }
 
+  /**
+   * Save all the data in the data.
+   */
+  saveTabData(address?: string, payload?: object) {
+    const { currentTab, updateTab } = this.props
+
+    if (currentTab) {
+      updateTab({
+        ...currentTab,
+        address: address || (this.addressRef.current && this.addressRef.current.value),
+        queryData: payload || this.generatePayload()
+      })
+
+      // TODO: Flash notification that the tab data is saved
+    }
+  }
+
   componentDidUpdate(prevProps: IQueryPaneProps, prevState: IQueryPaneState) {
     if (this.props.activeTab !== prevProps.activeTab) {
       this.loadTabData()
@@ -163,9 +180,31 @@ class QueryPane extends React.Component<IQueryPaneProps, IQueryPaneState> {
   componentDidMount() {
     const { activeTab } = this.props
 
+
     if (activeTab) {
       this.loadTabData()
+
+      // Attach a shortcut for making requests
+      attachIndividualShortcut({
+        handler: this.handleDispatchRequest.bind(this),
+        key: 'enter',
+        label: 'Send Request',
+        modifier: shortcutModifiers.general,
+      })
+
+      // Shortcut for saving tab data
+      attachIndividualShortcut({
+        handler: this.saveTabData.bind(this),
+        key: 's',
+        label: 'Save Tab Data',
+        modifier: shortcutModifiers.general
+      })
     }
+  }
+
+  componentWillUnmount() {
+    unregisterShortcut('enter')
+    unregisterShortcut('s')
   }
 
   render() {
