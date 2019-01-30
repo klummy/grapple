@@ -20,7 +20,8 @@ const shortcuts = [
 
 interface IShortcut {
   action?: IReduxAction,
-  handler?: (event?: object) => void,
+  // tslint:disable-next-line:no-any
+  handler?: (event?: any) => void,
   key: string,
   label: string,
   modifier: shortcutModifiers

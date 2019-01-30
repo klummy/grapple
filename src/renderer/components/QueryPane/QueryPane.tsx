@@ -104,11 +104,7 @@ class QueryPane extends React.Component<IQueryPaneProps, IQueryPaneState> {
     if (currentTab) {
       const { updateTab } = this.props
 
-      updateTab({
-        ...currentTab,
-        address: serviceAddress,
-        queryData: payload
-      })
+      this.saveTabData(serviceAddress, payload)
 
       dispatchRequest(currentTab, serviceAddress, payload)
         .then(results => {
@@ -152,6 +148,23 @@ class QueryPane extends React.Component<IQueryPaneProps, IQueryPaneState> {
       })
   }
 
+  /**
+   * Save all the data in the data.
+   */
+  saveTabData(address?: string, payload?: object) {
+    const { currentTab, updateTab } = this.props
+
+    if (currentTab) {
+      updateTab({
+        ...currentTab,
+        address: address || (this.addressRef.current && this.addressRef.current.value),
+        queryData: payload || this.generatePayload()
+      })
+
+      // TODO: Flash notification that the tab data is saved
+    }
+  }
+
   componentDidUpdate(prevProps: IQueryPaneProps, prevState: IQueryPaneState) {
     if (this.props.activeTab !== prevProps.activeTab) {
       this.loadTabData()
@@ -178,11 +191,20 @@ class QueryPane extends React.Component<IQueryPaneProps, IQueryPaneState> {
         label: 'Send Request',
         modifier: shortcutModifiers.general,
       })
+
+      // Shortcut for saving tab data
+      attachIndividualShortcut({
+        handler: this.saveTabData.bind(this),
+        key: 's',
+        label: 'Save Tab Data',
+        modifier: shortcutModifiers.general
+      })
     }
   }
 
   componentWillUnmount() {
     unregisterShortcut('enter')
+    unregisterShortcut('s')
   }
 
   render() {
