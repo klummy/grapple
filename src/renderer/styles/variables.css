@@ -4,5 +4,8 @@
   --secondary-color-grey: rgba(239, 233, 244, 1);
   --secondary-color-green: rgba(87, 167, 115, 1);
   --secondary-color-blue-black: rgba(72, 77, 109, 1);
-  --text-color-default: rgba(72, 77, 109, 1);
+  --text-color-default: #c4c9d0;
+
+  --color-black-default: #2d3035;
+  --color-lines-default: rgba(118, 120, 123, .6);
 }
