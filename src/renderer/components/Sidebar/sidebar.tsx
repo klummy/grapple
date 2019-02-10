@@ -7,20 +7,23 @@ import * as React from "react";
 import { connect } from "react-redux";
 
 import { IProto } from "../../types/protos";
-import { Nav } from "./sidebar.components";
+import { IStoreState } from "../../types";
+
+import { Nav, NewItemButton } from "./sidebar.components";
 import { ISidebarProps, ISidebarState } from "./sidebar.types";
 
-import logger from "../../libs/logger";
-import { humanFriendlyProtoName, validateProto } from "../../services/protos";
 import NavProtoList from "../NavProtoList";
+import AddIcon from "../Icons/add";
 
 import {
   attachIndividualShortcut,
   shortcutModifiers
 } from "../../services/shortcuts";
+import { humanFriendlyProtoName, validateProto } from "../../services/protos";
+import logger from "../../libs/logger";
+
 import * as layoutActions from "../../store/layout/layout.actions";
 import * as projectActions from "../../store/projects/projects.actions";
-import { IStoreState } from "../../types";
 
 class Sidebar extends React.Component<ISidebarProps, ISidebarState> {
   state = {
@@ -169,7 +172,10 @@ class Sidebar extends React.Component<ISidebarProps, ISidebarState> {
         />
 
         {/* TODO: Style button below */}
-        <button onClick={() => this.handleOpenFromDialog()}>Open File</button>
+        <NewItemButton onClick={() => this.handleOpenFromDialog()}>
+          <AddIcon />
+          <span>Add Proto</span>
+        </NewItemButton>
       </Nav>
     );
   }

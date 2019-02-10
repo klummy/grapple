@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css?family=Nunito');
+@import url('https://fonts.googleapis.com/css?family=Lato|Varela+Round');
 
 @import url('https://cdn.jsdelivr.net/gh/lykmapipo/themify-icons@0.1.2/css/themify-icons.css');
 
@@ -9,7 +9,7 @@
 }
 
 body {
-  background-color: rgba(242, 242, 242, .5);
+  background-color: var(--color-black-alt-darker);
   color: var(--text-color-default);
-  font-family: 'Nunito', sans-serif;
+  font-family: var(--font-default-stack);
 }
