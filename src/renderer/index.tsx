@@ -1,5 +1,5 @@
 import * as grpc from "@grpc/grpc-js";
-import * as React from "react";
+import React, { useEffect } from "react";
 import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
 
@@ -15,11 +15,11 @@ import { IStoreState } from "./types";
 import "./styles/global.css";
 import "./styles/normalize.css";
 
-// Set the gRPC logger to use our custom logger
+// Set the gRPC logger to use custom logger
 grpc.setLogger(logger);
 
-class App extends React.Component<{}, {}> {
-  componentDidMount() {
+const App: React.SFC<{}> = () => {
+  useEffect(() => {
     // Rehydrate previous user config data if it exists
     storage
       .getItem(config.storage.main)
@@ -42,17 +42,15 @@ class App extends React.Component<{}, {}> {
 
     // Attach application shortcuts
     registerGlobalShortcuts(store.dispatch);
-  }
+  });
 
-  render() {
-    return (
-      <Provider store={store}>
-        <Layout>
-          <Main />
-        </Layout>
-      </Provider>
-    );
-  }
-}
+  return (
+    <Provider store={store}>
+      <Layout>
+        <Main />
+      </Layout>
+    </Provider>
+  );
+};
 
 ReactDOM.render(<App />, document.getElementById("app"));
