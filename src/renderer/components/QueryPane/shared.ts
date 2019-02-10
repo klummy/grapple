@@ -1,4 +1,4 @@
 export interface IFieldProps {
-  isNested?: boolean
-  parentName?: string
+  isNested?: boolean;
+  parentName?: string;
 }

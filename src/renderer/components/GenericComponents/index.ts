@@ -1,4 +1,4 @@
-import styled from 'styled-components'
+import styled from "styled-components";
 
 export const Form = styled.form`
   display: flex;
@@ -8,7 +8,7 @@ export const Form = styled.form`
     flex: 1;
     margin-right: 5px;
   }
-`
+`;
 
 export const InputGroup = styled.div`
   align-items: center;
@@ -26,21 +26,21 @@ export const InputGroup = styled.div`
     flex: 1;
     margin-right: 5px;
   }
-`
+`;
 
 export const Input = styled.input`
-  border: 1px solid rgba(72, 77, 109, .3);
+  border: 1px solid rgba(72, 77, 109, 0.3);
   border-radius: 3px;
   flex: 1;
   font-size: 13px;
   padding: 10px;
-  transition: border-color .3s ease-in-out;
+  transition: border-color 0.3s ease-in-out;
 
   &:focus {
     border-color: rgba(72, 77, 109, 1);
     outline: thin;
   }
-`
+`;
 
 export const Button = styled.button`
   background-color: var(--primary-color);
@@ -50,16 +50,16 @@ export const Button = styled.button`
   cursor: pointer;
   font-size: 13px;
   padding: 0 20px;
-  transition: opacity .3s ease-in-out;
+  transition: opacity 0.3s ease-in-out;
 
   &:hover {
-    opacity: .8;
+    opacity: 0.8;
   }
-`
+`;
 
 export const Select = styled.select`
   background-color: transparent;
-  border: 1px solid rgba(72, 77, 109, .6);
+  border: 1px solid rgba(72, 77, 109, 0.6);
   display: flex;
   flex: 1;
   height: 35px;
@@ -70,4 +70,4 @@ export const Select = styled.select`
     border-color: rgba(72, 77, 109, 1);
     outline: thin;
   }
-`
+`;

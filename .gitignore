@@ -92,3 +92,5 @@ dist
 # Folder for
 del
 false
+
+.vscode

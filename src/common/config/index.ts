@@ -1,5 +1,5 @@
 export default {
   storage: {
-    main: 'grapple'
+    main: "grapple"
   }
 };

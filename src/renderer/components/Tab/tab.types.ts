@@ -1,11 +1,9 @@
-import { ITab } from '../../types/layout';
-
+import { ITab } from "../../types/layout";
 
 export interface ITabItemProps extends ITab {
-  active: boolean
-  closeTab: (tab: ITab) => void
-  updateTab: (tab: ITab) => void
-  // tslint:disable-next-line:no-any
-  switchTab: (tab: ITab) => void
-  tab: ITab
+  active: boolean;
+  closeTab: (tab: ITab) => void;
+  updateTab: (tab: ITab) => void;
+  switchTab: (tab: ITab) => void;
+  tab: ITab;
 }
