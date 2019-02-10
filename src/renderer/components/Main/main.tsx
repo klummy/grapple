@@ -1,8 +1,8 @@
-import * as React from 'react';
+import * as React from "react";
 
-import TabList from '../../components/TabList';
-import Content from '../Content';
-import { OuterWrapper } from './main.components';
+import TabList from "../../components/TabList";
+import Content from "../Content";
+import { OuterWrapper } from "./main.components";
 
 const Main: React.SFC<{}> = () => {
   return (
@@ -12,6 +12,6 @@ const Main: React.SFC<{}> = () => {
       <Content />
     </OuterWrapper>
   );
-}
+};
 
 export default Main;

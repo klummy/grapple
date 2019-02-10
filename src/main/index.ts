@@ -1,67 +1,67 @@
-'use strict'
+"use strict";
 
-import { app, BrowserWindow } from 'electron';
-import * as path from 'path';
-import { format as formatUrl } from 'url';
+import { app, BrowserWindow } from "electron";
+import * as path from "path";
+import { format as formatUrl } from "url";
 
-const isDev = process.env.NODE_ENV !== 'production'
+const isDev = process.env.NODE_ENV !== "production";
 
-let mainWindow: BrowserWindow | null
+let mainWindow: BrowserWindow | null;
 
 const createMainWindow = () => {
   const window = new BrowserWindow({
     height: 1000,
-    width: 1200,
-  })
+    width: 1200
+  });
 
   if (isDev) {
     window.webContents.openDevTools({
       mode: "bottom"
-    })
+    });
   }
 
   const startUrl = isDev
     ? `http://localhost:${process.env.ELECTRON_WEBPACK_WDS_PORT}`
     : formatUrl({
-      pathname: path.join(__dirname, 'index.html'),
-      protocol: 'file',
-      slashes: true
-    })
+        pathname: path.join(__dirname, "index.html"),
+        protocol: "file",
+        slashes: true
+      });
 
-  window.loadURL(startUrl)
+  window.loadURL(startUrl);
 
-  window.on('closed', () => {
-    mainWindow = null
-  })
+  window.on("closed", () => {
+    mainWindow = null;
+  });
 
-  window.webContents.on('devtools-opened', () => {
-    window.focus()
+  window.webContents.on("devtools-opened", () => {
+    window.focus();
     setImmediate(() => {
-      window.focus()
-    })
-  })
+      window.focus();
+    });
+  });
 
-  return window
-}
+  return window;
+};
 
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    app.quit()
+app.on("window-all-closed", () => {
+  if (process.platform !== "darwin") {
+    app.quit();
   }
-})
+});
 
-app.on('activate', () => {
+app.on("activate", () => {
   if (mainWindow === null) {
-    mainWindow = createMainWindow()
+    mainWindow = createMainWindow();
   }
-})
+});
 
-app.on('ready', () => {
-  mainWindow = createMainWindow()
+app.on("ready", () => {
+  mainWindow = createMainWindow();
 
-  if (process.platform === 'darwin') {
-    mainWindow.setFullScreen(true)
+  if (process.platform === "darwin") {
+    mainWindow.setFullScreen(true);
   } else {
-    mainWindow.maximize()
+    mainWindow.maximize();
   }
-})
+});

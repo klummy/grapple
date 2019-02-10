@@ -1,0 +1,51 @@
+{
+  "parser": "typescript-eslint-parser",
+
+  "plugins": [
+    "react-hooks",
+    "typescript",
+    "jest"
+  ],
+
+  "extends": "airbnb",
+  "rules": {
+    "arrow-body-style": "off",
+    "no-unused-vars": "off",
+    "sort-keys": "error",
+
+    "react/jsx-filename-extension": "off",
+    "react/jsx-sort-props": ["error", {
+      "ignoreCase": true
+    }],
+    "react/jsx-max-props-per-line": [1, {
+      "maximum": 1,
+      "when": "always"
+    }],
+    "react/jsx-one-expression-per-line": [true, {
+      "allow": "single-child"
+    }],
+    "react/prop-types": "off",
+
+    "jsx-a11y/label-has-for": "off",
+
+    "typescript/array-type": ["error", "array"],
+    "typescript/interface-name-prefix": ["error", "always"],
+    "typescript/no-array-constructor": ["error"],
+    "typescript/no-empty-interface": ["error"],
+    "typescript/no-explicit-any": ["error"],
+    "typescript/no-unused-vars": "error",
+
+    "react-hooks/rules-of-hooks": "error"
+
+  },
+  "env": {
+    "browser": true,
+    "jest": true
+  },
+
+  "settings": {
+    "import/resolver": {
+      "typescript": {}
+    }
+  }
+}
