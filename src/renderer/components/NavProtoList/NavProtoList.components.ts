@@ -14,17 +14,26 @@ export const NavProtoItemHeaderContainer = styled.div`
 `;
 
 export const NavProtoItemHeader = styled.h2`
-  color: inherit;
-  font-size: 15px;
+  color: rgba(127, 128, 131, 1);
+  font-size: 13px;
+  font-family: var(--font-default-stack);
   font-weight: 400;
   height: 100%;
+  letter-spacing: 0.7px;
   margin: 0;
   overflow: hidden;
   text-overflow: ellipsis;
+  text-transform: uppercase;
 `;
 
 export const NavProtoItemHeaderIcon = styled.span`
+  cursor: pointer;
   margin-left: auto;
+  transition: color 0.3s ease-in-out;
+
+  :hover {
+    color: #fff;
+  }
 `;
 
 export const NavProtoItemServicesList = styled.ul`
@@ -42,6 +51,7 @@ export const NavProtoItemServicesItem = styled.li`
 
   &:hover {
     background-color: rgba(151, 151, 151, 0.2);
+    color: #fff;
     opacity: 0.9;
   }
 `;
