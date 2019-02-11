@@ -28,10 +28,14 @@ const Content: React.SFC<IContentProps> = ({ activeTab, tabs }) => {
     return <EmptyStateContainer>Empty</EmptyStateContainer>;
   }
 
+  const { results } = tab;
+
   return (
     <React.Fragment>
       <QueryPane />
-      <Results queryResult={JSON.stringify(tab.results || {}, null, 2)} />
+      <Results
+        queryResult={results ? JSON.stringify(tab.results, null, 2) : ""}
+      />
     </React.Fragment>
   );
 };

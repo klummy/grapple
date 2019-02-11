@@ -11,8 +11,12 @@ import "prismjs/plugins/line-numbers/prism-line-numbers.css";
 import "prismjs/themes/prism-twilight.css";
 
 const ResultOuterContainer = styled.div`
+  background-color: var(--color-black-default);
+  margin-right: 10px;
+  margin-top: 10px;
+  padding: 10px;
+  height: calc(100vh - 80px);
   flex: 1;
-  padding: 0 20px 10px;
 `;
 
 const ResultContainer = styled.pre`
@@ -22,6 +26,7 @@ const ResultContainer = styled.pre`
   font-size: 12px;
   height: 100%;
   overflow-y: auto;
+  margin: 0 !important;
 `;
 
 interface IResultsProps {
@@ -54,10 +59,12 @@ class Results extends React.Component<IResultsProps, IResultsState> {
   }
 
   render() {
+    const { queryResult } = this.props;
+
     return (
       <ResultOuterContainer>
         <ResultContainer id="gEditorContainer" className="line-numbers">
-          <code className="language-js">{this.props.queryResult}</code>
+          <code className="language-js">{queryResult}</code>
         </ResultContainer>
       </ResultOuterContainer>
     );
