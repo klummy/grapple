@@ -1,20 +1,12 @@
 import * as React from "react";
 import { connect } from "react-redux";
-import styled from "styled-components";
 
 import { IStoreState } from "../../types";
 import { ITab } from "../../types/layout";
 import QueryPane from "../QueryPane";
 import Results from "../Results";
 
-const EmptyStateContainer = styled.div`
-  align-items: center;
-  display: flex;
-  height: 100%;
-  justify-content: center;
-  min-height: 400px;
-  padding: 20px;
-`;
+import { EmptyStateContainer, OuterWrapper } from "./Content.components";
 
 export interface IContentProps {
   activeTab: string;
@@ -31,12 +23,12 @@ const Content: React.SFC<IContentProps> = ({ activeTab, tabs }) => {
   const { results } = tab;
 
   return (
-    <React.Fragment>
+    <OuterWrapper>
       <QueryPane />
       <Results
         queryResult={results ? JSON.stringify(tab.results, null, 2) : ""}
       />
-    </React.Fragment>
+    </OuterWrapper>
   );
 };
 

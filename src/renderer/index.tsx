@@ -5,7 +5,8 @@ import { Provider } from "react-redux";
 
 import config from "../common/config";
 import Layout from "./components/Layout";
-import Main from "./components/Main";
+import Content from "./components/Content";
+
 import logger from "./libs/logger";
 import { registerGlobalShortcuts } from "./services/shortcuts";
 import store from "./store";
@@ -47,7 +48,7 @@ const App: React.SFC<{}> = () => {
   return (
     <Provider store={store}>
       <Layout>
-        <Main />
+        <Content />
       </Layout>
     </Provider>
   );
