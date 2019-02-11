@@ -1,33 +1,15 @@
 import Prism from "prismjs";
 import * as React from "react";
 import { connect } from "react-redux";
-import styled from "styled-components";
 
 import { IStoreState } from "../../types";
 import { ITab } from "../../types/layout";
 
+import { ResultContainer, ResultOuterContainer } from "./Results.components";
+
 import "prismjs/plugins/line-numbers/prism-line-numbers";
 import "prismjs/plugins/line-numbers/prism-line-numbers.css";
 import "prismjs/themes/prism-twilight.css";
-
-const ResultOuterContainer = styled.div`
-  background-color: var(--color-black-default);
-  margin-right: 10px;
-  margin-top: 10px;
-  padding: 10px;
-  height: calc(100vh - 80px);
-  flex: 1;
-`;
-
-const ResultContainer = styled.pre`
-  background-color: #fff;
-  border: none !important;
-  border-radius: 0 !important;
-  font-size: 12px;
-  height: 100%;
-  overflow-y: auto;
-  margin: 0 !important;
-`;
 
 interface IResultsProps {
   activeTab: string;
