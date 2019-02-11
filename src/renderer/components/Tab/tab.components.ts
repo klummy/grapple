@@ -1,41 +1,43 @@
 import styled from "styled-components";
 
-import { ITabItemProps } from "./tab.types";
-
 export const TabItemComponent: any = styled.li`
   align-items: center;
-  border-right: 1px solid #eee;
-  background-color: ${(props: ITabItemProps) =>
-    props.active ? "rgba(8, 178, 227, .5)" : "rgba(239, 233, 244, 1)"};
+  color: var(--text-color-default);
   cursor: pointer;
   display: flex;
   flex-shrink: 0;
   height: 100%;
-  opacity: 0.7;
-  padding: 0 20px;
+  opacity: ${(props: { active: boolean }) => (props.active ? "1" : ".5")};
+  padding-left: 20px;
   transition: opacity 0.3s ease-in-out;
-  width: 200px;
+  max-width: 200px;
+
+  svg {
+    margin-left: 10px;
+
+    path {
+      fill: currentColor;
+      transition: fill 0.3s ease-in-out;
+    }
+
+    &:hover {
+      path {
+        fill: #389bff;
+      }
+    }
+  }
 
   &:hover {
-    opacity: 0.9;
+    opacity: ${(props: { active: boolean }) => (props.active ? "1" : ".7")};
   }
 `;
 
 export const TitleComponent = styled.span`
   display: inline-block;
+  font-size: 12px;
   max-width: 90%;
   overflow: hidden;
   text-overflow: ellipsis;
   transition: opacity 0.3s ease-in-out;
   white-space: nowrap;
-`;
-
-export const CloseIcon = styled.span`
-  display: inline-block;
-  margin-left: auto;
-  transition: opacity 0.3s ease-in-out;
-
-  &:hover {
-    opacity: 0.6;
-  }
 `;

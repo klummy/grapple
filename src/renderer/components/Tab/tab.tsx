@@ -1,6 +1,8 @@
 import * as React from "react";
 
-import { CloseIcon, TabItemComponent, TitleComponent } from "./tab.components";
+import CloseIcon from '../Icons/close'
+
+import { TabItemComponent, TitleComponent } from "./tab.components";
 import { ITabItemProps } from "./tab.types";
 
 const Tab: React.SFC<ITabItemProps> = ({
@@ -16,7 +18,6 @@ const Tab: React.SFC<ITabItemProps> = ({
       <TitleComponent>{name || "Untitled Request"}</TitleComponent>
 
       <CloseIcon
-        className="ti-close"
         onClick={e => {
           e.stopPropagation();
           closeTab(tab);
