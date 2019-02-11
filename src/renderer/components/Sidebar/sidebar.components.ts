@@ -13,7 +13,6 @@ export const Nav = styled.nav`
   font-family: var(--font-alternate-stack);
   overflow-y: auto;
   padding-bottom: 50px;
-  position: relative;
   transition: background-color 0.2s ease-in-out;
   width: 300px;
   z-index: 20;

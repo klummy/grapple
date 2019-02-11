@@ -1,7 +1,6 @@
-import * as React from "react";
+import React from "react";
 import { connect } from "react-redux";
 
-// import logger from '../../libs/logger';
 import * as layoutActions from "../../store/layout/layout.actions";
 import { IStoreState } from "../../types";
 import { ITab } from "../../types/layout";
@@ -17,12 +16,16 @@ import {
   shortcutModifiers,
   unregisterShortcut
 } from "../../services/shortcuts";
+
 import {
   Button,
   Form as AddressBarContainer,
   Input
 } from "../GenericComponents";
-import { QueryPaneContainer } from "./QueryPane.components";
+import {
+  QueryPaneContainer,
+  ParamBuilderContainer
+} from "./QueryPane.components";
 import QueryParamBuilder from "./QueryParamBuilder";
 
 export interface IQueryPaneProps {
@@ -227,7 +230,11 @@ class QueryPane extends React.Component<IQueryPaneProps, IQueryPaneState> {
           </Button>
         </AddressBarContainer>
 
-        {requestFields && <QueryParamBuilder fields={requestFields} />}
+        <ParamBuilderContainer>
+          {/* <QueryTabs /> */}
+
+          {requestFields && <QueryParamBuilder fields={requestFields} />}
+        </ParamBuilderContainer>
       </QueryPaneContainer>
     );
   }

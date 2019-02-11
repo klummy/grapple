@@ -2,7 +2,7 @@ import styled from "styled-components";
 
 export const LayoutContainer = styled.div`
   display: flex;
-  height: 100vh;
+  height: calc(100vh - 60px);
   overflow-y: hidden;
 `;
 

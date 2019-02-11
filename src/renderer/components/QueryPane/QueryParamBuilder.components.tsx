@@ -3,17 +3,17 @@ import styled from "styled-components";
 import { Input } from "../GenericComponents";
 import { IFieldProps } from "./shared";
 
-const tableBorder = "1px solid rgba(239, 233, 244, 1)";
+const tableBorder = "1px solid var(--color-lines-default)";
 
 export const QueryParamTable = styled.table`
-  background-color: #fff;
+  background-color: transparent;
   display: flex;
   flex-direction: column;
-  height: 300px;
-  margin: 20px 0;
+  height: auto;
+  margin: 0;
   overflow-y: auto;
   padding: 0;
-  width: 50%;
+  width: 100%;
 
   select {
     border: none;
@@ -49,10 +49,6 @@ export const QueryParamTable = styled.table`
 
 export const TableHead = styled.thead`
   width: 100%;
-
-  tr {
-    background-color: #eee;
-  }
 `;
 
 export const TableBody = styled.tbody``;
@@ -62,7 +58,7 @@ export const TableRow = styled.tr`
   border-bottom: ${tableBorder};
   border-top: ${tableBorder};
   display: flex;
-  height: 40px;
+  height: 50px;
   width: 100%;
 
   td:first-child {
@@ -89,7 +85,6 @@ export const TableCell = styled.td`
 
 export const QueryInput = styled(Input)`
   border: none;
-  padding-left: 0;
-  padding-right: 0;
+  border-radius: 3px;
   width: 100%;
 `;

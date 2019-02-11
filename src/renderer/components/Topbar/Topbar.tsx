@@ -3,11 +3,9 @@ import React from "react";
 import TabList from "../TabList";
 import Logo from "../Logo";
 
-import {
-  LogoContainer,
-  SearchInput,
-  TopbarContainer
-} from "./Topbar.components";
+import { Input as SearchInput } from "../GenericComponents";
+
+import { LogoContainer, TopbarContainer } from "./Topbar.components";
 
 export interface ITopbarProps {}
 
