@@ -1,16 +1,16 @@
-import * as React from "react";
-import { connect } from "react-redux";
+import * as React from 'react';
+import { connect } from 'react-redux';
 
-import { IStoreState } from "../../types";
-import { ITab } from "../../types/layout";
-import QueryPane from "../QueryPane";
-import Results from "../Results";
+import { IStoreState } from '../../types';
+import { ITab } from '../../types/layout';
+import QueryPane from '../QueryPane';
+import Results from '../Results';
 
-import { EmptyStateContainer, OuterWrapper } from "./Content.components";
+import { EmptyStateContainer, OuterWrapper } from './Content.components';
 
 export interface IContentProps {
   activeTab: string;
-  tabs: Array<ITab>;
+  tabs: ITab[];
 }
 
 const Content: React.SFC<IContentProps> = ({ activeTab, tabs }) => {
@@ -26,7 +26,7 @@ const Content: React.SFC<IContentProps> = ({ activeTab, tabs }) => {
     <OuterWrapper>
       <QueryPane />
       <Results
-        queryResult={results ? JSON.stringify(tab.results, null, 2) : ""}
+        queryResult={results ? JSON.stringify(tab.results, null, 2) : ''}
       />
     </OuterWrapper>
   );
@@ -34,7 +34,7 @@ const Content: React.SFC<IContentProps> = ({ activeTab, tabs }) => {
 
 const mapStateToProps = (state: IStoreState) => ({
   activeTab: state.layout.activeTab,
-  tabs: state.layout.tabs
+  tabs: state.layout.tabs,
 });
 
 export default connect(mapStateToProps)(Content);

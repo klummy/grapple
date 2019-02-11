@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled from 'styled-components';
 
 export const ResultOuterContainer = styled.div`
   background-color: var(--color-black-default);

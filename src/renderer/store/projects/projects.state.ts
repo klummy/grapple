@@ -1,5 +1,5 @@
 export default {
   config: {},
-  name: "",
-  protos: []
+  name: '',
+  protos: [],
 };

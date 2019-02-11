@@ -1,20 +1,20 @@
-import Prism from "prismjs";
-import * as React from "react";
-import { connect } from "react-redux";
+import Prism from 'prismjs';
+import * as React from 'react';
+import { connect } from 'react-redux';
 
-import { IStoreState } from "../../types";
-import { ITab } from "../../types/layout";
+import { IStoreState } from '../../types';
+import { ITab } from '../../types/layout';
 
-import { ResultContainer, ResultOuterContainer } from "./Results.components";
+import { ResultContainer, ResultOuterContainer } from './Results.components';
 
-import "prismjs/plugins/line-numbers/prism-line-numbers";
-import "prismjs/plugins/line-numbers/prism-line-numbers.css";
-import "prismjs/themes/prism-twilight.css";
+import 'prismjs/plugins/line-numbers/prism-line-numbers';
+import 'prismjs/plugins/line-numbers/prism-line-numbers.css';
+import 'prismjs/themes/prism-twilight.css';
 
 interface IResultsProps {
   activeTab: string;
   queryResult: string;
-  tabs: Array<ITab>;
+  tabs: ITab[];
 }
 
 interface IResultsState {
@@ -23,7 +23,7 @@ interface IResultsState {
 
 class Results extends React.Component<IResultsProps, IResultsState> {
   state = {
-    highlightedMarkup: ""
+    highlightedMarkup: '',
   };
 
   componentDidUpdate(prevProps: IResultsProps) {
@@ -45,7 +45,10 @@ class Results extends React.Component<IResultsProps, IResultsState> {
 
     return (
       <ResultOuterContainer>
-        <ResultContainer id="gEditorContainer" className="line-numbers">
+        <ResultContainer
+          className="line-numbers"
+          id="gEditorContainer"
+        >
           <code className="language-js">{queryResult}</code>
         </ResultContainer>
       </ResultOuterContainer>
@@ -55,7 +58,7 @@ class Results extends React.Component<IResultsProps, IResultsState> {
 
 const mapStateToProps = (state: IStoreState) => ({
   activeTab: state.layout.activeTab,
-  tabs: state.layout.tabs
+  tabs: state.layout.tabs,
 });
 
 export default connect(mapStateToProps)(Results);

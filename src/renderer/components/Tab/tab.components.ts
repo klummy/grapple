@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled from 'styled-components';
 
 export const TabItemComponent: any = styled.li`
   align-items: center;
@@ -7,7 +7,7 @@ export const TabItemComponent: any = styled.li`
   display: flex;
   flex-shrink: 0;
   height: 100%;
-  opacity: ${(props: { active: boolean }) => (props.active ? "1" : ".5")};
+  opacity: ${(props: { active: boolean }) => (props.active ? '1' : '.5')};
   padding-left: 20px;
   transition: opacity 0.3s ease-in-out;
   max-width: 200px;
@@ -28,7 +28,7 @@ export const TabItemComponent: any = styled.li`
   }
 
   &:hover {
-    opacity: ${(props: { active: boolean }) => (props.active ? "1" : ".7")};
+    opacity: ${(props: { active: boolean }) => (props.active ? '1' : '.7')};
   }
 `;
 

@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled from 'styled-components';
 
 export const Form = styled.form`
   background-color: var(--color-black-default);
@@ -55,10 +55,15 @@ export const Button = styled.button`
   cursor: pointer;
   font-size: 13px;
   padding: 0 20px;
+  opacity: 0.7;
   transition: opacity 0.3s ease-in-out;
 
   &:hover {
-    opacity: 0.8;
+    opacity: 1;
+  }
+
+  &:focus {
+    outline: none;
   }
 `;
 

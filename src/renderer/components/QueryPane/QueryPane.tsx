@@ -1,43 +1,78 @@
-import React from "react";
-import { connect } from "react-redux";
+import React from 'react';
+import { connect } from 'react-redux';
 
-import * as layoutActions from "../../store/layout/layout.actions";
-import { IStoreState } from "../../types";
-import { ITab } from "../../types/layout";
+import * as layoutActions from '../../store/layout/layout.actions';
+import { IStoreState } from '../../types';
+import { ITab } from '../../types/layout';
 
-import logger from "../../libs/logger";
+
+import logger from '../../libs/logger';
 import {
   dispatchRequest,
   ICustomFields,
-  loadFields
-} from "../../services/grpc";
+  loadFields,
+} from '../../services/grpc';
 import {
   attachIndividualShortcut,
   shortcutModifiers,
-  unregisterShortcut
-} from "../../services/shortcuts";
+  unregisterShortcut,
+} from '../../services/shortcuts';
 
 import {
   Button,
   Form as AddressBarContainer,
-  Input
-} from "../GenericComponents";
+  Input,
+} from '../GenericComponents';
 import {
   QueryPaneContainer,
-  ParamBuilderContainer
-} from "./QueryPane.components";
-import QueryParamBuilder from "./QueryParamBuilder";
+  ParamBuilderContainer,
+} from './QueryPane.components';
+import QueryParamBuilder from './QueryParamBuilder';
 
 export interface IQueryPaneProps {
   activeTab: string;
   currentTab: ITab;
-  tabs: Array<ITab>;
+  tabs: ITab[];
   updateTab: (tab: ITab) => void;
 }
 
 export interface IQueryPaneState {
-  requestFields?: Array<ICustomFields>;
+  requestFields?: ICustomFields[];
 }
+
+const generatePayload = (): object => {
+  const queryContainer = document.getElementById('queryParams');
+  if (!queryContainer) {
+    return {};
+  }
+
+  const inputs = queryContainer.querySelectorAll('[data-query-item]');
+  const payload = {};
+
+  inputs.forEach((input) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const inputElement = input as any;
+
+    const inputName = inputElement.name;
+    const inputValue = inputElement.value;
+
+    // If it's nested field, put each value under the parent; else assign the name to the value
+    if (inputName.includes('/')) {
+      const [parent, self] = inputName.split('/');
+
+      // TODO: This won't work well for multiple nested levels.
+      // Only the first level, revisit(will likely need a recursive function)
+      payload[parent] = {
+        ...payload[parent],
+        [self]: inputValue,
+      };
+    } else {
+      payload[inputName] = inputValue;
+    }
+  });
+
+  return payload;
+};
 
 class QueryPane extends React.Component<IQueryPaneProps, IQueryPaneState> {
   constructor(props: IQueryPaneProps) {
@@ -45,47 +80,59 @@ class QueryPane extends React.Component<IQueryPaneProps, IQueryPaneState> {
     this.addressRef = React.createRef();
   }
 
-  addressRef: React.RefObject<any>;
-
   state = {
-    requestFields: undefined
+    requestFields: undefined,
   };
 
-  generatePayload(): object {
-    const queryContainer = document.getElementById("queryParams");
-    if (!queryContainer) {
-      return {};
+  componentDidMount() {
+    const { activeTab } = this.props;
+
+    if (activeTab) {
+      this.loadTabData();
+
+      // Attach a shortcut for making requests
+      attachIndividualShortcut({
+        handler: this.handleDispatchRequest.bind(this),
+        key: 'enter',
+        label: 'Send Request',
+        modifier: shortcutModifiers.general,
+      });
+
+      // Shortcut for saving tab data
+      attachIndividualShortcut({
+        handler: this.saveTabData.bind(this),
+        key: 's',
+        label: 'Save Tab Data',
+        modifier: shortcutModifiers.general,
+      });
     }
-
-    const inputs = queryContainer.querySelectorAll("[data-query-item]");
-    const payload = {};
-
-    inputs.forEach(input => {
-      const inputElement = input as any;
-
-      const inputName = inputElement.name;
-      const inputValue = inputElement.value;
-
-      // If it's nested field, put each value under the parent; else assign the name to the value
-      if (inputName.includes("/")) {
-        const [parent, self] = inputName.split("/");
-
-        // TODO: This won't work well for multiple nested levels. Only the first level, revisit (will likely need a recursive function)
-        payload[parent] = {
-          ...payload[parent],
-          [self]: inputValue
-        };
-      } else {
-        payload[inputName] = inputValue;
-      }
-    });
-
-    return payload;
   }
 
+  componentDidUpdate(prevProps: IQueryPaneProps) {
+    const { activeTab } = this.props;
+
+    if (activeTab !== prevProps.activeTab) {
+      this.loadTabData();
+
+      // Clear/set the address when the tab is changed
+      if (this.addressRef.current) {
+        const { currentTab } = this.props;
+        this.addressRef.current.value = currentTab.address || '';
+      }
+    }
+  }
+
+  componentWillUnmount() {
+    unregisterShortcut('enter');
+    unregisterShortcut('s');
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  addressRef: React.RefObject<any>;
+
   /**
-   * Make the request
-   */
+ * Make the request
+ */
   handleDispatchRequest(event?: React.MouseEvent) {
     if (event) {
       event.preventDefault();
@@ -99,13 +146,13 @@ class QueryPane extends React.Component<IQueryPaneProps, IQueryPaneState> {
       // TODO: Flash notification here
       // TODO: Validate that serviceAddress is a valid URL
       // TODO: Grey out button and disable it if no serviceAddress
-      logger.warn("No input provided");
+      logger.warn('No input provided');
       return;
     }
 
     const { currentTab } = this.props;
 
-    const payload = this.generatePayload();
+    const payload = generatePayload();
 
     if (currentTab) {
       const { updateTab } = this.props;
@@ -113,15 +160,15 @@ class QueryPane extends React.Component<IQueryPaneProps, IQueryPaneState> {
       this.saveTabData(serviceAddress, payload);
 
       dispatchRequest(currentTab, serviceAddress, payload)
-        .then(results => {
+        .then((results) => {
           // Update the tab with the request data
           updateTab({
             ...currentTab,
-            results
+            results,
           });
         })
         .catch((err: Error) => {
-          logger.error("Error during dispatch ", err);
+          logger.error('Error during dispatch ', err);
         })
         .finally(() => {
           // TODO: Clear loading indications and show appropriate notifications
@@ -130,8 +177,8 @@ class QueryPane extends React.Component<IQueryPaneProps, IQueryPaneState> {
   }
 
   /**
-   * Load the data for the tab when the app is loaded or the tab switched
-   */
+ * Load the data for the tab when the app is loaded or the tab switched
+ */
   loadTabData() {
     const { currentTab } = this.props;
 
@@ -139,22 +186,23 @@ class QueryPane extends React.Component<IQueryPaneProps, IQueryPaneState> {
       return;
     }
 
-    const { proto, service = { originalName: "" } } = currentTab;
+    const { proto, service = { originalName: '' } } = currentTab;
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     loadFields(proto.path, (service as any).path)
       .then(({ fields }) => {
         this.setState({
-          requestFields: fields
+          requestFields: fields,
         });
       })
-      .catch(err => {
-        logger.error("Error loading fields for proto", err);
+      .catch((err) => {
+        logger.error('Error loading fields for proto', err);
       });
   }
 
   /**
-   * Save all the data in the data.
-   */
+ * Save all the data in the data.
+ */
   saveTabData(address?: string, payload?: object) {
     const { currentTab, updateTab } = this.props;
 
@@ -163,52 +211,11 @@ class QueryPane extends React.Component<IQueryPaneProps, IQueryPaneState> {
         ...currentTab,
         address:
           address || (this.addressRef.current && this.addressRef.current.value),
-        queryData: payload || this.generatePayload()
+        queryData: payload || generatePayload(),
       });
 
       // TODO: Flash notification that the tab data is saved
     }
-  }
-
-  componentDidUpdate(prevProps: IQueryPaneProps, prevState: IQueryPaneState) {
-    if (this.props.activeTab !== prevProps.activeTab) {
-      this.loadTabData();
-
-      // Clear/set the address when the tab is changed
-      if (this.addressRef.current) {
-        const { currentTab } = this.props;
-        this.addressRef.current.value = currentTab.address || "";
-      }
-    }
-  }
-
-  componentDidMount() {
-    const { activeTab } = this.props;
-
-    if (activeTab) {
-      this.loadTabData();
-
-      // Attach a shortcut for making requests
-      attachIndividualShortcut({
-        handler: this.handleDispatchRequest.bind(this),
-        key: "enter",
-        label: "Send Request",
-        modifier: shortcutModifiers.general
-      });
-
-      // Shortcut for saving tab data
-      attachIndividualShortcut({
-        handler: this.saveTabData.bind(this),
-        key: "s",
-        label: "Save Tab Data",
-        modifier: shortcutModifiers.general
-      });
-    }
-  }
-
-  componentWillUnmount() {
-    unregisterShortcut("enter");
-    unregisterShortcut("s");
   }
 
   render() {
@@ -217,13 +224,17 @@ class QueryPane extends React.Component<IQueryPaneProps, IQueryPaneState> {
 
     return (
       <QueryPaneContainer>
-        <AddressBarContainer as="div" action="">
+        <AddressBarContainer
+          action=""
+          as="div"
+        >
           <Input
-            type="url"
+            defaultValue={currentTab.address}
             name="address"
             placeholder="Service Address"
             ref={this.addressRef}
-            defaultValue={currentTab.address}
+            required
+            type="url"
           />
           <Button onClick={e => this.handleDispatchRequest(e)}>
             Send Request
@@ -244,14 +255,14 @@ const mapStateToProps = (state: IStoreState) => ({
   activeTab: state.layout.activeTab,
   currentTab:
     state.layout.tabs.find(tab => tab.id === state.layout.activeTab) || {},
-  tabs: state.layout.tabs
+  tabs: state.layout.tabs,
 });
 
 const mapDispatchToProps = {
-  updateTab: (tab: ITab) => layoutActions.updateTab(tab)
+  updateTab: (tab: ITab) => layoutActions.updateTab(tab),
 };
 
 export default connect(
   mapStateToProps,
-  mapDispatchToProps
+  mapDispatchToProps,
 )(QueryPane);

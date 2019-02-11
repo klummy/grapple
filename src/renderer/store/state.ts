@@ -1,5 +1,5 @@
-import projects from "./projects/projects.state";
+import projects from './projects/projects.state';
 
 export default {
-  projects
+  projects,
 };

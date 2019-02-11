@@ -1,1 +1,1 @@
-export { default } from "./NavProtoList";
+export { default } from './NavProtoList';

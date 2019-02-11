@@ -1,1 +1,1 @@
-export { default } from "./QueryPane";
+export { default } from './QueryPane';

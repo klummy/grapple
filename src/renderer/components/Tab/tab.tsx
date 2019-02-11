@@ -1,24 +1,27 @@
-import * as React from "react";
+import * as React from 'react';
 
-import CloseIcon from '../Icons/close'
+import CloseIcon from '../Icons/close';
 
-import { TabItemComponent, TitleComponent } from "./tab.components";
-import { ITabItemProps } from "./tab.types";
+import { TabItemComponent, TitleComponent } from './tab.components';
+import { ITabItemProps } from './tab.types';
 
 const Tab: React.SFC<ITabItemProps> = ({
   active,
   tab,
   closeTab,
-  switchTab
+  switchTab,
 }) => {
   const { name } = tab;
 
   return (
-    <TabItemComponent active={active} onClick={() => switchTab(tab)}>
-      <TitleComponent>{name || "Untitled Request"}</TitleComponent>
+    <TabItemComponent
+      active={active}
+      onClick={() => switchTab(tab)}
+    >
+      <TitleComponent>{name || 'Untitled Request'}</TitleComponent>
 
       <CloseIcon
-        onClick={e => {
+        onClick={(e) => {
           e.stopPropagation();
           closeTab(tab);
         }}

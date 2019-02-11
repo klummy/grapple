@@ -1,21 +1,21 @@
-import Mousetrap from "mousetrap";
-import { Dispatch } from "redux";
+import Mousetrap from 'mousetrap';
+import { Dispatch } from 'redux';
 
-import logger from "../libs/logger";
-import { closeTab, switchTab } from "../store/layout/layout.actions";
-import { IReduxAction } from "../types";
+import logger from '../libs/logger';
+import { closeTab, switchTab } from '../store/layout/layout.actions';
+import { IReduxAction } from '../types';
 
 export enum shortcutModifiers {
-  general = "mod" // Translates to 'command' on Mac and 'ctrl' on Windows/Linux
+  general = 'mod' // Translates to 'command' on Mac and 'ctrl' on Windows/Linux
 }
 
 const shortcuts = [
   {
     action: closeTab(),
-    key: "w",
-    label: "Close Tab",
-    modifier: shortcutModifiers.general
-  }
+    key: 'w',
+    label: 'Close Tab',
+    modifier: shortcutModifiers.general,
+  },
 ];
 
 interface IShortcut {
@@ -32,14 +32,16 @@ interface IShortcut {
  */
 export const attachIndividualShortcut = (
   shortcut: IShortcut,
-  dispatch?: Dispatch
+  dispatch?: Dispatch,
 ) => {
-  const { action, handler, label, key, modifier } = shortcut;
+  const {
+    action, handler, label, key, modifier,
+  } = shortcut;
 
   Mousetrap.bind(`${modifier}+${key}`, () => {
-    logger.info("Triggering shortcut with label: ", label);
+    logger.info('Triggering shortcut with label: ', label);
 
-    if (handler && typeof handler === "function") {
+    if (handler && typeof handler === 'function') {
       handler();
       return false;
     }

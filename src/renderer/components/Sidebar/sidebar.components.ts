@@ -1,12 +1,11 @@
-import styled from "styled-components";
+import styled from 'styled-components';
 
-import { ISidebarState } from "./sidebar.types";
+import { ISidebarState } from './sidebar.types';
 
 export const Nav = styled.nav`
-  background-color: ${(props: ISidebarState) =>
-    props.dragInProgress
-      ? "rgba(87, 167, 115, .3)"
-      : "var(--color-black-default)"};
+  background-color: ${(props: ISidebarState) => (props.dragInProgress
+    ? 'rgba(87, 167, 115, .3)'
+    : 'var(--color-black-default)')};
   border-top: 1px solid var(--color-lines-default);
   box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.1);
   flex-shrink: 0;

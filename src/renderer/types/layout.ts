@@ -1,6 +1,6 @@
-import { MethodDefinition } from "@grpc/proto-loader";
+import { MethodDefinition } from '@grpc/proto-loader';
 
-import { IProto } from "./protos";
+import { IProto } from './protos';
 
 export interface ITab {
   address?: string;
@@ -14,5 +14,5 @@ export interface ITab {
 
 export interface ILayout {
   activeTab: string;
-  tabs: Array<ITab>;
+  tabs: ITab[];
 }

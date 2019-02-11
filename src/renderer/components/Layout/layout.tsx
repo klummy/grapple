@@ -1,9 +1,9 @@
-import * as React from "react";
+import * as React from 'react';
 
-import Sidebar from "../Sidebar";
-import Topbar from "../Topbar";
+import Sidebar from '../Sidebar';
+import Topbar from '../Topbar';
 
-import { LayoutContainer, MainContainer } from "./layout.components";
+import { LayoutContainer, MainContainer } from './layout.components';
 
 const Layout: React.SFC<{}> = ({ children }) => {
   return (

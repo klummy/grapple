@@ -1,4 +1,5 @@
-import styled from "styled-components";
+import styled from 'styled-components';
+
 export const EmptyStateContainer = styled.div`
   align-items: center;
   display: flex;

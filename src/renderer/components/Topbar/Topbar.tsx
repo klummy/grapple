@@ -1,11 +1,11 @@
-import React from "react";
+import React from 'react';
 
-import TabList from "../TabList";
-import Logo from "../Logo";
+import TabList from '../TabList';
+import Logo from '../Logo';
 
-import { Input as SearchInput } from "../GenericComponents";
+import { Input as SearchInput } from '../GenericComponents';
 
-import { LogoContainer, TopbarContainer } from "./Topbar.components";
+import { LogoContainer, TopbarContainer } from './Topbar.components';
 
 export interface ITopbarProps {}
 
@@ -17,7 +17,10 @@ const Topbar: React.SFC<ITopbarProps> = () => {
 
         {/* Search */}
         {/* TODO: Implement functionality */}
-        <SearchInput type="search" placeholder="Search" />
+        <SearchInput
+          placeholder="Search"
+          type="search"
+        />
       </LogoContainer>
 
       <TabList />
