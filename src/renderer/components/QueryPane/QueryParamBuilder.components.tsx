@@ -43,6 +43,18 @@ export const QueryParamTable = styled.table`
 
 export const TableHead = styled.thead`
   width: 100%;
+
+  tr {
+    border-top: none;
+
+    th:first-child {
+      border-right: ${tableBorder};
+    }
+
+    th:last-child {
+      padding-left: 10px;
+    }
+  }
 `;
 
 export const TableBody = styled.tbody``;

@@ -27,7 +27,7 @@ import {
   QueryPaneContainer,
   ParamBuilderContainer,
 } from './QueryPane.components';
-import QueryParamBuilder from './QueryParamBuilder';
+import QueryTabs from '../QueryTabs';
 
 export interface IQueryPaneProps {
   activeTab: string;
@@ -242,9 +242,8 @@ class QueryPane extends React.Component<IQueryPaneProps, IQueryPaneState> {
         </AddressBarContainer>
 
         <ParamBuilderContainer>
-          {/* <QueryTabs /> */}
+          <QueryTabs requestFields={requestFields} />
 
-          {requestFields && <QueryParamBuilder fields={requestFields} />}
         </ParamBuilderContainer>
       </QueryPaneContainer>
     );

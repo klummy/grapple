@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-export const TabItemComponent: any = styled.li`
+export const TabItemComponent = styled.li`
   align-items: center;
   color: var(--text-color-default);
   cursor: pointer;
