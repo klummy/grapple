@@ -1,33 +1,20 @@
-import Prism from "prismjs";
-import * as React from "react";
-import { connect } from "react-redux";
-import styled from "styled-components";
+import Prism from 'prismjs';
+import * as React from 'react';
+import { connect } from 'react-redux';
 
-import { IStoreState } from "../../types";
-import { ITab } from "../../types/layout";
+import { IStoreState } from '../../types';
+import { ITab } from '../../types/layout';
 
-import "prismjs/plugins/line-numbers/prism-line-numbers";
-import "prismjs/plugins/line-numbers/prism-line-numbers.css";
-import "prismjs/themes/prism-twilight.css";
+import { ResultContainer, ResultOuterContainer } from './Results.components';
 
-const ResultOuterContainer = styled.div`
-  flex: 1;
-  padding: 0 20px 10px;
-`;
-
-const ResultContainer = styled.pre`
-  background-color: #fff;
-  border: none !important;
-  border-radius: 0 !important;
-  font-size: 12px;
-  height: 100%;
-  overflow-y: auto;
-`;
+import 'prismjs/plugins/line-numbers/prism-line-numbers';
+import 'prismjs/plugins/line-numbers/prism-line-numbers.css';
+import 'prismjs/themes/prism-twilight.css';
 
 interface IResultsProps {
   activeTab: string;
   queryResult: string;
-  tabs: Array<ITab>;
+  tabs: ITab[];
 }
 
 interface IResultsState {
@@ -36,7 +23,7 @@ interface IResultsState {
 
 class Results extends React.Component<IResultsProps, IResultsState> {
   state = {
-    highlightedMarkup: ""
+    highlightedMarkup: '',
   };
 
   componentDidUpdate(prevProps: IResultsProps) {
@@ -54,10 +41,15 @@ class Results extends React.Component<IResultsProps, IResultsState> {
   }
 
   render() {
+    const { queryResult } = this.props;
+
     return (
       <ResultOuterContainer>
-        <ResultContainer id="gEditorContainer" className="line-numbers">
-          <code className="language-js">{this.props.queryResult}</code>
+        <ResultContainer
+          className="line-numbers"
+          id="gEditorContainer"
+        >
+          <code className="language-js">{queryResult}</code>
         </ResultContainer>
       </ResultOuterContainer>
     );
@@ -66,7 +58,7 @@ class Results extends React.Component<IResultsProps, IResultsState> {
 
 const mapStateToProps = (state: IStoreState) => ({
   activeTab: state.layout.activeTab,
-  tabs: state.layout.tabs
+  tabs: state.layout.tabs,
 });
 
 export default connect(mapStateToProps)(Results);

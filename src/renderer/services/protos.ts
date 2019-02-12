@@ -1,7 +1,7 @@
-import * as protoLoader from "@grpc/proto-loader";
+import * as protoLoader from '@grpc/proto-loader';
 
-import { PackageDefinition } from "@grpc/grpc-js/build/src/make-client";
-import { IProto } from "../types/protos";
+import { PackageDefinition } from '@grpc/grpc-js/build/src/make-client';
+import { IProto } from '../types/protos';
 
 /**
  * Validate a proto file
@@ -21,5 +21,4 @@ export const validateProto = (proto: IProto): Promise<PackageDefinition> => {
 /**
  * Return a human friendly proto name
  */
-export const humanFriendlyProtoName = (proto: IProto): string =>
-  proto.name.replace(".proto", "");
+export const humanFriendlyProtoName = (proto: IProto): string => proto.name.replace('.proto', '');

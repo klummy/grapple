@@ -1,9 +1,9 @@
-import { MethodDefinition } from "@grpc/proto-loader";
-import * as React from "react";
+import { MethodDefinition } from '@grpc/proto-loader';
+import * as React from 'react';
 
-import { IProto } from "../../types/protos";
-import NavProtoItem from "./NavProtoItem";
-import { NavProtoListContainer } from "./NavProtoList.components";
+import { IProto } from '../../types/protos';
+import NavProtoItem from './NavProtoItem';
+import { NavProtoListContainer } from './NavProtoList.components';
 
 export interface INavProtoListProps {
   newTabHandler: (
@@ -11,12 +11,12 @@ export interface INavProtoListProps {
     proto: IProto,
     service: MethodDefinition<{}, {}>
   ) => void;
-  protos: Array<IProto>;
+  protos: IProto[];
 }
 
 const NavProtoList: React.SFC<INavProtoListProps> = ({
   newTabHandler,
-  protos
+  protos,
 }) => {
   return (
     <React.Fragment>
@@ -24,8 +24,8 @@ const NavProtoList: React.SFC<INavProtoListProps> = ({
         <NavProtoListContainer>
           {protos.map(proto => (
             <NavProtoItem
-              newTabHandler={newTabHandler}
               key={proto.name}
+              newTabHandler={newTabHandler}
               proto={proto}
             />
           ))}

@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled from 'styled-components';
 
 export const QueryPanEmptyStateContainer = styled.div`
   align-items: center;
@@ -10,5 +10,17 @@ export const QueryPanEmptyStateContainer = styled.div`
 `;
 
 export const QueryPaneContainer = styled.div`
-  padding: 20px 20px 0px;
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 80px);
+  margin: 10px 10px 10px 20px;
+  overflow-y: auto;
+  width: 48%;
+`;
+
+export const ParamBuilderContainer = styled.div`
+  background-color: var(--color-black-default);
+  flex: 1;
+  margin-top: 10px;
+  padding: 10px;
 `;

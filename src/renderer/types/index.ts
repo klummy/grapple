@@ -1,5 +1,5 @@
-import { ILayout } from "./layout";
-import { IProject } from "./projects";
+import { ILayout } from './layout';
+import { IProject } from './projects';
 
 export interface IReduxAction {
   payload?: object;

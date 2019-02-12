@@ -1,19 +1,19 @@
-import styled from "styled-components";
+import styled from 'styled-components';
 
-import { Input } from "../GenericComponents";
-import { IFieldProps } from "./shared";
+import { Input } from '../GenericComponents';
+import { IFieldProps } from './shared';
 
-const tableBorder = "1px solid rgba(239, 233, 244, 1)";
+const tableBorder = '1px solid var(--color-lines-default)';
 
 export const QueryParamTable = styled.table`
-  background-color: #fff;
+  background-color: transparent;
   display: flex;
   flex-direction: column;
-  height: 300px;
-  margin: 20px 0;
+  height: auto;
+  margin: 0;
   overflow-y: auto;
   padding: 0;
-  width: 50%;
+  width: 100%;
 
   select {
     border: none;
@@ -22,12 +22,6 @@ export const QueryParamTable = styled.table`
   tr + tr,
   tbody tr:first-child {
     border-top: none;
-  }
-
-  td,
-  th {
-    padding-left: 10px;
-    padding-right: 10px;
   }
 
   td:first-child,
@@ -51,7 +45,15 @@ export const TableHead = styled.thead`
   width: 100%;
 
   tr {
-    background-color: #eee;
+    border-top: none;
+
+    th:first-child {
+      border-right: ${tableBorder};
+    }
+
+    th:last-child {
+      padding-left: 10px;
+    }
   }
 `;
 
@@ -62,15 +64,18 @@ export const TableRow = styled.tr`
   border-bottom: ${tableBorder};
   border-top: ${tableBorder};
   display: flex;
-  height: 40px;
+  height: 50px;
   width: 100%;
 
   td:first-child {
-    padding-left: ${(props: IFieldProps) => props.isNested && "30px"};
+    padding-left: ${(props: IFieldProps) => props.isNested && '15px'};
   }
 `;
 
 export const TableTh = styled.th`
+  font-size: 13px;
+  font-family: var(--font-alternate-stack);
+  opacity: 0.8;
   text-align: left;
   text-transform: capitalize;
 
@@ -84,12 +89,14 @@ export const TableTh = styled.th`
 `;
 
 export const TableCell = styled.td`
+  font-size: 13px;
+  opacity: 0.7;
   text-transform: capitalize;
 `;
 
 export const QueryInput = styled(Input)`
   border: none;
-  padding-left: 0;
-  padding-right: 0;
+  border-radius: 3px;
+  margin-left: 10px;
   width: 100%;
 `;

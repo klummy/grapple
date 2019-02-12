@@ -1,37 +1,40 @@
-import { MethodDefinition } from "@grpc/proto-loader";
-import { PackageDefinition } from "@grpc/proto-loader";
-import * as electron from "electron";
-import fs from "fs";
-import * as nodePath from "path";
-import * as React from "react";
-import { connect } from "react-redux";
+import { MethodDefinition } from '@grpc/proto-loader';
+import { PackageDefinition } from '@grpc/proto-loader';
+import * as electron from 'electron';
+import fs from 'fs';
+import * as nodePath from 'path';
+import * as React from 'react';
+import { connect } from 'react-redux';
 
-import { IProto } from "../../types/protos";
-import { Nav } from "./sidebar.components";
-import { ISidebarProps, ISidebarState } from "./sidebar.types";
+import { IProto } from '../../types/protos';
+import { IStoreState } from '../../types';
 
-import logger from "../../libs/logger";
-import { humanFriendlyProtoName, validateProto } from "../../services/protos";
-import NavProtoList from "../NavProtoList";
+import { Nav, NewItemButton } from './sidebar.components';
+import { ISidebarProps, ISidebarState } from './sidebar.types';
+
+import NavProtoList from '../NavProtoList';
+import AddIcon from '../Icons/add';
 
 import {
   attachIndividualShortcut,
-  shortcutModifiers
-} from "../../services/shortcuts";
-import * as layoutActions from "../../store/layout/layout.actions";
-import * as projectActions from "../../store/projects/projects.actions";
-import { IStoreState } from "../../types";
+  shortcutModifiers,
+} from '../../services/shortcuts';
+import { humanFriendlyProtoName, validateProto } from '../../services/protos';
+import logger from '../../libs/logger';
+
+import * as layoutActions from '../../store/layout/layout.actions';
+import * as projectActions from '../../store/projects/projects.actions';
 
 class Sidebar extends React.Component<ISidebarProps, ISidebarState> {
   state = {
     actionInProgress: false, // If an action is in progress
-    dragInProgress: false // If a drag event is in progress.
+    dragInProgress: false, // If a drag event is in progress.
   };
 
   handleDragLeave() {
     if (this.state.dragInProgress) {
       this.setState({
-        dragInProgress: false
+        dragInProgress: false,
       });
     }
   }
@@ -39,7 +42,7 @@ class Sidebar extends React.Component<ISidebarProps, ISidebarState> {
   handleDragOver(event: React.DragEvent<HTMLElement>) {
     if (!this.state.dragInProgress) {
       this.setState({
-        dragInProgress: true
+        dragInProgress: true,
       });
     }
 
@@ -74,18 +77,18 @@ class Sidebar extends React.Component<ISidebarProps, ISidebarState> {
       {
         filters: [
           {
-            extensions: ["proto"],
-            name: "Protos"
-          }
+            extensions: ['proto'],
+            name: 'Protos',
+          },
         ],
-        properties: ["openFile", "multiSelections"]
+        properties: ['openFile', 'multiSelections'],
       },
-      filePaths => {
+      (filePaths) => {
         if (filePaths && filePaths.length > 0) {
-          filePaths.forEach(filePath => {
+          filePaths.forEach((filePath) => {
             fs.stat(filePath, (err, stats) => {
               if (err) {
-                logger.error("Error getting stats for filePath", filePath, err);
+                logger.error('Error getting stats for filePath', filePath, err);
                 // TODO: Show error notification
                 return;
               }
@@ -93,14 +96,14 @@ class Sidebar extends React.Component<ISidebarProps, ISidebarState> {
               const proto = {
                 lastModified: stats.mtime.getTime(),
                 name: nodePath.basename(filePath),
-                path: filePath
+                path: filePath,
               };
 
               self.loadProto(proto);
             });
           });
         }
-      }
+      },
     );
   }
 
@@ -108,23 +111,23 @@ class Sidebar extends React.Component<ISidebarProps, ISidebarState> {
     const { lastModified, path } = proto;
 
     validateProto(proto)
-      .then(pkgDef => {
+      .then((pkgDef) => {
         // TODO: Check to make sure that the proto path hasn't already been added
 
         this.props.addProtoToProject({
           lastModified,
           name: humanFriendlyProtoName(proto),
           path,
-          pkgDef: pkgDef as PackageDefinition
+          pkgDef: pkgDef as PackageDefinition,
         });
       })
-      .catch(err => {
-        logger.warn("Proto validation failed: ", err);
+      .catch((err) => {
+        logger.warn('Proto validation failed: ', err);
       })
       .finally(() => {
         this.setState({
           actionInProgress: false,
-          dragInProgress: false
+          dragInProgress: false,
         });
       });
   }
@@ -132,7 +135,7 @@ class Sidebar extends React.Component<ISidebarProps, ISidebarState> {
   newTabHandler(
     e: React.MouseEvent,
     proto: IProto,
-    service: MethodDefinition<{}, {}>
+    service: MethodDefinition<{}, {}>,
   ) {
     e.preventDefault();
 
@@ -145,9 +148,9 @@ class Sidebar extends React.Component<ISidebarProps, ISidebarState> {
     // Attach shortcut for opening proto file(s) from the file system dialog
     attachIndividualShortcut({
       handler: this.handleOpenFromDialog.bind(this),
-      key: "o",
-      label: "Open dialog",
-      modifier: shortcutModifiers.general
+      key: 'o',
+      label: 'Open dialog',
+      modifier: shortcutModifiers.general,
     });
   }
 
@@ -162,30 +165,31 @@ class Sidebar extends React.Component<ISidebarProps, ISidebarState> {
         onDrop={e => this.handleOnDrop(e)}
       >
         <NavProtoList
-          newTabHandler={(e, proto, service) =>
-            this.newTabHandler(e, proto, service)
+          newTabHandler={(e, proto, service) => this.newTabHandler(e, proto, service)
           }
           protos={protos}
         />
 
         {/* TODO: Style button below */}
-        <button onClick={() => this.handleOpenFromDialog()}>Open File</button>
+        <NewItemButton onClick={() => this.handleOpenFromDialog()}>
+          <AddIcon />
+          <span>Add Proto</span>
+        </NewItemButton>
       </Nav>
     );
   }
 }
 
 const mapStateToProps = (state: IStoreState) => ({
-  protos: state.projects.protos
+  protos: state.projects.protos,
 });
 
 const mapDispatchToProps = {
   addProtoToProject: (e: IProto) => projectActions.addProtoToProject(e),
-  addTab: (proto: IProto, service: MethodDefinition<{}, {}>) =>
-    layoutActions.addTab({ proto, service })
+  addTab: (proto: IProto, service: MethodDefinition<{}, {}>) => layoutActions.addTab({ proto, service }),
 };
 
 export default connect(
   mapStateToProps,
-  mapDispatchToProps
+  mapDispatchToProps,
 )(Sidebar);

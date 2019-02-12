@@ -1,21 +1,21 @@
-import initialState from "./projects.state";
-import { ADD_PROTO_TO_PROJECT, NEW_PROJECT } from "./projects.types";
+import initialState from './projects.state';
+import { ADD_PROTO_TO_PROJECT, NEW_PROJECT } from './projects.types';
 
-import { IReduxAction } from "../../types";
-import { IProject } from "../../types/projects";
-import { IProto } from "../../types/protos";
+import { IReduxAction } from '../../types';
+import { IProject } from '../../types/projects';
+import { IProto } from '../../types/protos';
 
 const projectsReducer = (
   state: IProject = initialState,
-  { payload, type }: IReduxAction
+  { payload, type }: IReduxAction,
 ): IProject => {
   switch (type) {
     case ADD_PROTO_TO_PROJECT:
       const payloadProto = payload as IProto;
 
-      let protos: Array<IProto> = [];
+      let protos: IProto[] = [];
       const existsAlready = state.protos.find(
-        proto => proto.path === payloadProto.path
+        proto => proto.path === payloadProto.path,
       );
 
       if (existsAlready) {
@@ -26,7 +26,7 @@ const projectsReducer = (
 
       return {
         ...state,
-        protos
+        protos,
       };
 
     case NEW_PROJECT:

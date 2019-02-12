@@ -1,4 +1,4 @@
-import { ITab } from "../../types/layout";
+import { ITab } from '../../types/layout';
 
 export interface ITabItemProps extends ITab {
   active: boolean;

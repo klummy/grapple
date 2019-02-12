@@ -6,6 +6,7 @@
   "scripts": {
     "build": "electron-webpack",
     "dev": "electron-webpack dev",
+    "lint": "eslint --fix **/*.tsx",
     "test": "jest"
   },
   "keywords": [],
@@ -23,6 +24,8 @@
     "@types/react-redux": "^7.0.0",
     "@types/redux-logger": "^3.0.6",
     "@types/styled-components": "^4.1.4",
+    "@typescript-eslint/eslint-plugin": "^1.3.0",
+    "@typescript-eslint/parser": "^1.3.0",
     "babel-plugin-prismjs": "^1.0.2",
     "colors": "^1.3.3",
     "electron": "^4.0.0-beta.9",
@@ -30,7 +33,9 @@
     "electron-reload": "^1.4.0",
     "electron-webpack": "^2.6.1",
     "electron-webpack-ts": "^3.1.0",
+    "eslint": "^5.13.0",
     "eslint-config-airbnb": "^17.1.0",
+    "eslint-config-prettier": "^4.0.0",
     "eslint-import-resolver-typescript": "^1.1.1",
     "eslint-plugin-import": "^2.16.0",
     "eslint-plugin-jest": "^22.2.2",

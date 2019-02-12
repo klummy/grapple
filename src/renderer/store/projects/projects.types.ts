@@ -1,3 +1,3 @@
-export const NEW_PROJECT = "NEW_PROJECT";
+export const NEW_PROJECT = 'NEW_PROJECT';
 
-export const ADD_PROTO_TO_PROJECT = "ADD_PROTO_TO_PROJECT";
+export const ADD_PROTO_TO_PROJECT = 'ADD_PROTO_TO_PROJECT';

@@ -1,4 +1,4 @@
-import { PackageDefinition } from "@grpc/proto-loader";
+import { PackageDefinition } from '@grpc/proto-loader';
 
 export interface IProto {
   lastModified: number;

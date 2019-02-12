@@ -1,15 +1,17 @@
-import cuid from "cuid";
+import cuid from 'cuid';
 
-import { IReduxAction } from "../../types";
-import { ILayout, ITab } from "../../types/layout";
-import initialState from "./layout.state";
-import { CLOSE_TAB, NEW_TAB, SWITCH_TAB, UPDATE_TAB } from "./layout.types";
+import { IReduxAction } from '../../types';
+import { ILayout, ITab } from '../../types/layout';
+import initialState from './layout.state';
+import {
+  CLOSE_TAB, NEW_TAB, SWITCH_TAB, UPDATE_TAB,
+} from './layout.types';
 
-import { capitalizaFirstLetter } from "../../libs/utils";
+import { capitalizaFirstLetter } from '../../libs/utils';
 
 const layoutReducer = (
   state: ILayout = initialState,
-  { payload, type }: IReduxAction
+  { payload, type }: IReduxAction,
 ): ILayout => {
   switch (type) {
     case NEW_TAB: {
@@ -17,10 +19,10 @@ const layoutReducer = (
 
       const { proto, service } = tabData;
 
-      const tabs: Array<ITab> = Array.from(state.tabs);
+      const tabs: ITab[] = Array.from(state.tabs);
       const id = cuid();
 
-      let name = "";
+      let name = '';
 
       if (proto && service) {
         name = `${service.originalName} - ${capitalizaFirstLetter(proto.name)}`;
@@ -30,7 +32,7 @@ const layoutReducer = (
         id,
         name,
         proto,
-        service
+        service,
       };
 
       tabs.push(tab);
@@ -38,7 +40,7 @@ const layoutReducer = (
       return {
         ...state,
         activeTab: id,
-        tabs
+        tabs,
       };
     }
 
@@ -52,15 +54,15 @@ const layoutReducer = (
 
       return {
         ...state,
-        activeTab: "",
-        tabs: state.tabs.filter(tabItem => tabItem.id !== tabToCloseID)
+        activeTab: '',
+        tabs: state.tabs.filter(tabItem => tabItem.id !== tabToCloseID),
       };
 
     case UPDATE_TAB: {
       const updatedTab = payload as ITab;
 
       // TODO: Consider refactoring
-      const tabs = [...state.tabs].map(tab => {
+      const tabs = [...state.tabs].map((tab) => {
         if (tab.id === updatedTab.id) {
           return updatedTab;
         }
@@ -70,14 +72,14 @@ const layoutReducer = (
 
       return {
         ...state,
-        tabs
+        tabs,
       };
     }
 
     case SWITCH_TAB:
       return {
         ...state,
-        activeTab: (payload as ITab).id || ""
+        activeTab: (payload as ITab).id || '',
       };
 
     default:

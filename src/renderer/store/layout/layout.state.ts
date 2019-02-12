@@ -1,4 +1,4 @@
 export default {
-  activeTab: "",
-  tabs: []
+  activeTab: '',
+  tabs: [],
 };
