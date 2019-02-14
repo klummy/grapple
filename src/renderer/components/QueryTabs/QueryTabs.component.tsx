@@ -43,7 +43,7 @@ export const HeaderItem: React.SFC<{
   tabID,
   title,
 }) => {
-    return (
+  return (
       // eslint-disable-next-line react/jsx-indent
       <HeaderItemButton
         active={currentTab === tabID}
@@ -52,5 +52,5 @@ export const HeaderItem: React.SFC<{
       >
         {title}
       </HeaderItemButton>
-    );
-  };
+  );
+};

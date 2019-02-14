@@ -15,4 +15,19 @@ export interface ITab {
 export interface ILayout {
   activeTab: string;
   tabs: ITab[];
+  notifications: INotification[]
+}
+
+export enum notificationTypes {
+  error = 'error',
+  info = 'info',
+  warn = 'warn',
+}
+
+export interface INotification {
+  id: string
+  message: string,
+  rawErr?: Error
+  type: notificationTypes
+  title: string,
 }

@@ -1,6 +1,7 @@
-import { ITab } from '../../types/layout';
+import { INotification, ITab } from '../../types/layout';
 import {
   CLOSE_TAB, NEW_TAB, SWITCH_TAB, UPDATE_TAB,
+  ADD_NOTIFICATION,
 } from './layout.types';
 
 export const addTab = (payload: ITab) => ({
@@ -21,4 +22,14 @@ export const switchTab = (payload: ITab) => ({
 export const updateTab = (payload: ITab) => ({
   payload,
   type: UPDATE_TAB,
+});
+
+export const addNotification = (payload: INotification) => ({
+  payload,
+  type: ADD_NOTIFICATION,
+});
+
+export const removeNotification = (payload: INotification) => ({
+  payload,
+  type: ADD_NOTIFICATION,
 });

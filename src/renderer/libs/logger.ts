@@ -1,4 +1,4 @@
-// tslint:disable no-console no-any
+/* eslint-disable no-console, @typescript-eslint/no-explicit-any, class-methods-use-this */
 import colors from 'colors';
 
 class Logger {

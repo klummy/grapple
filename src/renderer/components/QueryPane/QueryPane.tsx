@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 
 import * as layoutActions from '../../store/layout/layout.actions';
 import { IStoreState } from '../../types';
-import { ITab } from '../../types/layout';
+import { ITab, INotification, notificationTypes } from '../../types/layout';
 
 
 import logger from '../../libs/logger';
@@ -29,9 +29,12 @@ import {
 } from './QueryPane.components';
 import QueryTabs from '../QueryTabs';
 
+import cuid = require('cuid');
+
 export interface IQueryPaneProps {
   activeTab: string;
   currentTab: ITab;
+  notify: (item: INotification) => void
   tabs: ITab[];
   updateTab: (tab: ITab) => void;
 }
@@ -150,7 +153,7 @@ class QueryPane extends React.Component<IQueryPaneProps, IQueryPaneState> {
       return;
     }
 
-    const { currentTab } = this.props;
+    const { currentTab, notify } = this.props;
 
     const payload = generatePayload();
 
@@ -169,6 +172,13 @@ class QueryPane extends React.Component<IQueryPaneProps, IQueryPaneState> {
         })
         .catch((err: Error) => {
           logger.error('Error during dispatch ', err);
+          notify({
+            id: cuid(),
+            message: err.message,
+            rawErr: err,
+            title: 'Error completing request',
+            type: notificationTypes.error,
+          });
         })
         .finally(() => {
           // TODO: Clear loading indications and show appropriate notifications
@@ -258,6 +268,7 @@ const mapStateToProps = (state: IStoreState) => ({
 });
 
 const mapDispatchToProps = {
+  notify: (item: INotification) => layoutActions.addNotification(item),
   updateTab: (tab: ITab) => layoutActions.updateTab(tab),
 };
 
