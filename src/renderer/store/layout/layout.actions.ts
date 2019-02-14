@@ -1,7 +1,7 @@
 import { INotification, ITab } from '../../types/layout';
 import {
   CLOSE_TAB, NEW_TAB, SWITCH_TAB, UPDATE_TAB,
-  ADD_NOTIFICATION,
+  ADD_NOTIFICATION, REMOVE_NOTIFICATION,
 } from './layout.types';
 
 export const addTab = (payload: ITab) => ({
@@ -31,5 +31,5 @@ export const addNotification = (payload: INotification) => ({
 
 export const removeNotification = (payload: INotification) => ({
   payload,
-  type: ADD_NOTIFICATION,
+  type: REMOVE_NOTIFICATION,
 });

@@ -96,6 +96,7 @@ const layoutReducer = (
     }
 
     case REMOVE_NOTIFICATION:
+
       return {
         ...state,
         notifications:

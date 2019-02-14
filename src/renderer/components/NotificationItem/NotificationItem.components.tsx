@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+
 import { notificationTypes } from '../../types/layout';
 
 const getNotificationColors = (type: notificationTypes) => {
@@ -31,6 +32,7 @@ export const NotificationWrapper = styled.div<{ type: notificationTypes }>`
   font-size: 12px;
   margin-bottom: 10px;
   padding: 10px;
+  position: relative;
   width: 300px;
 `;
 
@@ -52,4 +54,14 @@ export const RawErrLink = styled.a`
   color: orange;
   cursor: pointer;
   font-size: 12px;
+`;
+
+export const DismissIcon = styled.div`
+  cursor: pointer;
+  position: absolute;
+  right: 5px;
+  top: 5px;
+
+  svg {
+  }
 `;
