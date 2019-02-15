@@ -14,6 +14,11 @@ const getNotificationColors = (type: notificationTypes) => {
       color: '#1ebc30',
       shadow: '0 0 0 1px #1ebc30 inset, 0 0 0 0 transparent',
     },
+    [notificationTypes.success]: {
+      background: '#e5f9e7',
+      color: '#1ebc30',
+      shadow: '0 0 0 1px #1ebc30 inset, 0 0 0 0 transparent',
+    },
     [notificationTypes.warn]: {
       background: '#fff8db',
       color: '#b58105',

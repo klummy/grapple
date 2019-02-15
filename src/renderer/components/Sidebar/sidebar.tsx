@@ -1,5 +1,4 @@
-import { MethodDefinition } from '@grpc/proto-loader';
-import { PackageDefinition } from '@grpc/proto-loader';
+import { MethodDefinition, PackageDefinition } from '@grpc/proto-loader';
 import * as electron from 'electron';
 import fs from 'fs';
 import * as nodePath from 'path';
@@ -27,9 +26,18 @@ import * as projectActions from '../../store/projects/projects.actions';
 
 class Sidebar extends React.Component<ISidebarProps, ISidebarState> {
   state = {
-    actionInProgress: false, // If an action is in progress
     dragInProgress: false, // If a drag event is in progress.
   };
+
+  componentDidMount() {
+    // Attach shortcut for opening proto file(s) from the file system dialog
+    attachIndividualShortcut({
+      handler: this.handleOpenFromDialog.bind(this),
+      key: 'o',
+      label: 'Open dialog',
+      modifier: shortcutModifiers.general,
+    });
+  }
 
   handleDragLeave() {
     if (this.state.dragInProgress) {
@@ -126,7 +134,6 @@ class Sidebar extends React.Component<ISidebarProps, ISidebarState> {
       })
       .finally(() => {
         this.setState({
-          actionInProgress: false,
           dragInProgress: false,
         });
       });
@@ -142,16 +149,6 @@ class Sidebar extends React.Component<ISidebarProps, ISidebarState> {
     const { addTab } = this.props;
 
     addTab(proto, service);
-  }
-
-  componentDidMount() {
-    // Attach shortcut for opening proto file(s) from the file system dialog
-    attachIndividualShortcut({
-      handler: this.handleOpenFromDialog.bind(this),
-      key: 'o',
-      label: 'Open dialog',
-      modifier: shortcutModifiers.general,
-    });
   }
 
   render() {
@@ -186,7 +183,8 @@ const mapStateToProps = (state: IStoreState) => ({
 
 const mapDispatchToProps = {
   addProtoToProject: (e: IProto) => projectActions.addProtoToProject(e),
-  addTab: (proto: IProto, service: MethodDefinition<{}, {}>) => layoutActions.addTab({ proto, service }),
+  addTab:
+    (proto: IProto, service: MethodDefinition<{}, {}>) => layoutActions.addTab({ proto, service }),
 };
 
 export default connect(

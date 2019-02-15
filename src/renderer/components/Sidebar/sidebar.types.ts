@@ -9,6 +9,5 @@ export interface ISidebarProps {
 }
 
 export interface ISidebarState {
-  actionInProgress?: boolean;
   dragInProgress: boolean;
 }

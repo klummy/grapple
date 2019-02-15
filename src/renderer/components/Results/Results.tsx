@@ -17,27 +17,17 @@ interface IResultsProps {
   tabs: ITab[];
 }
 
-interface IResultsState {
-  highlightedMarkup: string;
-}
+const highlightResults = () => Prism.highlightAll();
 
-class Results extends React.Component<IResultsProps, IResultsState> {
-  state = {
-    highlightedMarkup: '',
-  };
+class Results extends React.Component<IResultsProps, {}> {
+  componentDidMount() {
+    highlightResults();
+  }
 
   componentDidUpdate(prevProps: IResultsProps) {
     if (prevProps.queryResult !== this.props.queryResult) {
-      this.highlightResults();
+      highlightResults();
     }
-  }
-
-  highlightResults() {
-    Prism.highlightAll();
-  }
-
-  componentDidMount() {
-    this.highlightResults();
   }
 
   render() {

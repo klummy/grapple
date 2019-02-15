@@ -1,5 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import omit from 'lodash.omit';
 
 import * as layoutActions from '../../store/layout/layout.actions';
 import { IStoreState } from '../../types';
@@ -38,8 +39,8 @@ export interface IQueryPaneProps {
   tabs: ITab[];
   updateTab: (tab: ITab) => void;
 }
-
 export interface IQueryPaneState {
+  serviceAddress: string
   requestFields?: ICustomFields[];
 }
 
@@ -80,12 +81,13 @@ const generatePayload = (): object => {
 class QueryPane extends React.Component<IQueryPaneProps, IQueryPaneState> {
   constructor(props: IQueryPaneProps) {
     super(props);
-    this.addressRef = React.createRef();
+
+    this.state = {
+      requestFields: undefined,
+      serviceAddress: (props.currentTab && props.currentTab.address) || '',
+    };
   }
 
-  state = {
-    requestFields: undefined,
-  };
 
   componentDidMount() {
     const { activeTab } = this.props;
@@ -118,9 +120,13 @@ class QueryPane extends React.Component<IQueryPaneProps, IQueryPaneState> {
       this.loadTabData();
 
       // Clear/set the address when the tab is changed
-      if (this.addressRef.current) {
+      if (this.state.serviceAddress) {
         const { currentTab } = this.props;
-        this.addressRef.current.value = currentTab.address || '';
+
+        // eslint-disable-next-line react/no-did-update-set-state
+        this.setState({
+          serviceAddress: currentTab.address || '',
+        });
       }
     }
   }
@@ -130,9 +136,6 @@ class QueryPane extends React.Component<IQueryPaneProps, IQueryPaneState> {
     unregisterShortcut('s');
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  addressRef: React.RefObject<any>;
-
   /**
  * Make the request
  */
@@ -141,19 +144,22 @@ class QueryPane extends React.Component<IQueryPaneProps, IQueryPaneState> {
       event.preventDefault();
     }
 
-    const input = this.addressRef.current;
+    const { serviceAddress } = this.state;
 
-    const serviceAddress = input && input.value;
+    const { notify } = this.props;
 
     if (!serviceAddress) {
-      // TODO: Flash notification here
-      // TODO: Validate that serviceAddress is a valid URL
-      // TODO: Grey out button and disable it if no serviceAddress
+      notify({
+        id: cuid(),
+        message: 'Invalid/missing service address. Please provide a valid address.',
+        title: 'Validation error',
+        type: notificationTypes.warn,
+      });
       logger.warn('No input provided');
       return;
     }
 
-    const { currentTab, notify } = this.props;
+    const { currentTab } = this.props;
 
     const payload = generatePayload();
 
@@ -162,7 +168,18 @@ class QueryPane extends React.Component<IQueryPaneProps, IQueryPaneState> {
 
       this.saveTabData(serviceAddress, payload);
 
-      dispatchRequest(currentTab, serviceAddress, payload)
+      // Remove the previous results from the current tab while a request is in progress
+      // to avoid misleading users that the request was completed
+      // TODO: Refactor may be required
+      updateTab(
+        omit(currentTab, ['results']),
+      );
+
+      dispatchRequest(
+        currentTab,
+        serviceAddress,
+        payload,
+      )
         .then((results) => {
           // Update the tab with the request data
           updateTab({
@@ -171,19 +188,33 @@ class QueryPane extends React.Component<IQueryPaneProps, IQueryPaneState> {
           });
         })
         .catch((err: Error) => {
-          logger.error('Error during dispatch ', err);
-          notify({
-            id: cuid(),
-            message: err.message,
-            rawErr: err,
-            title: 'Error completing request',
-            type: notificationTypes.error,
+          logger.warn('Error during dispatch ', err);
+
+          // Create the error object to be displayed to the user
+          updateTab({
+            ...currentTab,
+            results: {
+              error: {
+                ...err,
+              },
+              status: 'Error completing request',
+            },
           });
         })
         .finally(() => {
           // TODO: Clear loading indications and show appropriate notifications
         });
     }
+  }
+
+  /**
+   * Handle updating the service address input
+   * @param event Input event
+   */
+  handleServiceAddressChange(event: React.ChangeEvent<HTMLInputElement>) {
+    this.setState({
+      serviceAddress: event.target.value,
+    });
   }
 
   /**
@@ -214,23 +245,26 @@ class QueryPane extends React.Component<IQueryPaneProps, IQueryPaneState> {
  * Save all the data in the data.
  */
   saveTabData(address?: string, payload?: object) {
-    const { currentTab, updateTab } = this.props;
+    const { currentTab, notify, updateTab } = this.props;
 
     if (currentTab) {
       updateTab({
         ...currentTab,
-        address:
-          address || (this.addressRef.current && this.addressRef.current.value),
+        address: this.state.serviceAddress,
         queryData: payload || generatePayload(),
       });
 
-      // TODO: Flash notification that the tab data is saved
+      notify({
+        id: cuid(),
+        message: 'Tab data saved successfully',
+        title: 'Success',
+        type: notificationTypes.success,
+      });
     }
   }
 
   render() {
-    const { requestFields } = this.state;
-    const { currentTab } = this.props;
+    const { requestFields, serviceAddress } = this.state;
 
     return (
       <QueryPaneContainer>
@@ -239,14 +273,17 @@ class QueryPane extends React.Component<IQueryPaneProps, IQueryPaneState> {
           as="div"
         >
           <Input
-            defaultValue={currentTab.address}
             name="address"
+            onChange={e => this.handleServiceAddressChange(e)}
             placeholder="Service Address"
-            ref={this.addressRef}
             required
             type="url"
+            value={serviceAddress}
           />
-          <Button onClick={e => this.handleDispatchRequest(e)}>
+          <Button
+            disabled={!serviceAddress}
+            onClick={e => this.handleDispatchRequest(e)}
+          >
             Send Request
           </Button>
         </AddressBarContainer>

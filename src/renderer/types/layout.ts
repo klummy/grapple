@@ -21,6 +21,7 @@ export interface ILayout {
 export enum notificationTypes {
   error = 'error',
   info = 'info',
+  success = 'success',
   warn = 'warn',
 }
 
