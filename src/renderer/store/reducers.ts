@@ -8,7 +8,9 @@ const appReducers = combineReducers({
   projects,
 });
 
-const rootReducer: Reducer = (state, action) => {
+const rootReducer: Reducer = (oldState, action) => {
+  let state = oldState;
+
   if (action.type === 'REHYDRATE_STORE') {
     state = action.payload;
   }

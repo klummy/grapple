@@ -2,7 +2,7 @@ import Mousetrap from 'mousetrap';
 import { Dispatch } from 'redux';
 
 import logger from '../libs/logger';
-import { closeTab, switchTab } from '../store/layout/layout.actions';
+import { closeTab } from '../store/layout/layout.actions';
 import { IReduxAction } from '../types';
 
 export enum shortcutModifiers {
@@ -20,7 +20,7 @@ const shortcuts = [
 
 interface IShortcut {
   action?: IReduxAction;
-  // tslint:disable-next-line:no-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   handler?: (event?: any) => void;
   key: string;
   label: string;
@@ -53,6 +53,7 @@ export const attachIndividualShortcut = (
     }
 
     // NOTE: Returning "false" prevents default behaviour and stops the event from bubbling
+    return true;
   });
 };
 

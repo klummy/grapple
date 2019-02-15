@@ -1,10 +1,10 @@
 import cuid from 'cuid';
 
 import { IReduxAction } from '../../types';
-import { ILayout, ITab } from '../../types/layout';
+import { ILayout, ITab, INotification } from '../../types/layout';
 import initialState from './layout.state';
 import {
-  CLOSE_TAB, NEW_TAB, SWITCH_TAB, UPDATE_TAB,
+  CLOSE_TAB, NEW_TAB, SWITCH_TAB, UPDATE_TAB, ADD_NOTIFICATION, REMOVE_NOTIFICATION,
 } from './layout.types';
 
 import { capitalizaFirstLetter } from '../../libs/utils';
@@ -44,7 +44,7 @@ const layoutReducer = (
       };
     }
 
-    case CLOSE_TAB:
+    case CLOSE_TAB: {
       // When no payload is passed, close the current tab
       const tabToCloseID = payload ? (payload as ITab).id : state.activeTab;
 
@@ -57,6 +57,7 @@ const layoutReducer = (
         activeTab: '',
         tabs: state.tabs.filter(tabItem => tabItem.id !== tabToCloseID),
       };
+    }
 
     case UPDATE_TAB: {
       const updatedTab = payload as ITab;
@@ -80,6 +81,26 @@ const layoutReducer = (
       return {
         ...state,
         activeTab: (payload as ITab).id || '',
+      };
+
+    case ADD_NOTIFICATION: {
+      const notification = payload as INotification;
+
+      return {
+        ...state,
+        notifications: [
+          ...state.notifications,
+          notification,
+        ],
+      };
+    }
+
+    case REMOVE_NOTIFICATION:
+
+      return {
+        ...state,
+        notifications:
+          state.notifications.filter(item => item.id !== (payload as INotification).id),
       };
 
     default:

@@ -65,6 +65,11 @@ export const Button = styled.button`
   &:focus {
     outline: none;
   }
+
+  :disabled {
+    cursor: not-allowed;
+    filter: grayscale();
+  }
 `;
 
 export const Select = styled.select`

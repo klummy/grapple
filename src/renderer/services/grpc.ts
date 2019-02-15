@@ -9,6 +9,7 @@ import { ITab } from '../types/layout';
 import { grpcTypes } from './grpc-constants';
 
 export interface ICustomFields {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   defaultValue: any;
   fullName: string;
   id: number;
@@ -83,6 +84,7 @@ const lookupField = (
 // tslint:disable-next-line:no-any
 export const getFields = (
   root: protobufjs.Root,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   method: any,
 ): ICustomFields[] => {
   const requestFields = root.lookupTypeOrEnum(method.requestType).fields;
@@ -149,14 +151,16 @@ export const loadFields = (
   });
 };
 
-// tslint:disable-next-line:no-any
 export const dispatchRequest = (
   tab: ITab,
-  serviceAddress: string,
+  rawServiceAddress: string,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   payload: any,
-): Promise<any> => {
+): Promise<object | Error> => {
   return new Promise((resolve, reject) => {
     const { service, proto } = tab;
+
+    const serviceAddress = rawServiceAddress.replace(/^https?:\/\//i, '');
 
     if (!service || !proto) {
       reject(Error(`Tab doesn't contain crucial data ${JSON.stringify(tab)}`));
@@ -187,6 +191,7 @@ export const dispatchRequest = (
         const credentials = grpc.credentials.createInsecure();
 
         // tslint:disable-next-line:no-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const serviceProto = pkgObject[serviceIndex] as any;
         const client = new serviceProto[serviceName](
           serviceAddress,
