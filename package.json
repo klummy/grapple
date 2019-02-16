@@ -6,8 +6,8 @@
   "scripts": {
     "build": "electron-webpack",
     "dev": "electron-webpack dev",
-    "ci:test": "npm test",
-    "ci:lint": "npm lint",
+    "ci:test": "npm run test",
+    "ci:lint": "npm run lint",
     "lint": "eslint --fix **/*.tsx",
     "test": "jest"
   },
