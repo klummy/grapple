@@ -10,7 +10,7 @@ const projectsReducer = (
   { payload, type }: IReduxAction,
 ): IProject => {
   switch (type) {
-    case ADD_PROTO_TO_PROJECT:
+    case ADD_PROTO_TO_PROJECT: {
       const payloadProto = payload as IProto;
 
       let protos: IProto[] = [];
@@ -28,6 +28,7 @@ const projectsReducer = (
         ...state,
         protos,
       };
+    }
 
     case NEW_PROJECT:
       return state;

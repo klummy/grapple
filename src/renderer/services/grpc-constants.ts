@@ -1,5 +1,3 @@
-/* eslint-disable import/prefer-default-export */
-
 // GRPC Types
 export const grpcTypes = {
   enum: 'enum',

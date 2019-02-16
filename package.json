@@ -8,7 +8,7 @@
     "dev": "electron-webpack dev",
     "ci:test": "npm run test",
     "ci:lint": "npm run lint",
-    "lint": "eslint --fix **/*.tsx",
+    "lint": "eslint . --ext .js,.ts,.tsx",
     "test": "jest"
   },
   "keywords": [],

@@ -65,6 +65,7 @@ class Sidebar extends React.Component<ISidebarProps, ISidebarState> {
     event.persist();
     event.preventDefault();
 
+    // eslint-disable-next-line no-restricted-syntax
     for (const file of event.dataTransfer.files) {
       const proto = (file as unknown) as IProto;
       this.loadProto(proto);

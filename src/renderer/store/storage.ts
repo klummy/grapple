@@ -23,7 +23,7 @@ export const createStorage = () => {
       });
     },
 
-    // tslint:disable-next-line:no-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     setItem: (key: string, item: any): Promise<void> => {
       logger.info(`Setting item with key: ${key}: `, item);
       return new Promise((resolve) => {
