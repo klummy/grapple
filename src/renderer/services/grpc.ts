@@ -81,7 +81,6 @@ const lookupField = (
   };
 };
 
-// tslint:disable-next-line:no-any
 export const getFields = (
   root: protobufjs.Root,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -190,7 +189,6 @@ export const dispatchRequest = (
         // TODO: Allow for secured credentials with credentials passed by user
         const credentials = grpc.credentials.createInsecure();
 
-        // tslint:disable-next-line:no-any
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const serviceProto = pkgObject[serviceIndex] as any;
         const client = new serviceProto[serviceName](

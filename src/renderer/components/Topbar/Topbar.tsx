@@ -7,9 +7,7 @@ import { Input as SearchInput } from '../GenericComponents';
 
 import { LogoContainer, TopbarContainer } from './Topbar.components';
 
-export interface ITopbarProps {}
-
-const Topbar: React.SFC<ITopbarProps> = () => {
+const Topbar: React.SFC<{}> = () => {
   return (
     <TopbarContainer>
       <LogoContainer>
