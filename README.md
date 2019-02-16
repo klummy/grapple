@@ -1,7 +1,7 @@
 # Grapple
 
 [![Build Status](https://travis-ci.com/klummy/grapple.svg?branch=master)](https://travis-ci.com/klummy/grapple)
-[![Coverage Status](https://coveralls.io/repos/klummy/grapple/badge.svg?branch=master)](https://coveralls.io/r/klummy/grapple?branch=master)
+[![Coverage Status](https://coveralls.io/repos/klummy/grapple/badge.svg?branch=master)](https://coveralls.io/r/klummy/grapple?branch=master) [![Greenkeeper badge](https://badges.greenkeeper.io/klummy/grapple.svg)](https://greenkeeper.io/)
 
 Grapple is a Postman-like tool for working with gRPC applications. It shouldn't require any native or additional dependency but should work out of the box.
 
