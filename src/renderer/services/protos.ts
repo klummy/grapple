@@ -1,6 +1,6 @@
 import * as protoLoader from '@grpc/proto-loader';
-
 import { PackageDefinition } from '@grpc/grpc-js/build/src/make-client';
+
 import { IProto } from '../types/protos';
 
 /**

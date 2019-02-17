@@ -35,7 +35,7 @@ const handleRemoveProto = (
   removeProto(proto);
   notify({
     id: cuid(),
-    message: `"${proto.name}" deleted`,
+    message: `"${proto.name}" removed`,
     title: 'Deleted',
     type: notificationTypes.success,
   });
@@ -51,26 +51,66 @@ const NavProtoItem: React.SFC<INavProtoItemProps> = ({
     return null;
   }
 
-  // Service name
-  const pkgIndex = Object.keys(pkgDef)[0];
-  const pkgName = (pkgIndex.match(/\.[^.]*$/) || [''])[0].replace('.', '');
+  const serviceDefs = Object.keys(pkgDef)
+    .map((key) => {
+      const item = pkgDef[key];
 
-  const servicesObj = pkgDef[pkgIndex];
-  const services = Object.keys(servicesObj)
-    .map(key => servicesObj[key])
+      // The pkgDef contains all types in the proto file,
+      // get the services which don't have a type property
+      return !item.type
+        ? item
+        : null;
+    })
+    .filter(item => item);
+
+  const services = serviceDefs
+    .map((service) => {
+      if (!service) {
+        return null;
+      }
+
+      return Object.keys(service)
+        .map((key) => {
+          const item = service[key];
+          return {
+            ...item,
+            formattedPath: (item.path.match(/\.[^.]*$/)[0] || '').replace('.', ''),
+          };
+        })
+        .sort((a, b) => {
+          const aName = a.formattedPath || '';
+          const bName = b.formattedPath || '';
+
+          return aName.localeCompare(bName, 'en', {
+            sensitivity: 'base',
+          });
+        });
+    })
+    .filter(item => item)
+    .flat()
     .sort((a, b) => {
-      const aName = a.originalName || '';
-      const bName = b.originalName || '';
+      const aName = a.formattedPath || '';
+      const bName = b.formattedPath || '';
 
       return aName.localeCompare(bName, 'en', {
         sensitivity: 'base',
       });
     });
 
+  // Flag to know if it's just one service or multiple in the proto file
+  const isMultipleService = Object.keys(serviceDefs).length > 1;
+
+  // If it's a single package, attach the service name to the package name
+  const pkgName = isMultipleService
+    ? proto.name
+    : `${proto.name}.${services[0].formattedPath.split('/')[0]}`;
+
   return (
     <NavProtoItemContainer>
       <NavProtoItemHeaderContainer>
-        <NavProtoItemHeader>{pkgName}</NavProtoItemHeader>
+        <NavProtoItemHeader title={pkgName}>
+          {pkgName}
+        </NavProtoItemHeader>
 
         <NavProtoItemHeaderIcon
           className="ti-trash"
@@ -81,10 +121,14 @@ const NavProtoItem: React.SFC<INavProtoItemProps> = ({
       <NavProtoItemServicesList>
         {services.map(service => (
           <NavProtoItemServicesItem
-            key={service.originalName}
+            key={service.path}
             onClick={e => newTabHandler(e, proto, service)}
           >
-            {service.originalName}
+            {
+              isMultipleService
+                ? service.formattedPath
+                : service.originalName
+            }
           </NavProtoItemServicesItem>
         ))}
       </NavProtoItemServicesList>

@@ -1,6 +1,7 @@
 import * as React from 'react';
-
+import omit from 'lodash.omit';
 import { connect } from 'react-redux';
+
 import { ICustomFields as ICustomField } from '../../services/grpc';
 import { grpcTypes } from '../../services/grpc-constants';
 import { Select } from '../GenericComponents';
@@ -33,11 +34,6 @@ class QueryParamBuilder extends React.Component<
 
     const inputName = parentName ? `${parentName}/${name}` : name;
 
-    const sharedProps = {
-      'data-field-name': fullName,
-      'data-parent-name': parentName,
-      'data-query-item': true,
-    };
 
     const storedQueryData = (currentTab && currentTab.queryData) || {};
 
@@ -46,18 +42,35 @@ class QueryParamBuilder extends React.Component<
         ? storedQueryData[parentName] && storedQueryData[parentName][name]
         : storedQueryData[name]);
 
+    const sharedProps = {
+      'data-field-name': fullName,
+      'data-parent-name': parentName,
+      'data-query-item': true,
+      defaultValue: defaultInputValue,
+      name: inputName,
+      type,
+    };
+
     switch (type) {
       case grpcTypes.string:
       case grpcTypes.int32:
       case grpcTypes.number:
         return (
           <QueryInput
-            defaultValue={defaultInputValue}
-            name={inputName}
-            type={type}
             {...sharedProps}
           />
         );
+
+      case grpcTypes.bool: {
+        const itemProps = omit(sharedProps, ['type']);
+
+        return (
+          <QueryInput
+            type="checkbox"
+            {...itemProps}
+          />
+        );
+      }
 
       case grpcTypes.enum: {
         if (!values) {
@@ -75,7 +88,6 @@ class QueryParamBuilder extends React.Component<
 
         return (
           <Select
-            name={inputName}
             {...sharedProps}
           >
             {valueKeys.map((key) => {
