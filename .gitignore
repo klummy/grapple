@@ -94,3 +94,4 @@ del
 false
 
 .vscode
+.DS_Store
