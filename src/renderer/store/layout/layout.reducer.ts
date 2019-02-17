@@ -7,8 +7,6 @@ import {
   CLOSE_TAB, NEW_TAB, SWITCH_TAB, UPDATE_TAB, ADD_NOTIFICATION, REMOVE_NOTIFICATION,
 } from './layout.types';
 
-import { capitalizaFirstLetter } from '../../libs/utils';
-
 const layoutReducer = (
   state: ILayout = initialState,
   { payload, type }: IReduxAction,
@@ -25,7 +23,8 @@ const layoutReducer = (
       let name = '';
 
       if (proto && service) {
-        name = `${service.originalName} - ${capitalizaFirstLetter(proto.name)}`;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        name = (service as any).formattedPath;
       }
 
       const tab = {

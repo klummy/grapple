@@ -69,24 +69,22 @@ const NavProtoItem: React.SFC<INavProtoItemProps> = ({
         return null;
       }
 
-      const content = Object.keys(service)
+      return Object.keys(service)
         .map((key) => {
           const item = service[key];
-
           return {
-            formattedPath: (item.path.match(/\.[^.]*$/)[0] || '').replace('.', ''),
             ...item,
+            formattedPath: (item.path.match(/\.[^.]*$/)[0] || '').replace('.', ''),
           };
-        });
+        })
+        .sort((a, b) => {
+          const aName = a.formattedPath || '';
+          const bName = b.formattedPath || '';
 
-      return content.sort((a, b) => {
-        const aName = a.formattedPath || '';
-        const bName = b.formattedPath || '';
-
-        return aName.localeCompare(bName, 'en', {
-          sensitivity: 'base',
+          return aName.localeCompare(bName, 'en', {
+            sensitivity: 'base',
+          });
         });
-      });
     })
     .filter(item => item)
     .flat()
@@ -99,12 +97,20 @@ const NavProtoItem: React.SFC<INavProtoItemProps> = ({
       });
     });
 
-  const pkgName = proto.name;
+  // Flag to know if it's just one service or multiple in the proto file
+  const isMultipleService = Object.keys(serviceDefs).length > 1;
+
+  // If it's a single package, attach the service name to the package name
+  const pkgName = isMultipleService
+    ? proto.name
+    : `${proto.name}.${services[0].formattedPath.split('/')[0]}`;
 
   return (
     <NavProtoItemContainer>
       <NavProtoItemHeaderContainer>
-        <NavProtoItemHeader>{pkgName}</NavProtoItemHeader>
+        <NavProtoItemHeader title={pkgName}>
+          {pkgName}
+        </NavProtoItemHeader>
 
         <NavProtoItemHeaderIcon
           className="ti-trash"
@@ -118,7 +124,11 @@ const NavProtoItem: React.SFC<INavProtoItemProps> = ({
             key={service.path}
             onClick={e => newTabHandler(e, proto, service)}
           >
-            {service.formattedPath}
+            {
+              isMultipleService
+                ? service.formattedPath
+                : service.originalName
+            }
           </NavProtoItemServicesItem>
         ))}
       </NavProtoItemServicesList>
