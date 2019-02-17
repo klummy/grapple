@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { Fragment } from 'react';
 import { connect } from 'react-redux';
 
 import { IStoreState } from '../../types';
@@ -18,18 +18,21 @@ export interface IContentProps {
 const Content: React.SFC<IContentProps> = ({ activeTab, notifications, tabs }) => {
   const tab = tabs.find(t => t.id === activeTab);
 
-  if (!tab) {
-    return <EmptyStateContainer>Empty</EmptyStateContainer>;
-  }
-
-  const { results } = tab;
+  const results = tab && tab.results;
 
   return (
     <OuterWrapper>
-      <QueryPane />
-      <Results
-        queryResult={results ? JSON.stringify(tab.results, null, 2) : ''}
-      />
+      {tab
+        ? (
+          <Fragment>
+            <QueryPane />
+            <Results
+              queryResult={results ? JSON.stringify(tab.results, null, 2) : ''}
+            />
+          </Fragment>
+        )
+        : <EmptyStateContainer>Empty</EmptyStateContainer>
+      }
       <NotificationList notifications={notifications} />
     </OuterWrapper>
   );
