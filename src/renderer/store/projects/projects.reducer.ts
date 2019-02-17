@@ -30,14 +30,14 @@ const projectsReducer = (
       };
     }
 
+    case NEW_PROJECT:
+      return state;
+
     case REMOVE_PROTO_FROM_PROJECT:
       return {
         ...state,
-        protos: state.protos.filter(item => item.path !== (payload as IProto).path)
-      }
-
-    case NEW_PROJECT:
-      return state;
+        protos: state.protos.filter(item => item.path !== (payload as IProto).path),
+      };
 
     default:
       return state;
