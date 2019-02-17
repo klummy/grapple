@@ -35,7 +35,7 @@ const handleRemoveProto = (
   removeProto(proto);
   notify({
     id: cuid(),
-    message: `"${proto.name}" deleted`,
+    message: `"${proto.name}" removed`,
     title: 'Deleted',
     type: notificationTypes.success,
   });
@@ -51,21 +51,55 @@ const NavProtoItem: React.SFC<INavProtoItemProps> = ({
     return null;
   }
 
-  // Service name
-  const pkgIndex = Object.keys(pkgDef)[0];
-  const pkgName = (pkgIndex.match(/\.[^.]*$/) || [''])[0].replace('.', '');
+  const serviceDefs = Object.keys(pkgDef)
+    .map((key) => {
+      const item = pkgDef[key];
 
-  const servicesObj = pkgDef[pkgIndex];
-  const services = Object.keys(servicesObj)
-    .map(key => servicesObj[key])
+      // The pkgDef contains all types in the proto file,
+      // get the services which don't have a type property
+      return !item.type
+        ? item
+        : null;
+    })
+    .filter(item => item);
+
+  const services = serviceDefs
+    .map((service) => {
+      if (!service) {
+        return null;
+      }
+
+      const content = Object.keys(service)
+        .map((key) => {
+          const item = service[key];
+
+          return {
+            formattedPath: (item.path.match(/\.[^.]*$/)[0] || '').replace('.', ''),
+            ...item,
+          };
+        });
+
+      return content.sort((a, b) => {
+        const aName = a.formattedPath || '';
+        const bName = b.formattedPath || '';
+
+        return aName.localeCompare(bName, 'en', {
+          sensitivity: 'base',
+        });
+      });
+    })
+    .filter(item => item)
+    .flat()
     .sort((a, b) => {
-      const aName = a.originalName || '';
-      const bName = b.originalName || '';
+      const aName = a.formattedPath || '';
+      const bName = b.formattedPath || '';
 
       return aName.localeCompare(bName, 'en', {
         sensitivity: 'base',
       });
     });
+
+  const pkgName = proto.name;
 
   return (
     <NavProtoItemContainer>
@@ -81,10 +115,10 @@ const NavProtoItem: React.SFC<INavProtoItemProps> = ({
       <NavProtoItemServicesList>
         {services.map(service => (
           <NavProtoItemServicesItem
-            key={service.originalName}
+            key={service.path}
             onClick={e => newTabHandler(e, proto, service)}
           >
-            {service.originalName}
+            {service.formattedPath}
           </NavProtoItemServicesItem>
         ))}
       </NavProtoItemServicesList>
