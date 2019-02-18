@@ -9,10 +9,12 @@ export const ResultOuterContainer = styled.div`
   flex: 1;
 `;
 
+/* "!important" is required to override generated styles which have a higher specificity */
 export const ResultContainer = styled.pre`
   background-color: #fff;
   border: none !important;
   border-radius: 0 !important;
+  box-shadow: none !important;
   font-size: 12px;
   height: 100%;
   overflow-y: auto;
