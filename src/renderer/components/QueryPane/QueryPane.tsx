@@ -1,6 +1,5 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import omit from 'lodash.omit';
 
 import * as layoutActions from '../../store/layout/layout.actions';
 import { IStoreState } from '../../types';
@@ -166,14 +165,7 @@ class QueryPane extends React.Component<IQueryPaneProps, IQueryPaneState> {
     if (currentTab) {
       const { updateTab } = this.props;
 
-      this.saveTabData(serviceAddress, payload);
-
-      // Remove the previous results from the current tab while a request is in progress
-      // to avoid misleading users that the request was completed
-      // TODO: Refactor may be required
-      updateTab(
-        omit(currentTab, ['results']),
-      );
+      this.saveTabData(serviceAddress, payload, false);
 
       dispatchRequest(
         currentTab,
@@ -184,6 +176,8 @@ class QueryPane extends React.Component<IQueryPaneProps, IQueryPaneState> {
           // Update the tab with the request data
           updateTab({
             ...currentTab,
+            address: serviceAddress,
+            queryData: payload,
             results,
           });
         })
@@ -193,6 +187,8 @@ class QueryPane extends React.Component<IQueryPaneProps, IQueryPaneState> {
           // Create the error object to be displayed to the user
           updateTab({
             ...currentTab,
+            address: serviceAddress,
+            queryData: payload,
             results: {
               error: {
                 ...err,
@@ -242,9 +238,9 @@ class QueryPane extends React.Component<IQueryPaneProps, IQueryPaneState> {
   }
 
   /**
- * Save all the data in the data.
- */
-  saveTabData(address?: string, payload?: object) {
+   * Save all the data in the data.
+   */
+  saveTabData(address?: string, payload?: object, showNotification = true) {
     const { currentTab, notify, updateTab } = this.props;
 
     if (currentTab) {
@@ -254,12 +250,15 @@ class QueryPane extends React.Component<IQueryPaneProps, IQueryPaneState> {
         queryData: payload || generatePayload(),
       });
 
-      notify({
-        id: cuid(),
-        message: 'Tab data saved successfully',
-        title: 'Success',
-        type: notificationTypes.success,
-      });
+
+      if (showNotification) {
+        notify({
+          id: cuid(),
+          message: 'Tab data saved successfully',
+          title: 'Success',
+          type: notificationTypes.success,
+        });
+      }
     }
   }
 
@@ -269,7 +268,6 @@ class QueryPane extends React.Component<IQueryPaneProps, IQueryPaneState> {
     return (
       <QueryPaneContainer>
         <AddressBarContainer
-          action=""
           as="div"
         >
           <Input
