@@ -177,6 +177,7 @@ export const dispatchRequest = (
       .then((pkgDef) => {
         const pkgObject = grpc.loadPackageDefinition(pkgDef);
 
+        // TODO: Refactor as to not depend on key matching; Or at least account for multiple keys
         const serviceIndex = Object.keys(pkgObject)[0];
         const servicePath = (service.path.match(/\.[^.]*$/) || [''])[0].replace(
           '.',

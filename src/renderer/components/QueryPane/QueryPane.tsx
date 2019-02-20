@@ -266,7 +266,7 @@ class QueryPane extends React.Component<IQueryPaneProps, IQueryPaneState> {
     const { requestFields, serviceAddress } = this.state;
 
     return (
-      <QueryPaneContainer>
+      <QueryPaneContainer data-testid="queryPane">
         <AddressBarContainer
           as="div"
         >

@@ -34,7 +34,7 @@ class Results extends React.Component<IResultsProps, {}> {
     const { queryResult } = this.props;
 
     return (
-      <ResultOuterContainer>
+      <ResultOuterContainer data-testid="results">
         <ResultContainer
           className="line-numbers"
           id="gEditorContainer"
