@@ -2,9 +2,20 @@ import { MethodDefinition } from '@grpc/proto-loader';
 
 import { IProto } from './protos';
 
+export enum ITabStatus {
+  error = 'error',
+  success = 'success',
+}
+
+export interface ITabMeta {
+  status: ITabStatus,
+  timestamp: number, // Milliseconds
+}
+
 export interface ITab {
   address?: string;
   id?: string;
+  meta?: ITabMeta,
   name?: string;
   proto?: IProto;
   queryData?: object;

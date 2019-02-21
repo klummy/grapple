@@ -25,7 +25,8 @@ const TabList: React.SFC<ITabListProps> = ({
 }) => {
   return (
     <TabListContainer>
-      {Array.isArray(tabs)
+      {
+        Array.isArray(tabs)
         && tabs.length > 0
         && tabs.map(tab => (
           <Tab
@@ -40,7 +41,8 @@ const TabList: React.SFC<ITabListProps> = ({
             tab={tab}
             updateTab={updateTab}
           />
-        ))}
+        ))
+      }
     </TabListContainer>
   );
 };

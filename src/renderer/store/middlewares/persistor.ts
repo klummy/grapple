@@ -15,7 +15,7 @@ const persistMiddleware: ReduxMiddlewareType = ({ getState }) => {
       layout: {
         ...currentState.layout,
         notifications: [],
-        tabs: currentState.layout.tabs.map(tab => omit(tab, ['results'])),
+        tabs: currentState.layout.tabs.map(tab => omit(tab, ['meta', 'results'])),
       },
     };
 

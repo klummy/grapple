@@ -27,6 +27,7 @@ export const Content: React.SFC<IContentProps> = ({ activeTab, notifications, ta
           <Fragment>
             <QueryPane />
             <Results
+              meta={tab && tab.meta}
               queryResult={results ? JSON.stringify(tab.results, null, 2) : ''}
             />
           </Fragment>

@@ -1,3 +1,4 @@
+/* eslint-disable prefer-promise-reject-errors */
 import * as grpc from '@grpc/grpc-js';
 import * as protoLoader from '@grpc/proto-loader';
 import fs from 'fs';
@@ -5,7 +6,7 @@ import fs from 'fs';
 import protobufjs, { Enum } from 'protobufjs';
 
 import logger from '../libs/logger';
-import { ITab } from '../types/layout';
+import { ITab, ITabMeta, ITabStatus } from '../types/layout';
 import { grpcTypes } from './grpc-constants';
 
 export interface ICustomFields {
@@ -150,12 +151,17 @@ export const loadFields = (
   });
 };
 
+interface IDispatchResponse {
+  response: object | Error,
+  meta: ITabMeta
+}
+
 export const dispatchRequest = (
   tab: ITab,
   rawServiceAddress: string,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   payload: any,
-): Promise<object | Error> => {
+): Promise<IDispatchResponse> => {
   return new Promise((resolve, reject) => {
     const { service, proto } = tab;
 
@@ -206,24 +212,55 @@ export const dispatchRequest = (
           client.close();
         };
 
+        const started = performance.now();
+        let ended;
+
         try {
           client[serviceMethod](payload, (err: Error, response: object) => {
             if (err) {
+              ended = performance.now();
+
               logger.warn('gRPC request failed with error ', err);
               cleanupClient();
-              reject(err);
+              reject({
+                meta: {
+                  status: ITabStatus.error,
+                  timestamp: ended - started,
+                },
+                response: err,
+              });
             } else {
+              ended = performance.now();
               logger.info('gRPC request successful', response);
               cleanupClient();
-              resolve(response);
+              resolve({
+                meta: {
+                  status: ITabStatus.success,
+                  timestamp: ended - started,
+                },
+                response,
+              });
             }
           });
         } catch (error) {
-          reject(error);
+          ended = performance.now();
+          reject({
+            meta: {
+              status: ITabStatus.error,
+              timestamp: ended - started,
+            },
+            response: error,
+          });
         }
       })
       .catch((err) => {
-        reject(err);
+        reject({
+          meta: {
+            status: ITabStatus.error,
+            timestamp: 0,
+          },
+          response: err,
+        });
       });
   });
 };

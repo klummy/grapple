@@ -2,7 +2,7 @@ import React from 'react';
 import { cleanup, render } from 'react-testing-library';
 
 import { Content } from '@/renderer/components/Content/Content';
-import MockStore from '../helpers/mock-store';
+import MockStore from '../../helpers/mock-store';
 
 describe('<Content />', () => {
   afterEach(cleanup);

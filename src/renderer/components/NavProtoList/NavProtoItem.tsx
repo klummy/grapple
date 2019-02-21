@@ -57,9 +57,9 @@ const NavProtoItem: React.SFC<INavProtoItemProps> = ({
 
       // The pkgDef contains all types in the proto file,
       // get the services which don't have a type property
-      return !item.type
-        ? item
-        : null;
+      return item.type
+        ? null
+        : item;
     })
     .filter(item => item);
 
