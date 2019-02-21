@@ -172,22 +172,32 @@ class QueryPane extends React.Component<IQueryPaneProps, IQueryPaneState> {
         serviceAddress,
         payload,
       )
-        .then((results) => {
+        .then(({
+          response: results,
+          meta,
+        }) => {
           // Update the tab with the request data
           updateTab({
             ...currentTab,
             address: serviceAddress,
+            meta,
             queryData: payload,
             results,
           });
         })
-        .catch((err: Error) => {
+        .catch(({
+          response,
+          meta,
+        }) => {
+          const err = response as Error;
+
           logger.warn('Error during dispatch ', err);
 
           // Create the error object to be displayed to the user
           updateTab({
             ...currentTab,
             address: serviceAddress,
+            meta,
             queryData: payload,
             results: {
               error: {
@@ -266,7 +276,7 @@ class QueryPane extends React.Component<IQueryPaneProps, IQueryPaneState> {
     const { requestFields, serviceAddress } = this.state;
 
     return (
-      <QueryPaneContainer>
+      <QueryPaneContainer data-testid="queryPane">
         <AddressBarContainer
           as="div"
         >

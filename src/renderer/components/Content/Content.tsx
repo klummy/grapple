@@ -15,7 +15,7 @@ export interface IContentProps {
   tabs: ITab[];
 }
 
-const Content: React.SFC<IContentProps> = ({ activeTab, notifications, tabs }) => {
+export const Content: React.SFC<IContentProps> = ({ activeTab, notifications, tabs }) => {
   const tab = tabs.find(t => t.id === activeTab);
 
   const results = tab && tab.results;
@@ -27,11 +27,12 @@ const Content: React.SFC<IContentProps> = ({ activeTab, notifications, tabs }) =
           <Fragment>
             <QueryPane />
             <Results
+              meta={tab && tab.meta}
               queryResult={results ? JSON.stringify(tab.results, null, 2) : ''}
             />
           </Fragment>
         )
-        : <EmptyStateContainer>Empty</EmptyStateContainer>
+        : <EmptyStateContainer data-testid="emptyState">Empty</EmptyStateContainer>
       }
       <NotificationList notifications={notifications} />
     </OuterWrapper>

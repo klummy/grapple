@@ -1,40 +1,56 @@
 import Prism from 'prismjs';
-import * as React from 'react';
-import { connect } from 'react-redux';
+import React, { Fragment, useEffect } from 'react';
 
-import { IStoreState } from '../../types';
-import { ITab } from '../../types/layout';
-
-import { ResultContainer, ResultOuterContainer } from './Results.components';
+import {
+  ResultContainer,
+  ResultMetaContainer,
+  ResultOuterContainer,
+  ResultStatus,
+  ResultTimestamp,
+  ResultWrapper,
+} from './Results.components';
+import { ITabMeta } from '@/renderer/types/layout';
 
 import 'prismjs/plugins/line-numbers/prism-line-numbers';
 import 'prismjs/plugins/line-numbers/prism-line-numbers.css';
 import 'prismjs/themes/prism-twilight.css';
 
 interface IResultsProps {
-  activeTab: string;
+  meta?: ITabMeta,
   queryResult: string;
-  tabs: ITab[];
 }
 
 const highlightResults = () => Prism.highlightAll();
 
-class Results extends React.Component<IResultsProps, {}> {
-  componentDidMount() {
+const Results: React.SFC<IResultsProps> = ({ meta, queryResult }) => {
+  useEffect(() => {
     highlightResults();
-  }
+  });
 
-  componentDidUpdate(prevProps: IResultsProps) {
-    if (prevProps.queryResult !== this.props.queryResult) {
-      highlightResults();
-    }
-  }
+  const timestamp = (meta && meta.timestamp) || 0;
+  const status = (meta && meta.status) || '';
 
-  render() {
-    const { queryResult } = this.props;
-
-    return (
-      <ResultOuterContainer>
+  return (
+    <ResultWrapper>
+      <ResultMetaContainer>
+        {
+          status
+          && (
+            <Fragment>
+              <ResultStatus status={status}>{status}</ResultStatus>
+            </Fragment>
+          )
+        }
+        {
+          timestamp !== 0
+          && (
+            <Fragment>
+              <ResultTimestamp>{timestamp.toFixed(2)}ms</ResultTimestamp>
+            </Fragment>
+          )
+        }
+      </ResultMetaContainer>
+      <ResultOuterContainer data-testid="results">
         <ResultContainer
           className="line-numbers"
           id="gEditorContainer"
@@ -42,13 +58,8 @@ class Results extends React.Component<IResultsProps, {}> {
           <code className="language-js">{queryResult}</code>
         </ResultContainer>
       </ResultOuterContainer>
-    );
-  }
-}
+    </ResultWrapper>
+  );
+};
 
-const mapStateToProps = (state: IStoreState) => ({
-  activeTab: state.layout.activeTab,
-  tabs: state.layout.tabs,
-});
-
-export default connect(mapStateToProps)(Results);
+export default Results;

@@ -7,6 +7,7 @@ export const Nav = styled.nav`
     ? 'rgba(87, 167, 115, .3)'
     : 'var(--color-black-default)')};
   border-top: 1px solid var(--color-lines-default);
+  border-right: 1px solid var(--color-lines-default);
   box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.1);
   flex-shrink: 0;
   font-family: var(--font-alternate-stack);
@@ -21,6 +22,7 @@ export const NewItemButton = styled.button`
   align-items: center;
   background-color: var(--color-black-alt-darker);
   border: none;
+  border-right: 1px solid var(--color-lines-default);
   bottom: 0;
   color: var(--text-color-default);
   cursor: pointer;

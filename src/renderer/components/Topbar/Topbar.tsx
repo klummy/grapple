@@ -16,6 +16,7 @@ const Topbar: React.SFC<{}> = () => {
         {/* Search */}
         {/* TODO: Implement functionality */}
         <SearchInput
+          name="search"
           placeholder="Search"
           type="search"
         />

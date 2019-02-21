@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
     "outDir": "dist",
     "module": "commonjs",
     "esModuleInterop": true,
@@ -15,7 +16,11 @@
     "noUnusedLocals": true,
     "declaration": true,
     "jsx": "react",
-    "strict": true
+    "strict": true,
+
+    "paths": {
+      "@/*": ["./src/*"]
+    }
   },
 
   "extends": "./node_modules/electron-webpack/tsconfig-base.json"
