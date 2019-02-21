@@ -14,15 +14,17 @@ import { ITabMeta } from '@/renderer/types/layout';
 import 'prismjs/plugins/line-numbers/prism-line-numbers';
 import 'prismjs/plugins/line-numbers/prism-line-numbers.css';
 import 'prismjs/themes/prism-twilight.css';
+import Loader from '../Icons/loader';
 
 interface IResultsProps {
+  inProgress: boolean | undefined,
   meta?: ITabMeta,
   queryResult: string;
 }
 
 const highlightResults = () => Prism.highlightAll();
 
-const Results: React.SFC<IResultsProps> = ({ meta, queryResult }) => {
+const Results: React.SFC<IResultsProps> = ({ inProgress, meta, queryResult }) => {
   useEffect(() => {
     highlightResults();
   });
@@ -56,6 +58,8 @@ const Results: React.SFC<IResultsProps> = ({ meta, queryResult }) => {
           id="gEditorContainer"
         >
           <code className="language-js">{queryResult}</code>
+          <Loader show={inProgress as boolean} />
+
         </ResultContainer>
       </ResultOuterContainer>
     </ResultWrapper>

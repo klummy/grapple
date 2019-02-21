@@ -5,6 +5,7 @@ import { ITabStatus } from '../../types/layout';
 export const ResultWrapper = styled.div`
   flex: 1;
   flex-direction: column;
+  position: relative;
 `;
 
 export const ResultOuterContainer = styled.div`

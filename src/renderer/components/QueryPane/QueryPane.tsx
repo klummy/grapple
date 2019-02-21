@@ -257,6 +257,7 @@ class QueryPane extends React.Component<IQueryPaneProps, IQueryPaneState> {
       updateTab({
         ...currentTab,
         address: this.state.serviceAddress,
+        inProgress: !showNotification, // Prevent a double action dispatched
         queryData: payload || generatePayload(),
       });
 

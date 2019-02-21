@@ -27,6 +27,7 @@ export const Content: React.SFC<IContentProps> = ({ activeTab, notifications, ta
           <Fragment>
             <QueryPane />
             <Results
+              inProgress={tab.inProgress}
               meta={tab && tab.meta}
               queryResult={results ? JSON.stringify(tab.results, null, 2) : ''}
             />
@@ -34,6 +35,7 @@ export const Content: React.SFC<IContentProps> = ({ activeTab, notifications, ta
         )
         : <EmptyStateContainer data-testid="emptyState">Empty</EmptyStateContainer>
       }
+
       <NotificationList notifications={notifications} />
     </OuterWrapper>
   );

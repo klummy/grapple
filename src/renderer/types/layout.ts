@@ -15,6 +15,7 @@ export interface ITabMeta {
 export interface ITab {
   address?: string;
   id?: string;
+  inProgress?: boolean;
   meta?: ITabMeta,
   name?: string;
   proto?: IProto;
