@@ -1,4 +1,9 @@
-import { ADD_PROTO_TO_PROJECT, NEW_PROJECT, REMOVE_PROTO_FROM_PROJECT } from './projects.types';
+import {
+  ADD_PROTO_TO_PROJECT,
+  NEW_PROJECT,
+  REMOVE_PROTO_FROM_PROJECT,
+  UPDATE_PROTO,
+} from './projects.types';
 
 import { IProject } from '../../types/projects';
 import { IProto } from '../../types/protos';
@@ -16,4 +21,9 @@ export const addProtoToProject = (proto: IProto) => ({
 export const removeProtoFromProject = (proto: IProto) => ({
   payload: proto,
   type: REMOVE_PROTO_FROM_PROJECT,
+});
+
+export const updateProto = (payload: IProto) => ({
+  payload,
+  type: UPDATE_PROTO,
 });
