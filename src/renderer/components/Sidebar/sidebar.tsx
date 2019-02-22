@@ -124,8 +124,6 @@ class Sidebar extends React.Component<ISidebarProps, ISidebarState> {
 
     validateProto(proto)
       .then((pkgDef) => {
-        // TODO: Check to make sure that the proto path hasn't already been added
-
         // Prevent duplicate files from being added
         const existsAlready = protos.find(
           item => item.path === proto.path,
@@ -134,8 +132,8 @@ class Sidebar extends React.Component<ISidebarProps, ISidebarState> {
         if (existsAlready) {
           notify({
             id: cuid(),
-            message: 'Proto file is already imported, use the refresh icon to update an existing file instead',
-            title: 'Duplicate Error',
+            message: `"${proto.name}" is already imported, use the refresh icon to update an existing file instead.`,
+            title: `Duplicate Error - ${proto.name}`,
             type: notificationTypes.warn,
           });
         } else {
