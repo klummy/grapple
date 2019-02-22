@@ -13,20 +13,9 @@ const projectsReducer = (
     case ADD_PROTO_TO_PROJECT: {
       const payloadProto = payload as IProto;
 
-      let protos: IProto[] = [];
-      const existsAlready = state.protos.find(
-        proto => proto.path === payloadProto.path,
-      );
-
-      if (existsAlready) {
-        protos = Array.from(state.protos);
-      } else {
-        protos = [...state.protos, payloadProto];
-      }
-
       return {
         ...state,
-        protos,
+        protos: [...state.protos, payloadProto],
       };
     }
 

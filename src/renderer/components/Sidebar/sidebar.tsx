@@ -6,6 +6,7 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 
 import { IProto } from '../../types/protos';
+import { INotification, notificationTypes } from '../../types/layout';
 import { IStoreState } from '../../types';
 
 import { Nav, NewItemButton } from './sidebar.components';
@@ -23,6 +24,8 @@ import logger from '../../libs/logger';
 
 import * as layoutActions from '../../store/layout/layout.actions';
 import * as projectActions from '../../store/projects/projects.actions';
+
+import cuid = require('cuid');
 
 class Sidebar extends React.Component<ISidebarProps, ISidebarState> {
   state = {
@@ -81,7 +84,6 @@ class Sidebar extends React.Component<ISidebarProps, ISidebarState> {
     const self = this;
 
     // TODO: In user preferences, allow user to specify root project folder
-    // TODO: Remember last folder user loaded protos from (under user preference)
     dialog.showOpenDialog(
       {
         filters: [
@@ -118,20 +120,43 @@ class Sidebar extends React.Component<ISidebarProps, ISidebarState> {
 
   loadProto(proto: IProto) {
     const { lastModified, path } = proto;
+    const { notify, protos } = this.props;
 
     validateProto(proto)
       .then((pkgDef) => {
         // TODO: Check to make sure that the proto path hasn't already been added
 
-        this.props.addProtoToProject({
-          lastModified,
-          name: humanFriendlyProtoName(proto),
-          path,
-          pkgDef: pkgDef as PackageDefinition,
-        });
+        // Prevent duplicate files from being added
+        const existsAlready = protos.find(
+          item => item.path === proto.path,
+        );
+
+        if (existsAlready) {
+          notify({
+            id: cuid(),
+            message: 'Proto file is already imported, use the refresh icon to update an existing file instead',
+            title: 'Duplicate Error',
+            type: notificationTypes.warn,
+          });
+        } else {
+          this.props.addProtoToProject({
+            lastModified,
+            name: humanFriendlyProtoName(proto),
+            path,
+            pkgDef: pkgDef as PackageDefinition,
+          });
+        }
       })
       .catch((err) => {
         logger.warn('Proto validation failed: ', err);
+
+        notify({
+          id: cuid(),
+          message: 'Error validating proto file, please check that the file is accurate',
+          rawErr: err,
+          title: 'Proto validation error',
+          type: notificationTypes.error,
+        });
       })
       .finally(() => {
         this.setState({
@@ -168,7 +193,6 @@ class Sidebar extends React.Component<ISidebarProps, ISidebarState> {
           protos={protos}
         />
 
-        {/* TODO: Style button below */}
         <NewItemButton onClick={() => this.handleOpenFromDialog()}>
           <AddIcon />
           <span>Add Proto</span>
@@ -186,6 +210,7 @@ const mapDispatchToProps = {
   addProtoToProject: (e: IProto) => projectActions.addProtoToProject(e),
   addTab:
     (proto: IProto, service: MethodDefinition<{}, {}>) => layoutActions.addTab({ proto, service }),
+  notify: (item: INotification) => layoutActions.addNotification(item),
 };
 
 export default connect(
