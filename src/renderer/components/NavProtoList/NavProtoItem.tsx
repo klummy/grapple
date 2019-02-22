@@ -9,6 +9,7 @@ import {
   NavProtoItemHeader,
   NavProtoItemHeaderContainer,
   NavProtoItemHeaderIcon,
+  NavProtoItemHeaderIconContainer,
   NavProtoItemServicesItem,
   NavProtoItemServicesList,
 } from './NavProtoList.components';
@@ -26,23 +27,62 @@ export interface INavProtoItemProps {
   ) => void;
   notify: (item: INotification) => void
   proto: IProto;
+  refreshProto: (proto: IProto) => void;
   removeProto: (proto: IProto) => void
 }
 
-const handleRemoveProto = (
-  proto: IProto, removeProto: (proto: IProto) => void, notify: (item: INotification) => void,
+enum INavProtoActions {
+  reload = 'reload',
+  remove = 'remove',
+  watch = 'watch',
+}
+
+const navProtoActions = {
+  [INavProtoActions.reload]: {
+    message: (proto: IProto) => `"${proto.name}" reloaded`,
+    title: 'Refreshed',
+    type: notificationTypes.success,
+  },
+  [INavProtoActions.remove]: {
+    message: (proto: IProto) => `"${proto.name}" removed`,
+    title: 'Removed',
+    type: notificationTypes.success,
+  },
+  [INavProtoActions.watch]: {
+    message: (proto: IProto) => `Watching "${proto.name}"`,
+    title: 'Success',
+    type: notificationTypes.success,
+  },
+};
+
+const dispatchNavProtoAction = (
+  proto: IProto,
+  handler: (proto: IProto) => void,
+  notify: (item: INotification) => void,
+  actionType: INavProtoActions,
 ) => {
-  removeProto(proto);
+  handler(proto);
+
+  const {
+    message,
+    title,
+    type,
+  } = navProtoActions[actionType];
+
   notify({
     id: cuid(),
-    message: `"${proto.name}" removed`,
-    title: 'Deleted',
-    type: notificationTypes.success,
+    message: message(proto),
+    title,
+    type,
   });
 };
 
 const NavProtoItem: React.SFC<INavProtoItemProps> = ({
-  proto, newTabHandler, notify, removeProto,
+  newTabHandler,
+  notify,
+  proto,
+  refreshProto,
+  removeProto,
 }) => {
   const { pkgDef } = proto;
 
@@ -112,10 +152,35 @@ const NavProtoItem: React.SFC<INavProtoItemProps> = ({
           {pkgName}
         </NavProtoItemHeader>
 
-        <NavProtoItemHeaderIcon
-          className="ti-trash"
-          onClick={() => handleRemoveProto(proto, removeProto, notify)}
-        />
+        <NavProtoItemHeaderIconContainer>
+          <NavProtoItemHeaderIcon
+            className="ti-reload"
+            onClick={() => dispatchNavProtoAction(
+              proto,
+              refreshProto,
+              notify,
+              INavProtoActions.reload,
+            )}
+            title="Refresh proto file"
+          />
+
+          {/* TODO: https://github.com/klummy/grapple/issues/37 */}
+          {/* <NavProtoItemHeaderIcon
+            className="ti-eye"
+            onClick={() => dispatchNavProtoAction(
+              proto, removeProto, notify, INavProtoActions.watch,
+            )}
+            title="Auto watch files"
+          /> */}
+
+          <NavProtoItemHeaderIcon
+            className="ti-trash"
+            onClick={() => dispatchNavProtoAction(
+              proto, removeProto, notify, INavProtoActions.remove,
+            )}
+            title="Remove proto"
+          />
+        </NavProtoItemHeaderIconContainer>
       </NavProtoItemHeaderContainer>
 
       <NavProtoItemServicesList>

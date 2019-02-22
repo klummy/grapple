@@ -8,6 +8,7 @@ export interface ISidebarProps {
   addTab: (proto: IProto, service: MethodDefinition<{}, {}>) => void;
   notify: (item: INotification) => void;
   protos: IProto[];
+  updateProto: (proto: IProto) => void
 }
 
 export interface ISidebarState {

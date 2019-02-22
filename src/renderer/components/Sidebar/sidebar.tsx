@@ -118,7 +118,7 @@ class Sidebar extends React.Component<ISidebarProps, ISidebarState> {
     );
   }
 
-  loadProto(proto: IProto) {
+  loadProto(proto: IProto, refresh?: boolean) {
     const { lastModified, path } = proto;
     const { notify, protos } = this.props;
 
@@ -129,30 +129,44 @@ class Sidebar extends React.Component<ISidebarProps, ISidebarState> {
           item => item.path === proto.path,
         );
 
+        const protoItem = {
+          lastModified,
+          name: humanFriendlyProtoName(proto),
+          path,
+          pkgDef: pkgDef as PackageDefinition,
+        };
+
+        // Update the proto here if it's a refresh
+        if (refresh) {
+          this.props.updateProto(protoItem);
+          return;
+        }
+
+        // If it exists already, refresh the proto automatically
         if (existsAlready) {
+          this.props.updateProto(protoItem);
+
           notify({
             id: cuid(),
-            message: `"${proto.name}" is already imported, use the refresh icon to update an existing file instead.`,
+            message: `"${proto.name}" is already imported, refreshing proto instead.`,
             title: `Duplicate Error - ${proto.name}`,
             type: notificationTypes.warn,
           });
-        } else {
-          this.props.addProtoToProject({
-            lastModified,
-            name: humanFriendlyProtoName(proto),
-            path,
-            pkgDef: pkgDef as PackageDefinition,
-          });
+
+          return;
         }
+
+        // Add a new proto to the project
+        this.props.addProtoToProject(protoItem);
       })
       .catch((err) => {
         logger.warn('Proto validation failed: ', err);
 
         notify({
           id: cuid(),
-          message: 'Error validating proto file, please check that the file is accurate',
+          message: `Error validating "${proto.name}", please check that the proto file is accurate Protocol Buffers`,
           rawErr: err,
-          title: 'Proto validation error',
+          title: 'Unable to add file',
           type: notificationTypes.error,
         });
       })
@@ -189,6 +203,7 @@ class Sidebar extends React.Component<ISidebarProps, ISidebarState> {
           newTabHandler={(e, proto, service) => this.newTabHandler(e, proto, service)
           }
           protos={protos}
+          refreshProto={proto => this.loadProto(proto, true)}
         />
 
         <NewItemButton onClick={() => this.handleOpenFromDialog()}>
@@ -209,6 +224,7 @@ const mapDispatchToProps = {
   addTab:
     (proto: IProto, service: MethodDefinition<{}, {}>) => layoutActions.addTab({ proto, service }),
   notify: (item: INotification) => layoutActions.addNotification(item),
+  updateProto: (proto: IProto) => projectActions.updateProto(proto),
 };
 
 export default connect(

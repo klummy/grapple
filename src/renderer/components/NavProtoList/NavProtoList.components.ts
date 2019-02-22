@@ -26,9 +26,13 @@ export const NavProtoItemHeader = styled.h2`
   text-transform: uppercase;
 `;
 
+export const NavProtoItemHeaderIconContainer = styled.div`
+  margin-left: auto;
+`;
+
 export const NavProtoItemHeaderIcon = styled.span`
   cursor: pointer;
-  margin-left: auto;
+  padding: 5px;
   transition: color 0.3s ease-in-out;
 
   :hover {
