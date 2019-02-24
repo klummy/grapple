@@ -49,7 +49,7 @@ const NotificationItem: React.SFC<INotificationItemProps> = ({
       {
         rawErr && (
           <RawErrLink>
-            View trace
+            View error trace
           </RawErrLink>
         )
       }
