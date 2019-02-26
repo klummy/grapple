@@ -71,7 +71,6 @@ const layoutReducer = (
     case UPDATE_TAB: {
       const updatedTab = payload as ITab;
 
-      // TODO: Refactor needed
       const tabs = state.tabs.map((tab) => {
         if (tab.id === updatedTab.id) {
           return updatedTab;
