@@ -234,15 +234,23 @@ const handleDispatchRequest = (params: {
       });
     })
     .catch(({
-      response,
+      meta,
+      response: err,
     }) => {
-      const err = response as Error;
-
       logger.warn('Error during dispatch ', err);
 
       updateTab({
         ...currentTab,
+        address: serviceAddress,
         inProgress: false,
+        meta,
+        queryData: payload,
+        results: {
+          error: {
+            ...err,
+          },
+          status: 'Error completing request',
+        },
       });
 
       notify({
