@@ -100,10 +100,12 @@ const generateMetadata = (): object => {
   const metadata = {};
 
   metaTabRows.forEach((tabRow) => {
+    const enabled = (tabRow.querySelector('[data-enabled]') as HTMLInputElement).checked;
+
     const key = (tabRow.querySelector('[data-key]') as HTMLInputElement).value;
     const { value } = tabRow.querySelector('[data-value]') as HTMLInputElement;
 
-    if (key && value) {
+    if (enabled && key && value) {
       metadata[key] = value;
     }
   });

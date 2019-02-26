@@ -6,7 +6,7 @@ import { IStoreState } from '@/renderer/types';
 
 import {
   TableHead, TableRow,
-  QueryParamTable, TableTh, TableBody, TableCell, QueryInput, QueryInputIcon, TableCellWithIcon,
+  QueryParamTable, TableTh, TableBody, QueryInput, QueryInputIcon, TableCellWithIcon,
 } from '../../QueryParamBuilder/QueryParamBuilder.components';
 import { IQueryTabItemProps, QueryTabItemWrapper } from './shared';
 
@@ -77,16 +77,25 @@ const MetadataTab: React.SFC<IMetadataTabProps> = ({
                 data-meta-tab-row
                 key={row.id}
               >
-                <TableCell>
+                <TableCellWithIcon>
+                  {/* TODO: Style better;
+                  Also, reduce opacity or similar transition to show disabled rows */}
+                  <input
+                    data-enabled
+                    defaultChecked
+                    name="enabled"
+                    type="checkbox"
+                  />
+
                   <QueryInput
                     data-key
                     defaultValue={row.key}
                     style={{
-                      marginLeft: 0,
+                      marginRight: '10px',
                     }}
                     type="text"
                   />
-                </TableCell>
+                </TableCellWithIcon>
 
                 <TableCellWithIcon>
                   <QueryInput
