@@ -21,7 +21,7 @@ export interface IContentState {
   isErrored: boolean
 }
 
-class Content extends React.Component<IContentProps, IContentState> {
+export class Content extends React.Component<IContentProps, IContentState> {
   state = {
     // TODO: Implement error views
     // eslint-disable-next-line react/no-unused-state
