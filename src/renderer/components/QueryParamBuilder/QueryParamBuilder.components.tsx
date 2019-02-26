@@ -100,3 +100,13 @@ export const QueryInput = styled(Input)`
   margin-left: 10px;
   width: calc(100% - 10px);
 `;
+
+export const TableCellWithIcon = styled(TableCell)`
+  align-items: center;
+  display: flex;
+`;
+
+export const QueryInputIcon = styled.span`
+  cursor: pointer;
+  padding: 0 10px;
+`;

@@ -13,15 +13,16 @@ export interface ITabMeta {
 }
 
 export interface ITab {
-  address?: string;
-  id?: string;
-  inProgress?: boolean;
-  meta?: ITabMeta,
-  name?: string;
-  proto?: IProto;
-  queryData?: object;
-  results?: object;
-  service?: MethodDefinition<{}, {}>;
+  address?: string; // Service address
+  id?: string; // Unique identifier
+  inProgress?: boolean; // Flag if a request is in progress, not cached
+  meta?: ITabMeta, // Meta around request
+  metadata?: object, // Native gRPC request metadata sent to server
+  name?: string; // Custom tab name. TODO: Consider implementing functionality on tabs or remove
+  proto?: IProto; // Proto for tab
+  queryData?: object; // Query payload
+  results?: object; // Results for page, not cached
+  service?: MethodDefinition<{}, {}>; // Service for tab
 }
 
 export interface ILayout {

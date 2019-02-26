@@ -86,8 +86,34 @@ const generatePayload = (): object => {
   return payload;
 };
 
+/**
+ * Generate the metadata from the metadata form on the page
+ * @returns {object} Payload
+ */
+const generateMetadata = (): object => {
+  const metaContainer = document.getElementById('queryMeta');
+  if (!metaContainer) {
+    return {};
+  }
+
+  const metaTabRows = metaContainer.querySelectorAll('[data-meta-tab-row]');
+  const metadata = {};
+
+  metaTabRows.forEach((tabRow) => {
+    const key = (tabRow.querySelector('[data-key]') as HTMLInputElement).value;
+    const { value } = tabRow.querySelector('[data-value]') as HTMLInputElement;
+
+    if (key && value) {
+      metadata[key] = value;
+    }
+  });
+
+  return metadata;
+};
+
 const handleSaveTabData = (params: {
   currentTab: ITab,
+  metadata?: object,
   notify: (item: INotification) => void,
   payload?: object,
   serviceAddress?: string,
@@ -96,6 +122,7 @@ const handleSaveTabData = (params: {
 }) => {
   const {
     currentTab,
+    metadata,
     notify,
     payload,
     serviceAddress: address,
@@ -108,6 +135,7 @@ const handleSaveTabData = (params: {
       ...currentTab,
       address,
       inProgress: !showNotification, // Prevent double action dispatched
+      metadata: metadata || generateMetadata(),
       queryData: payload || generatePayload(),
     });
 
@@ -173,60 +201,58 @@ const handleDispatchRequest = (params: {
   }
 
   const payload = generatePayload();
+  const metadata = generateMetadata();
 
-  if (currentTab) {
-    handleSaveTabData({
-      currentTab,
-      notify,
-      payload,
-      serviceAddress,
-      showNotification: false,
-      updateTab,
-    });
+  handleSaveTabData({
+    currentTab,
+    metadata,
+    notify,
+    payload,
+    serviceAddress,
+    showNotification: false,
+    updateTab,
+  });
 
-    dispatchRequest(
-      currentTab,
-      serviceAddress,
-      payload,
-    )
-      .then(({
-        response: results,
+  dispatchRequest({
+    metadata,
+    payload,
+    serviceAddress,
+    tab: currentTab,
+  })
+    .then(({
+      response: results,
+      meta,
+    }) => {
+      // Update the tab with the request data
+      updateTab({
+        ...currentTab,
+        address: serviceAddress,
+        inProgress: false,
         meta,
-      }) => {
-        // Update the tab with the request data
-        updateTab({
-          ...currentTab,
-          address: serviceAddress,
-          inProgress: false,
-          meta,
-          queryData: payload,
-          results,
-        });
-      })
-      .catch(({
-        response,
-        meta,
-      }) => {
-        const err = response as Error;
-
-        logger.warn('Error during dispatch ', err);
-
-        // Create the error object to be displayed to the user
-        updateTab({
-          ...currentTab,
-          address: serviceAddress,
-          inProgress: false,
-          meta,
-          queryData: payload,
-          results: {
-            error: {
-              ...err,
-            },
-            status: 'Error completing request',
-          },
-        });
+        queryData: payload,
+        results,
       });
-  }
+    })
+    .catch(({
+      response,
+    }) => {
+      const err = response as Error;
+
+      logger.warn('Error during dispatch ', err);
+
+      updateTab({
+        ...currentTab,
+        inProgress: false,
+      });
+
+      notify({
+        id: cuid(),
+        message: err.message,
+        rawErr: err,
+        title: 'Error completing request',
+        type: notificationTypes.error,
+      });
+    });
 };
 
 const QueryPane: React.SFC<IQueryPaneProps> = ({
