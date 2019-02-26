@@ -1,17 +1,18 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 
 import QueryParamBuilder from '../../QueryParamBuilder/QueryParamBuilder';
 import { ICustomFields } from '../../../services/grpc';
+import { IQueryTabItemProps, QueryTabItemWrapper } from './shared';
 
-export interface IParamTabProps {
+export interface IParamTabProps extends IQueryTabItemProps {
   requestFields?: ICustomFields[]
 }
 
-const ParamTab: React.SFC<IParamTabProps> = ({ requestFields }) => {
+const ParamTab: React.SFC<IParamTabProps> = ({ requestFields, visible }) => {
   return (
-    <Fragment>
+    <QueryTabItemWrapper visible={visible}>
       {requestFields && <QueryParamBuilder fields={requestFields} />}
-    </Fragment>
+    </QueryTabItemWrapper>
 
   );
 };

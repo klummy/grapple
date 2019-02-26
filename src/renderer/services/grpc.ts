@@ -153,15 +153,23 @@ export const loadFields = (
   });
 };
 
-export const dispatchRequest = (
+export const dispatchRequest = (params: {
   tab: ITab,
   serviceAddress: string,
+  metadata: object,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   payload: any,
-): Promise<{
+}): Promise<{
   response: object | Error,
   meta: ITabMeta
 }> => {
+  const {
+    tab,
+    serviceAddress,
+    metadata,
+    payload,
+  } = params;
+
   return new Promise((resolve, reject) => {
     const { service, proto } = tab;
 
@@ -216,8 +224,13 @@ export const dispatchRequest = (
         const started = performance.now();
         let ended;
 
+        const reqMetadata = new grpc.Metadata();
+        Object.keys(metadata).forEach((key) => {
+          reqMetadata.set(key, metadata[key]);
+        });
+
         try {
-          client[serviceMethod](payload, (err: Error, response: object) => {
+          client[serviceMethod](payload, reqMetadata, (err: Error, response: object) => {
             if (err) {
               ended = performance.now();
 

@@ -54,3 +54,7 @@ export const HeaderItem: React.SFC<{
       </HeaderItemButton>
   );
 };
+
+export const TabsContainer = styled.div`
+  height: 100%;
+`;
