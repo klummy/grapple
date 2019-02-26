@@ -15,7 +15,7 @@ export const NavProtoItemHeaderContainer = styled.div`
 
 export const NavProtoItemHeader = styled.h2`
   color: rgba(127, 128, 131, 1);
-  font-size: 13px;
+  font-size: 15px;
   font-family: var(--font-default-stack);
   font-weight: 400;
   height: 100%;
@@ -27,6 +27,7 @@ export const NavProtoItemHeader = styled.h2`
 `;
 
 export const NavProtoItemHeaderIconContainer = styled.div`
+  font-size: 14px;
   margin-left: auto;
 `;
 
@@ -42,20 +43,22 @@ export const NavProtoItemHeaderIcon = styled.span`
 
 export const NavProtoItemServicesList = styled.ul`
   list-style: none;
-  margin: 0;
+  margin: 0 10px;
   padding: 0;
 `;
 
 export const NavProtoItemServicesItem = styled.li`
   cursor: pointer;
-  font-size: 13px;
+  font-size: 14px;
   opacity: 0.7;
-  padding: 10px 20px;
+  padding: 12px 10px;
   transition: all 0.3s ease-in-out;
 
   &:hover {
     background-color: rgba(151, 151, 151, 0.2);
+    border-radius: 3px;
     color: #fff;
+    font-size: 15px;
     opacity: 0.9;
   }
 `;

@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react';
 
-import QueryParamBuilder from '../../QueryPane/QueryParamBuilder';
+import QueryParamBuilder from '../../QueryParamBuilder/QueryParamBuilder';
 import { ICustomFields } from '../../../services/grpc';
 
 export interface IParamTabProps {

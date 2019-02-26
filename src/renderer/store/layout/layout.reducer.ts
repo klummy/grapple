@@ -44,24 +44,33 @@ const layoutReducer = (
     }
 
     case CLOSE_TAB: {
-      // When no payload is passed, close the current tab
+      const { activeTab } = state;
+
+      // When no payload is passed, close the current tab (e.g. when the keyboard shortcut is used)
       const tabToCloseID = payload ? (payload as ITab).id : state.activeTab;
 
       if (!tabToCloseID) {
         return state;
       }
 
+      // If the targetTab and the active tab are the same thing, use the last tab in the sequence
+      // Else, use the current active tab
+      const newTabs = state.tabs.filter(tabItem => tabItem.id !== tabToCloseID);
+      const lastTab = newTabs[newTabs.length - 1] || {};
+      const newActiveTab = tabToCloseID === activeTab
+        ? lastTab.id || ''
+        : activeTab;
+
       return {
         ...state,
-        activeTab: '',
-        tabs: state.tabs.filter(tabItem => tabItem.id !== tabToCloseID),
+        activeTab: newActiveTab,
+        tabs: newTabs,
       };
     }
 
     case UPDATE_TAB: {
       const updatedTab = payload as ITab;
 
-      // TODO: Refactor needed
       const tabs = state.tabs.map((tab) => {
         if (tab.id === updatedTab.id) {
           return updatedTab;

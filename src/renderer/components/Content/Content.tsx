@@ -3,9 +3,11 @@ import { connect } from 'react-redux';
 
 import { IStoreState } from '../../types';
 import { ITab, INotification } from '../../types/layout';
+
+import logger from '../../libs/logger';
+
 import QueryPane from '../QueryPane';
 import Results from '../Results';
-
 import { EmptyStateContainer, OuterWrapper } from './Content.components';
 import NotificationList from '../NotificationList';
 
@@ -15,31 +17,55 @@ export interface IContentProps {
   tabs: ITab[];
 }
 
-export const Content: React.SFC<IContentProps> = ({ activeTab, notifications, tabs }) => {
-  const tab = tabs.find(t => t.id === activeTab);
+export interface IContentState {
+  isErrored: boolean
+}
 
-  const results = tab && tab.results;
+export class Content extends React.Component<IContentProps, IContentState> {
+  state = {
+    // TODO: Implement error views
+    // eslint-disable-next-line react/no-unused-state
+    isErrored: false,
+  }
 
-  return (
-    <OuterWrapper>
-      {tab
-        ? (
-          <Fragment>
-            <QueryPane />
-            <Results
-              inProgress={tab.inProgress}
-              meta={tab && tab.meta}
-              queryResult={results ? JSON.stringify(tab.results, null, 2) : ''}
-            />
-          </Fragment>
-        )
-        : <EmptyStateContainer data-testid="emptyState">Empty</EmptyStateContainer>
-      }
+  static getDerivedStateFromError() {
+    return {
+      isErrored: true,
+    };
+  }
 
-      <NotificationList notifications={notifications} />
-    </OuterWrapper>
-  );
-};
+  componentDidCatch(error: Error, info: React.ErrorInfo) {
+    logger.error('Uncaught error in <Content />', error, info);
+  }
+
+  render() {
+    const { notifications, tabs, activeTab } = this.props;
+
+    const tab = tabs.find(t => t.id === activeTab);
+
+    const results = tab && tab.results;
+
+    return (
+      <OuterWrapper>
+        {tab
+          ? (
+            <Fragment>
+              <QueryPane />
+              <Results
+                inProgress={tab.inProgress}
+                meta={tab && tab.meta}
+                queryResult={results ? JSON.stringify(tab.results, null, 2) : ''}
+              />
+            </Fragment>
+          )
+          : <EmptyStateContainer data-testid="emptyState">Empty</EmptyStateContainer>
+        }
+
+        <NotificationList notifications={notifications} />
+      </OuterWrapper>
+    );
+  }
+}
 
 const mapStateToProps = (state: IStoreState) => ({
   activeTab: state.layout.activeTab,

@@ -82,6 +82,7 @@ class Sidebar extends React.Component<ISidebarProps, ISidebarState> {
     const { dialog } = electron.remote;
 
     const self = this;
+    const { notify } = this.props;
 
     // TODO: In user preferences, allow user to specify root project folder
     dialog.showOpenDialog(
@@ -101,6 +102,13 @@ class Sidebar extends React.Component<ISidebarProps, ISidebarState> {
               if (err) {
                 logger.error('Error getting stats for filePath', filePath, err);
                 // TODO: Show error notification
+                notify({
+                  id: cuid(),
+                  message: `Error opening file ${filePath}.`,
+                  rawErr: err,
+                  title: 'Error',
+                  type: notificationTypes.error,
+                });
                 return;
               }
 
