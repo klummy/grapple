@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 import { Input } from '../GenericComponents';
-import { IFieldProps } from './shared';
+import { IFieldProps } from '../QueryPane/shared';
 
 const tableBorder = '1px solid var(--color-lines-default)';
 

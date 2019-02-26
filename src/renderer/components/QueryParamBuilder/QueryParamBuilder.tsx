@@ -17,7 +17,7 @@ import {
   TableRow,
   TableTh,
 } from './QueryParamBuilder.components';
-import { IFieldProps } from './shared';
+import { IFieldProps } from '../QueryPane/shared';
 
 class QueryParamBuilder extends React.Component<
   {

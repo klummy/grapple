@@ -39,6 +39,7 @@ export const NotificationWrapper = styled.div<{ type: notificationTypes }>`
   padding: 10px;
   position: relative;
   width: 300px;
+  z-index: 50;
 `;
 
 
@@ -66,7 +67,4 @@ export const DismissIcon = styled.div`
   position: absolute;
   right: 5px;
   top: 5px;
-
-  svg {
-  }
 `;

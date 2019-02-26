@@ -197,6 +197,7 @@ const handleDispatchRequest = (params: {
         updateTab({
           ...currentTab,
           address: serviceAddress,
+          inProgress: false,
           meta,
           queryData: payload,
           results,
@@ -214,6 +215,7 @@ const handleDispatchRequest = (params: {
         updateTab({
           ...currentTab,
           address: serviceAddress,
+          inProgress: false,
           meta,
           queryData: payload,
           results: {
@@ -223,9 +225,6 @@ const handleDispatchRequest = (params: {
             status: 'Error completing request',
           },
         });
-      })
-      .finally(() => {
-        // TODO: Clear loading indications and show appropriate notifications
       });
   }
 };
