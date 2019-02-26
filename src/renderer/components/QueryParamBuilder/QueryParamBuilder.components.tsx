@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 import { Input } from '../GenericComponents';
-import { IFieldProps } from './shared';
+import { IFieldProps } from '../QueryPane/shared';
 
 const tableBorder = '1px solid var(--color-lines-default)';
 
@@ -98,5 +98,15 @@ export const QueryInput = styled(Input)`
   border: none;
   border-radius: 3px;
   margin-left: 10px;
-  width: 100%;
+  width: calc(100% - 10px);
+`;
+
+export const TableCellWithIcon = styled(TableCell)`
+  align-items: center;
+  display: flex;
+`;
+
+export const QueryInputIcon = styled.span`
+  cursor: pointer;
+  padding: 0 10px;
 `;

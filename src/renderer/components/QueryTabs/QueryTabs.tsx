@@ -4,7 +4,8 @@ import ParamTab from './Tabs/ParamTab';
 
 import { ICustomFields } from '../../services/grpc';
 
-import { HeaderTabContainer, HeaderItem } from './QueryTabs.component';
+import { HeaderTabContainer, HeaderItem, TabsContainer } from './QueryTabs.component';
+import MetadataTab from './Tabs/MetadataTab';
 
 export interface IQueryTabProps {
   requestFields?: ICustomFields[]
@@ -12,6 +13,7 @@ export interface IQueryTabProps {
 
 const TABS = {
   credentials: 2,
+  metadata: 3,
   params: 1,
 };
 
@@ -34,13 +36,24 @@ const QueryTab: React.SFC<IQueryTabProps> = ({ requestFields }) => {
           tabID={TABS.credentials}
           title="Credentials"
         />
+
+        <HeaderItem
+          currentTab={currentTab}
+          onClick={() => setCurrentTab(TABS.metadata)}
+          tabID={TABS.metadata}
+          title="Metadata"
+        />
       </HeaderTabContainer>
 
 
-      {
-        currentTab === TABS.params
-        && <ParamTab requestFields={requestFields} />
-      }
+      <TabsContainer>
+        <ParamTab
+          requestFields={requestFields}
+          visible={currentTab === TABS.params}
+        />
+
+        <MetadataTab visible={currentTab === TABS.metadata} />
+      </TabsContainer>
     </Fragment>
   );
 };
