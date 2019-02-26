@@ -108,12 +108,16 @@ export const getFields = (
   return fields;
 };
 
+/**
+ * Load the fields for a given proto path and specified service
+ * @param {string} protoPath Path to proto file on filesystem
+ * @param {string} serviceName Name of service to lookup
+ * @returns
+ */
 export const loadFields = (
   protoPath: string,
   serviceName: string,
-): Promise<{
-  fields: ICustomFields[];
-}> => {
+): Promise<ICustomFields[]> => {
   return new Promise((resolve, reject) => {
     fs.readFile(protoPath, 'utf8', (err, data) => {
       if (err) {
@@ -144,31 +148,27 @@ export const loadFields = (
 
       const fields = getFields(root, method);
 
-      resolve({
-        fields,
-      });
+      resolve(fields);
     });
   });
 };
 
-interface IDispatchResponse {
-  response: object | Error,
-  meta: ITabMeta
-}
-
 export const dispatchRequest = (
   tab: ITab,
-  rawServiceAddress: string,
+  serviceAddress: string,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   payload: any,
-): Promise<IDispatchResponse> => {
+): Promise<{
+  response: object | Error,
+  meta: ITabMeta
+}> => {
   return new Promise((resolve, reject) => {
     const { service, proto } = tab;
 
-    const serviceAddress = rawServiceAddress.replace(/^https?:\/\//i, '');
+    const address = serviceAddress.replace(/^https?:\/\//i, '');
 
     if (!service || !proto) {
-      reject(Error(`Tab doesn't contain crucial data ${JSON.stringify(tab)}`));
+      reject(new Error(`Tab doesn't contain crucial data ${JSON.stringify(tab)}`));
       return;
     }
 
@@ -182,6 +182,7 @@ export const dispatchRequest = (
       })
       .then((pkgDef) => {
         const pkgObject = grpc.loadPackageDefinition(pkgDef);
+
 
         // TODO: Refactor as to not depend on key matching; Or at least account for multiple keys
         const serviceIndex = Object.keys(pkgObject)[0];
@@ -199,7 +200,7 @@ export const dispatchRequest = (
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const serviceProto = pkgObject[serviceIndex] as any;
         const client = new serviceProto[serviceName](
-          serviceAddress,
+          address,
           credentials,
         );
 

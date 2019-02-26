@@ -137,7 +137,7 @@ const loadFieldsForTab = (tab: ITab): Promise<ICustomFields[]> => {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     loadFields(proto.path, (service as any).path)
-      .then(({ fields }) => resolve(fields))
+      .then(fields => resolve(fields))
       .catch((err) => {
         logger.error('Error loading fields for proto', err);
         reject(Error);
