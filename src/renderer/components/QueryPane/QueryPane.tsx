@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import styled from 'styled-components';
 
@@ -48,6 +48,10 @@ export interface IQueryPaneState {
   requestFields?: ICustomFields[];
 }
 
+/**
+ * Generate a payload from the form elements (generated from the proto defs)
+ * @returns {object} Payload
+ */
 const generatePayload = (): object => {
   const queryContainer = document.getElementById('queryParams');
   if (!queryContainer) {
@@ -82,234 +86,250 @@ const generatePayload = (): object => {
   return payload;
 };
 
-class QueryPane extends React.Component<IQueryPaneProps, IQueryPaneState> {
-  constructor(props: IQueryPaneProps) {
-    super(props);
+const handleSaveTabData = (params: {
+  currentTab: ITab,
+  notify: (item: INotification) => void,
+  payload?: object,
+  serviceAddress?: string,
+  showNotification: boolean,
+  updateTab: (tab: ITab) => void,
+}) => {
+  const {
+    currentTab,
+    notify,
+    payload,
+    serviceAddress: address,
+    showNotification = true,
+    updateTab,
+  } = params;
 
-    this.state = {
-      requestFields: undefined,
-      serviceAddress: (props.currentTab && props.currentTab.address) || '',
-    };
-  }
+  if (currentTab) {
+    updateTab({
+      ...currentTab,
+      address,
+      inProgress: !showNotification, // Prevent double action dispatched
+      queryData: payload || generatePayload(),
+    });
 
 
-  componentDidMount() {
-    const { activeTab } = this.props;
-
-    if (activeTab) {
-      this.loadTabData();
-
-      // Attach a shortcut for making requests
-      attachIndividualShortcut({
-        handler: this.handleDispatchRequest.bind(this),
-        key: 'enter',
-        label: 'Send Request',
-        modifier: shortcutModifiers.general,
-      });
-
-      // Shortcut for saving tab data
-      attachIndividualShortcut({
-        handler: this.saveTabData.bind(this),
-        key: 's',
-        label: 'Save Tab Data',
-        modifier: shortcutModifiers.general,
-      });
-    }
-  }
-
-  componentDidUpdate(prevProps: IQueryPaneProps) {
-    const { activeTab } = this.props;
-
-    if (activeTab !== prevProps.activeTab) {
-      this.loadTabData();
-
-      // Clear/set the address when the tab is changed
-      if (this.state.serviceAddress) {
-        const { currentTab } = this.props;
-
-        // eslint-disable-next-line react/no-did-update-set-state
-        this.setState({
-          serviceAddress: currentTab.address || '',
-        });
-      }
-    }
-  }
-
-  componentWillUnmount() {
-    unregisterShortcut('enter');
-    unregisterShortcut('s');
-  }
-
-  /**
- * Make the request
- */
-  handleDispatchRequest(event?: React.MouseEvent) {
-    if (event) {
-      event.preventDefault();
-    }
-
-    const { serviceAddress } = this.state;
-
-    const { notify } = this.props;
-
-    if (!serviceAddress) {
+    if (showNotification) {
       notify({
         id: cuid(),
-        message: 'Invalid/missing service address. Please provide a valid address.',
-        title: 'Validation error',
-        type: notificationTypes.warn,
+        message: 'Tab data saved successfully',
+        title: 'Success',
+        type: notificationTypes.success,
       });
-      logger.warn('No input provided');
-      return;
-    }
-
-    const { currentTab } = this.props;
-
-    const payload = generatePayload();
-
-    if (currentTab) {
-      const { updateTab } = this.props;
-
-      this.saveTabData(serviceAddress, payload, false);
-
-      dispatchRequest(
-        currentTab,
-        serviceAddress,
-        payload,
-      )
-        .then(({
-          response: results,
-          meta,
-        }) => {
-          // Update the tab with the request data
-          updateTab({
-            ...currentTab,
-            address: serviceAddress,
-            meta,
-            queryData: payload,
-            results,
-          });
-        })
-        .catch(({
-          response,
-          meta,
-        }) => {
-          const err = response as Error;
-
-          logger.warn('Error during dispatch ', err);
-
-          // Create the error object to be displayed to the user
-          updateTab({
-            ...currentTab,
-            address: serviceAddress,
-            meta,
-            queryData: payload,
-            results: {
-              error: {
-                ...err,
-              },
-              status: 'Error completing request',
-            },
-          });
-        })
-        .finally(() => {
-          // TODO: Clear loading indications and show appropriate notifications
-        });
     }
   }
+};
 
-  /**
-   * Handle updating the service address input
-   * @param event Input event
-   */
-  handleServiceAddressChange(event: React.ChangeEvent<HTMLInputElement>) {
-    this.setState({
-      serviceAddress: event.target.value,
-    });
-  }
+/**
+* Load the data for a specified tab
+*/
+const loadFieldsForTab = (tab: ITab): Promise<ICustomFields[]> => {
+  return new Promise((resolve, reject) => {
+    const { proto, service = { originalName: '' } } = tab;
 
-  /**
- * Load the data for the tab when the app is loaded or the tab switched
- */
-  loadTabData() {
-    const { currentTab } = this.props;
-
-    if (!currentTab || !currentTab.proto) {
+    if (!proto) {
+      reject(new Error('Proto missing in tab definition'));
       return;
     }
-
-    const { proto, service = { originalName: '' } } = currentTab;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     loadFields(proto.path, (service as any).path)
-      .then(({ fields }) => {
-        this.setState({
-          requestFields: fields,
-        });
-      })
+      .then(({ fields }) => resolve(fields))
       .catch((err) => {
         logger.error('Error loading fields for proto', err);
+        reject(Error);
       });
+  });
+};
+
+/**
+* Make the request
+*/
+const handleDispatchRequest = (params: {
+  currentTab: ITab,
+  notify: (item: INotification) => void,
+  serviceAddress: string,
+  updateTab: (tab: ITab) => void
+}) => {
+  const {
+    currentTab,
+    notify,
+    serviceAddress,
+    updateTab,
+  } = params;
+
+  if (!serviceAddress) {
+    notify({
+      id: cuid(),
+      message: 'Invalid/missing service address. Please provide a valid address.',
+      title: 'Validation error',
+      type: notificationTypes.warn,
+    });
+    logger.warn('No input provided');
+    return;
   }
 
-  /**
-   * Save all the data in the data.
-   */
-  saveTabData(address?: string, payload?: object, showNotification = true) {
-    const { currentTab, notify, updateTab } = this.props;
+  const payload = generatePayload();
 
-    if (currentTab) {
-      updateTab({
-        ...currentTab,
-        address: this.state.serviceAddress,
-        inProgress: !showNotification, // Prevent a double action dispatched
-        queryData: payload || generatePayload(),
-      });
+  if (currentTab) {
+    handleSaveTabData({
+      currentTab,
+      notify,
+      payload,
+      serviceAddress,
+      showNotification: false,
+      updateTab,
+    });
 
-
-      if (showNotification) {
-        notify({
-          id: cuid(),
-          message: 'Tab data saved successfully',
-          title: 'Success',
-          type: notificationTypes.success,
+    dispatchRequest(
+      currentTab,
+      serviceAddress,
+      payload,
+    )
+      .then(({
+        response: results,
+        meta,
+      }) => {
+        // Update the tab with the request data
+        updateTab({
+          ...currentTab,
+          address: serviceAddress,
+          meta,
+          queryData: payload,
+          results,
         });
-      }
+      })
+      .catch(({
+        response,
+        meta,
+      }) => {
+        const err = response as Error;
+
+        logger.warn('Error during dispatch ', err);
+
+        // Create the error object to be displayed to the user
+        updateTab({
+          ...currentTab,
+          address: serviceAddress,
+          meta,
+          queryData: payload,
+          results: {
+            error: {
+              ...err,
+            },
+            status: 'Error completing request',
+          },
+        });
+      })
+      .finally(() => {
+        // TODO: Clear loading indications and show appropriate notifications
+      });
+  }
+};
+
+const QueryPane: React.SFC<IQueryPaneProps> = ({
+  activeTab,
+  currentTab,
+  notify,
+  updateTab,
+}) => {
+  const [requestFields, setRequestFields] = useState<ICustomFields[] | undefined>(undefined);
+  const [serviceAddress, setServiceAddress] = useState((currentTab && currentTab.address) || '');
+
+  // Load the fields for the request on first load and when the active tab changes
+  useEffect(() => {
+    if (activeTab && currentTab) {
+      loadFieldsForTab(currentTab)
+        .then(fields => setRequestFields(fields))
+        .catch((err) => {
+          notify({
+            id: cuid(),
+            message: 'Unable to load the fields for this tab. This probably shouldn\'t happen, please use the report link below to report this error',
+            rawErr: err,
+            title: 'Loading error',
+            type: notificationTypes.error,
+          });
+          return undefined;
+        });
     }
-  }
+  }, [activeTab]);
 
-  render() {
-    const { requestFields, serviceAddress } = this.state;
+  // Update the service address when the active tab changes
+  useEffect(() => {
+    setServiceAddress((currentTab && currentTab.address) || '');
+  }, [activeTab]);
 
-    return (
-      <QueryPaneContainer data-testid="queryPane">
-        <AddressBarContainer
-          as="div"
+  // Attach and remove keyboard listeners. Run only once
+  useEffect(() => {
+    // Attach a shortcut for making requests
+    attachIndividualShortcut({
+      handler: () => handleDispatchRequest({
+        currentTab,
+        notify,
+        serviceAddress: serviceAddress || '',
+        updateTab,
+      }),
+      key: 'enter',
+      label: 'Send Request',
+      modifier: shortcutModifiers.general,
+    });
+
+    // Shortcut for saving tab data
+    attachIndividualShortcut({
+      handler: () => handleSaveTabData({
+        currentTab,
+        notify,
+        serviceAddress,
+        showNotification: true,
+        updateTab,
+      }),
+      key: 's',
+      label: 'Save Tab Data',
+      modifier: shortcutModifiers.general,
+    });
+
+    return () => {
+      unregisterShortcut('enter');
+      unregisterShortcut('s');
+    };
+  }, []);
+
+  return (
+    <QueryPaneContainer data-testid="queryPane">
+      <AddressBarContainer
+        as="div"
+      >
+        <Input
+          name="address"
+          onChange={event => setServiceAddress(event.target.value || '')}
+          placeholder="Service Address"
+          required
+          type="url"
+          value={serviceAddress}
+        />
+        <Button
+          disabled={!serviceAddress}
+          onClick={() => handleDispatchRequest({
+            currentTab,
+            notify,
+            serviceAddress: serviceAddress || '',
+            updateTab,
+          })}
         >
-          <Input
-            name="address"
-            onChange={e => this.handleServiceAddressChange(e)}
-            placeholder="Service Address"
-            required
-            type="url"
-            value={serviceAddress}
-          />
-          <Button
-            disabled={!serviceAddress}
-            onClick={e => this.handleDispatchRequest(e)}
-          >
-            Send Request
-          </Button>
-        </AddressBarContainer>
+          Send Request
+        </Button>
+      </AddressBarContainer>
 
-        <ParamBuilderContainer>
-          <QueryTabs requestFields={requestFields} />
+      <ParamBuilderContainer>
+        <QueryTabs requestFields={requestFields} />
 
-        </ParamBuilderContainer>
-      </QueryPaneContainer>
-    );
-  }
-}
+      </ParamBuilderContainer>
+    </QueryPaneContainer>
+  );
+};
 
 const mapStateToProps = (state: IStoreState) => ({
   activeTab: state.layout.activeTab,
