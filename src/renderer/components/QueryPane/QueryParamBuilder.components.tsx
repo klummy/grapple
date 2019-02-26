@@ -98,5 +98,5 @@ export const QueryInput = styled(Input)`
   border: none;
   border-radius: 3px;
   margin-left: 10px;
-  width: 100%;
+  width: calc(100% - 10px);
 `;

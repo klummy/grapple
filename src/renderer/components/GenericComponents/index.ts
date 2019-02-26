@@ -75,6 +75,7 @@ export const Button = styled.button`
 export const Select = styled.select`
   background-color: transparent;
   border: 1px solid rgba(72, 77, 109, 0.6);
+  color: var(--text-color-default);
   display: flex;
   flex: 1;
   height: 35px;

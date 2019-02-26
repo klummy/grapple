@@ -1,5 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import styled from 'styled-components';
 
 import * as layoutActions from '../../store/layout/layout.actions';
 import { IStoreState } from '../../types';
@@ -20,7 +21,7 @@ import {
 
 import {
   Button,
-  Form as AddressBarContainer,
+  Form,
   Input,
 } from '../GenericComponents';
 import {
@@ -30,6 +31,10 @@ import {
 import QueryTabs from '../QueryTabs';
 
 import cuid = require('cuid');
+
+const AddressBarContainer = styled(Form)`
+  flex-shrink: 0;
+`;
 
 export interface IQueryPaneProps {
   activeTab: string;
