@@ -61,14 +61,25 @@ export const TableBody = styled.tbody``;
 
 export const TableRow = styled.tr`
   align-items: center;
-  border-bottom: ${tableBorder};
-  border-top: ${tableBorder};
+  border-bottom: ${(props: IFieldProps) => (props.isNested ? '' : tableBorder)};
+  border-top: ${(props: IFieldProps) => (props.isNested ? '' : tableBorder)};
   display: flex;
   height: 50px;
   width: 100%;
 
   td:first-child {
-    padding-left: ${(props: IFieldProps) => props.isNested && '15px'};
+    padding-right: 10px;
+    text-align: right;
+  }
+
+  /* Select the next nested item that is not nested */
+  &.nested + &:not(.nested),
+  &.nested-head {
+    border-top: ${tableBorder};
+  }
+
+  &.nested-head {
+    border-bottom: none;
   }
 `;
 

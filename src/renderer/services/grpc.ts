@@ -25,6 +25,7 @@ const lookupField = (
   type: string,
 ): {
   nested?: ICustomFields[];
+  repeated?: boolean,
   type: string;
   values?: Enum['valuesById'];
 } => {
@@ -44,7 +45,7 @@ const lookupField = (
     const nested = Object.keys(f).map((key) => {
       const fValue = f[key];
 
-      const { nested: nestedF, type: typeF } = lookupField(root, fValue.type);
+      const { nested: nestedF, repeated, type: typeF } = lookupField(root, fValue.type);
 
       return {
         defaultValue: fValue.defaultValue,
@@ -52,6 +53,7 @@ const lookupField = (
         id: fValue.id,
         name: fValue.name,
         nested: nestedF,
+        repeated,
         type: typeF,
       };
     });
@@ -92,7 +94,9 @@ export const getFields = (
   const fields = Object.keys(requestFields).map((key) => {
     const field = requestFields[key];
 
-    const { nested, type, values } = lookupField(root, field.type);
+    const {
+      nested, type, values,
+    } = lookupField(root, field.type);
 
     return {
       defaultValue: field.defaultValue,
@@ -100,6 +104,7 @@ export const getFields = (
       id: field.id,
       name: field.name,
       nested,
+      repeated: field.repeated,
       type,
       values,
     };
@@ -214,12 +219,25 @@ export const dispatchRequest = (params: {
 
         /**
          * Close the client after a successful/failed request
-         * NOTE: This may need to be revisted after streaming is implemented
+         * NOTE: This will need to be revisted after streaming is implemented
          */
         const cleanupClient = () => {
           logger.info('Closing client connection');
           client.close();
         };
+
+        // TODO: Consider better handling for connections that don't happen quickly.
+        // See: https://github.com/grpc/grpc/issues/10569
+        const connected = client.getChannel().getConnectivityState();
+
+        if (connected !== 2) {
+          cleanupClient();
+
+          reject({
+            response: new Error(`Error connecting to server at "${serviceAddress}"`),
+          });
+          return;
+        }
 
         const started = performance.now();
         let ended;

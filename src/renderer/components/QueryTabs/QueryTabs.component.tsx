@@ -8,7 +8,7 @@ export const HeaderTabContainer = styled.div`
 
 const HeaderItemButton = styled.button`
   background-color: transparent;
-  border: 1px solid transparent;
+  border: 1px solid ${(props: { active: boolean }) => (props.active ? 'var(--color-lines-default)' : 'transparent')};
   border-radius: 3px;
   color: #fff;
   cursor: pointer;
@@ -27,7 +27,6 @@ const HeaderItemButton = styled.button`
   }
 
   &:focus {
-    border-color: var(--color-lines-default);
     outline: none;
   }
 `;
