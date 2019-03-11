@@ -252,8 +252,12 @@ const handleDispatchRequest = async (params: {
     }
   }, 5000);
 
+  interface IGrpcError extends Error {
+    code: number
+  }
+
   // Make the actual request
-  client[methodName](payload, reqMetadata, (err: Error, results: object) => {
+  client[methodName](payload, reqMetadata, (err: IGrpcError, results: object) => {
     if (err) {
       reqEnded = performance.now();
 
@@ -262,8 +266,15 @@ const handleDispatchRequest = async (params: {
       updateTab({
         ...currentTab,
         inProgress: false,
+        meta: {
+          code: err.code,
+          status: ITabStatus.error,
+          timestamp: reqEnded - reqStarted,
+        },
         results: err,
       });
+
+      client.close();
 
       return;
     }
@@ -273,6 +284,7 @@ const handleDispatchRequest = async (params: {
       ...currentTab,
       inProgress: false,
       meta: {
+        ...results,
         status: ITabStatus.success,
         timestamp: reqEnded - reqStarted,
       },

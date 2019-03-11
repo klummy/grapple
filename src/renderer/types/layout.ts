@@ -8,6 +8,7 @@ export enum ITabStatus {
 }
 
 export interface ITabMeta {
+  code?: Number, // Request code.
   status: ITabStatus,
   timestamp: number, // Milliseconds
 }

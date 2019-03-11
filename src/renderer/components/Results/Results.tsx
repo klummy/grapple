@@ -10,11 +10,12 @@ import {
   ResultWrapper,
 } from './Results.components';
 import { ITabMeta } from '@/renderer/types/layout';
+import Loader from '../Icons/loader';
+import { grpcStatus } from '../../services/grpc-constants';
 
 import 'prismjs/plugins/line-numbers/prism-line-numbers';
 import 'prismjs/plugins/line-numbers/prism-line-numbers.css';
 import 'prismjs/themes/prism-twilight.css';
-import Loader from '../Icons/loader';
 
 interface IResultsProps {
   inProgress: boolean | undefined,
@@ -29,12 +30,21 @@ const Results: React.SFC<IResultsProps> = ({ inProgress, meta, queryResult }) =>
     highlightResults();
   });
 
+  const errorCode = (meta && meta.code && grpcStatus[`${meta.code}`]) || '';
   const timestamp = (meta && meta.timestamp) || 0;
   const status = (meta && meta.status) || '';
 
   return (
     <ResultWrapper>
       <ResultMetaContainer>
+        {
+          errorCode
+          && (
+            <Fragment>
+              <span>Status: {errorCode}</span>
+            </Fragment>
+          )
+        }
         {
           status
           && (
