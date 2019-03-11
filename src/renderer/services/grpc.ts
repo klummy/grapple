@@ -2,12 +2,14 @@
 import * as grpc from '@grpc/grpc-js';
 import * as protoLoader from '@grpc/proto-loader';
 import fs from 'fs';
+import lodashGet from 'lodash.get';
+import { ServiceClientConstructor, ServiceClient } from '@grpc/grpc-js/build/src/make-client';
 
 import protobufjs, { Enum } from 'protobufjs';
 
 import logger from '../libs/logger';
-import { ITab, ITabMeta, ITabStatus } from '../types/layout';
 import { grpcTypes } from './grpc-constants';
+import { IProto } from '../types/protos';
 
 export interface ICustomFields {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -25,6 +27,7 @@ const lookupField = (
   type: string,
 ): {
   nested?: ICustomFields[];
+  repeated?: boolean,
   type: string;
   values?: Enum['valuesById'];
 } => {
@@ -44,7 +47,7 @@ const lookupField = (
     const nested = Object.keys(f).map((key) => {
       const fValue = f[key];
 
-      const { nested: nestedF, type: typeF } = lookupField(root, fValue.type);
+      const { nested: nestedF, repeated, type: typeF } = lookupField(root, fValue.type);
 
       return {
         defaultValue: fValue.defaultValue,
@@ -52,6 +55,7 @@ const lookupField = (
         id: fValue.id,
         name: fValue.name,
         nested: nestedF,
+        repeated,
         type: typeF,
       };
     });
@@ -92,7 +96,9 @@ export const getFields = (
   const fields = Object.keys(requestFields).map((key) => {
     const field = requestFields[key];
 
-    const { nested, type, values } = lookupField(root, field.type);
+    const {
+      nested, type, values,
+    } = lookupField(root, field.type);
 
     return {
       defaultValue: field.defaultValue,
@@ -100,12 +106,84 @@ export const getFields = (
       id: field.id,
       name: field.name,
       nested,
+      repeated: field.repeated,
       type,
       values,
     };
   });
 
   return fields;
+};
+
+/**
+ * Get the client instance for a given service
+ * @returns {Promise<ServiceClient>} The Service Client
+ */
+export const getClientInstance = async (params: {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  credentials?: any, // TODO: Add the right type
+  proto: IProto,
+  service: protoLoader.MethodDefinition<{}, {}>,
+  serviceAddress: string
+}): Promise<{
+  client: ServiceClient,
+  methodName: string
+}> => {
+  const {
+    credentials,
+    proto,
+    service,
+    serviceAddress,
+  } = params;
+
+  const creds = credentials || grpc.credentials.createInsecure();
+
+  return new Promise(async (resolve, reject) => {
+    if (!serviceAddress.trim()) {
+      reject({
+        message: 'The service address is a required field',
+        title: 'Validation error',
+      });
+    }
+
+    const pkgDef = await protoLoader.load(proto.path, {
+      defaults: true,
+      enums: String,
+      keepCase: true,
+      longs: String,
+      oneofs: true,
+    }).catch((err) => {
+      reject(err);
+      return null;
+    });
+
+    if (!pkgDef) return;
+
+    const pkgObject = grpc.loadPackageDefinition(pkgDef);
+
+    // Extract the service lookup path from the service path
+    const [serviceLookupPath, methodName] = service.path
+      .substring(1, service.path.length) // Replace initial slash
+      .split('/'); // Split with '/' to get the service itself (it comes first)
+
+    const Client = lodashGet(pkgObject, serviceLookupPath) as ServiceClientConstructor;
+
+    if (!Client) {
+      logger.error('Fatal error creating client', {
+        client: Client,
+        params,
+        pkgObject,
+        serviceLookupPath,
+      });
+      reject(new Error('Error parsing proto'));
+      return;
+    }
+
+    resolve({
+      client: new Client(serviceAddress, creds),
+      methodName,
+    });
+  });
 };
 
 /**
@@ -150,131 +228,5 @@ export const loadFields = (
 
       resolve(fields);
     });
-  });
-};
-
-export const dispatchRequest = (params: {
-  tab: ITab,
-  serviceAddress: string,
-  metadata: object,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  payload: any,
-}): Promise<{
-  response: object | Error,
-  meta: ITabMeta
-}> => {
-  const {
-    tab,
-    serviceAddress,
-    metadata,
-    payload,
-  } = params;
-
-  return new Promise((resolve, reject) => {
-    const { service, proto } = tab;
-
-    const address = serviceAddress.replace(/^https?:\/\//i, '');
-
-    if (!service || !proto) {
-      reject(new Error(`Tab doesn't contain crucial data ${JSON.stringify(tab)}`));
-      return;
-    }
-
-    protoLoader
-      .load(proto.path, {
-        defaults: true,
-        enums: String,
-        keepCase: true,
-        longs: String,
-        oneofs: true,
-      })
-      .then((pkgDef) => {
-        const pkgObject = grpc.loadPackageDefinition(pkgDef);
-
-
-        // TODO: Refactor as to not depend on key matching; Or at least account for multiple keys
-        const serviceIndex = Object.keys(pkgObject)[0];
-        const servicePath = (service.path.match(/\.[^.]*$/) || [''])[0].replace(
-          '.',
-          '',
-        );
-        const [serviceName, serviceMethodFull] = servicePath.split('/');
-        const serviceMethod = serviceMethodFull.charAt(0).toLowerCase()
-          + serviceMethodFull.slice(1);
-
-        // TODO: Allow for secured credentials with credentials passed by user
-        const credentials = grpc.credentials.createInsecure();
-
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const serviceProto = pkgObject[serviceIndex] as any;
-        const client = new serviceProto[serviceName](
-          address,
-          credentials,
-        );
-
-        /**
-         * Close the client after a successful/failed request
-         * NOTE: This may need to be revisted after streaming is implemented
-         */
-        const cleanupClient = () => {
-          logger.info('Closing client connection');
-          client.close();
-        };
-
-        const started = performance.now();
-        let ended;
-
-        const reqMetadata = new grpc.Metadata();
-        Object.keys(metadata).forEach((key) => {
-          reqMetadata.set(key, metadata[key]);
-        });
-
-        try {
-          client[serviceMethod](payload, reqMetadata, (err: Error, response: object) => {
-            if (err) {
-              ended = performance.now();
-
-              logger.warn('gRPC request failed with error ', err);
-              cleanupClient();
-              reject({
-                meta: {
-                  status: ITabStatus.error,
-                  timestamp: ended - started,
-                },
-                response: err,
-              });
-            } else {
-              ended = performance.now();
-              logger.info('gRPC request successful', response);
-              cleanupClient();
-              resolve({
-                meta: {
-                  status: ITabStatus.success,
-                  timestamp: ended - started,
-                },
-                response,
-              });
-            }
-          });
-        } catch (error) {
-          ended = performance.now();
-          reject({
-            meta: {
-              status: ITabStatus.error,
-              timestamp: ended - started,
-            },
-            response: error,
-          });
-        }
-      })
-      .catch((err) => {
-        reject({
-          meta: {
-            status: ITabStatus.error,
-            timestamp: 0,
-          },
-          response: err,
-        });
-      });
   });
 };

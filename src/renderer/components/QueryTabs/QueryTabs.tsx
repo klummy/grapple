@@ -2,14 +2,8 @@ import React, { Fragment, useState } from 'react';
 
 import ParamTab from './Tabs/ParamTab';
 
-import { ICustomFields } from '../../services/grpc';
-
 import { HeaderTabContainer, HeaderItem, TabsContainer } from './QueryTabs.component';
 import MetadataTab from './Tabs/MetadataTab';
-
-export interface IQueryTabProps {
-  requestFields?: ICustomFields[]
-}
 
 const TABS = {
   credentials: 2,
@@ -17,7 +11,7 @@ const TABS = {
   params: 1,
 };
 
-const QueryTab: React.SFC<IQueryTabProps> = ({ requestFields }) => {
+const QueryTab: React.SFC<{}> = () => {
   const [currentTab, setCurrentTab] = useState(TABS.params);
 
   return (
@@ -48,7 +42,6 @@ const QueryTab: React.SFC<IQueryTabProps> = ({ requestFields }) => {
 
       <TabsContainer>
         <ParamTab
-          requestFields={requestFields}
           visible={currentTab === TABS.params}
         />
 

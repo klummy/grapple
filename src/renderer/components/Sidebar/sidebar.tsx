@@ -128,7 +128,12 @@ class Sidebar extends React.Component<ISidebarProps, ISidebarState> {
 
   loadProto(proto: IProto, refresh?: boolean) {
     const { lastModified, path } = proto;
-    const { notify, protos } = this.props;
+    const {
+      addProtoToProject,
+      notify,
+      protos,
+      updateProto,
+    } = this.props;
 
     validateProto(proto)
       .then((pkgDef) => {
@@ -146,13 +151,13 @@ class Sidebar extends React.Component<ISidebarProps, ISidebarState> {
 
         // Update the proto here if it's a refresh
         if (refresh) {
-          this.props.updateProto(protoItem);
+          updateProto(protoItem);
           return;
         }
 
         // If it exists already, refresh the proto automatically
         if (existsAlready) {
-          this.props.updateProto(protoItem);
+          updateProto(protoItem);
 
           notify({
             id: cuid(),
@@ -165,7 +170,7 @@ class Sidebar extends React.Component<ISidebarProps, ISidebarState> {
         }
 
         // Add a new proto to the project
-        this.props.addProtoToProject(protoItem);
+        addProtoToProject(protoItem);
       })
       .catch((err) => {
         logger.warn('Proto validation failed: ', err);

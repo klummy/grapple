@@ -27,7 +27,7 @@ export const NavProtoItemHeader = styled.h2`
 `;
 
 export const NavProtoItemHeaderIconContainer = styled.div`
-  font-size: 14px;
+  font-size: 13px;
   margin-left: auto;
 `;
 
@@ -48,17 +48,16 @@ export const NavProtoItemServicesList = styled.ul`
 `;
 
 export const NavProtoItemServicesItem = styled.li`
+  border-radius: 3px;
+  color: #fff;
   cursor: pointer;
-  font-size: 14px;
-  opacity: 0.7;
+  font-size: 13px;
+  opacity: 0.6;
   padding: 12px 10px;
   transition: all 0.3s ease-in-out;
 
   &:hover {
     background-color: rgba(151, 151, 151, 0.2);
-    border-radius: 3px;
-    color: #fff;
-    font-size: 15px;
     opacity: 0.9;
   }
 `;

@@ -117,10 +117,15 @@ class QueryParamBuilder extends React.Component<
 
   renderField(field: ICustomField, fieldProps?: IFieldProps) {
     const { nested } = field;
+    const isNested = fieldProps && fieldProps.isNested;
+
     if (Array.isArray(nested) && nested.length > 0) {
       return (
         <React.Fragment key={field.id}>
-          <TableRow>
+          <TableRow
+            className="nested-head"
+            isNested={isNested}
+          >
             <TableTh>{field.name}</TableTh>
           </TableRow>
 
@@ -132,11 +137,11 @@ class QueryParamBuilder extends React.Component<
       );
     }
 
-    const isNested = fieldProps && fieldProps.isNested;
     const parentName = fieldProps && fieldProps.parentName;
 
     return (
       <TableRow
+        className={isNested ? 'nested' : ''}
         isNested={isNested}
         key={field.id}
       >
