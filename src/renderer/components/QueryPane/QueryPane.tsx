@@ -223,6 +223,26 @@ const handleDispatchRequest = async (params: {
 
   const { client, methodName } = clientInstance;
 
+  // Implements cancelling a request by updating the inProgress flag
+  // The inProgress flag is then checked before the tab is updated below.
+  // This implementation isn't the best and won't work for streaming RPCs
+  if (currentTab.inProgress) {
+    client.close();
+    notify({
+      id: cuid(),
+      message: 'Request cancelled successfully',
+      title: 'Cancelled',
+      type: notificationTypes.success,
+    });
+
+    updateTab({
+      ...currentTab,
+      inProgress: false,
+    });
+
+    return;
+  }
+
   // Create metadata
   const reqMetadata = new grpc.Metadata();
   Object.keys(metadata).forEach((key) => {
@@ -233,9 +253,8 @@ const handleDispatchRequest = async (params: {
   const reqStarted = performance.now();
   let reqEnded: number = 0;
 
-  // Somewhat hacky way to check for transient failure.
-  // client.waitForReady would likely be a better option but it wasn't working as expected.
-  // Revisit this at a later date
+  // Somewhat hacky way to check for transient failure:
+  // Revisit this: client.waitForReady or client.getChannel().getConnectivityState() would likely be better options but it wasn't working as expected.
   setTimeout(() => {
     if (reqEnded === 0) {
       notify({
@@ -263,16 +282,18 @@ const handleDispatchRequest = async (params: {
 
       logger.warn('gRPC request failed with error ', err);
 
-      updateTab({
-        ...currentTab,
-        inProgress: false,
-        meta: {
-          code: err.code,
-          status: ITabStatus.error,
-          timestamp: reqEnded - reqStarted,
-        },
-        results: err,
-      });
+      if (currentTab.inProgress) {
+        updateTab({
+          ...currentTab,
+          inProgress: false,
+          meta: {
+            code: err.code,
+            status: ITabStatus.error,
+            timestamp: reqEnded - reqStarted,
+          },
+          results: err,
+        });
+      }
 
       client.close();
 
@@ -280,16 +301,18 @@ const handleDispatchRequest = async (params: {
     }
 
     reqEnded = performance.now();
-    updateTab({
-      ...currentTab,
-      inProgress: false,
-      meta: {
-        ...results,
-        status: ITabStatus.success,
-        timestamp: reqEnded - reqStarted,
-      },
-      results,
-    });
+    if (currentTab.inProgress) {
+      updateTab({
+        ...currentTab,
+        inProgress: false,
+        meta: {
+          ...results,
+          status: ITabStatus.success,
+          timestamp: reqEnded - reqStarted,
+        },
+        results,
+      });
+    }
 
     client.close();
   });
@@ -365,7 +388,11 @@ const QueryPane: React.SFC<IQueryPaneProps> = ({
             updateTab,
           })}
         >
-          Send Request
+          {
+            currentTab.inProgress
+              ? 'Cancel Request'
+              : 'Send Request'
+          }
         </Button>
       </AddressBarContainer>
 
