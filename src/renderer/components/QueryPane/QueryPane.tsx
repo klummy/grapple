@@ -1,14 +1,17 @@
+import * as grpc from '@grpc/grpc-js';
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import styled from 'styled-components';
 
 import * as layoutActions from '../../store/layout/layout.actions';
 import { IStoreState } from '../../types';
-import { ITab, INotification, notificationTypes } from '../../types/layout';
+import {
+  ITab, INotification, notificationTypes, ITabStatus,
+} from '../../types/layout';
 
 
 import logger from '../../libs/logger';
-import { dispatchRequest } from '../../services/grpc';
+import { getClientInstance } from '../../services/grpc';
 import {
   attachIndividualShortcut,
   shortcutModifiers,
@@ -151,7 +154,7 @@ const handleSaveTabData = (params: {
 /**
 * Make the request
 */
-const handleDispatchRequest = (params: {
+const handleDispatchRequest = async (params: {
   currentTab: ITab,
   notify: (item: INotification) => void,
   serviceAddress: string,
@@ -171,7 +174,6 @@ const handleDispatchRequest = (params: {
       title: 'Validation error',
       type: notificationTypes.warn,
     });
-    logger.warn('No input provided');
     return;
   }
 
@@ -188,54 +190,97 @@ const handleDispatchRequest = (params: {
     updateTab,
   });
 
-  dispatchRequest({
-    metadata,
-    payload,
-    serviceAddress,
-    tab: currentTab,
-  })
-    .then(({
-      response: results,
-      meta,
-    }) => {
-      // Update the tab with the request data
-      updateTab({
-        ...currentTab,
-        address: serviceAddress,
-        inProgress: false,
-        meta,
-        queryData: payload,
-        results,
-      });
-    })
-    .catch(({
-      meta,
-      response: err,
-    }) => {
-      logger.warn('Error during dispatch ', err);
+  if (!currentTab.proto || !currentTab.service) {
+    // No pro
+    logger.error('Tab doesn\'t contain required proto or service', currentTab);
+    return;
+  }
 
-      updateTab({
-        ...currentTab,
-        address: serviceAddress,
-        inProgress: false,
-        meta,
-        queryData: payload,
-        results: {
-          error: {
-            ...err,
-          },
-          status: 'Error completing request',
-        },
-      });
+  const { proto, service } = currentTab;
+
+  // Get the client and the method name using the tab details
+  const clientInstance = await getClientInstance({
+    proto,
+    service,
+    serviceAddress,
+  })
+    .catch((err) => {
+      logger.error('Error getting client instance ', err);
 
       notify({
         id: cuid(),
         message: err.message,
         rawErr: err,
-        title: 'Error completing request',
+        title: err.title || 'Error making request',
         type: notificationTypes.error,
       });
+      return null;
     });
+
+  if (!clientInstance) {
+    return;
+  }
+
+  const { client, methodName } = clientInstance;
+
+  // Create metadata
+  const reqMetadata = new grpc.Metadata();
+  Object.keys(metadata).forEach((key) => {
+    reqMetadata.set(key, metadata[key]);
+  });
+
+  // Setup timers
+  const reqStarted = performance.now();
+  let reqEnded: number = 0;
+
+  // Somewhat hacky way to check for transient failure.
+  // client.waitForReady would likely be a better option but it wasn't working as expected.
+  // Revisit this at a later date
+  setTimeout(() => {
+    if (reqEnded === 0) {
+      notify({
+        id: cuid(),
+        message: `Error connecting to server at "${serviceAddress}"`,
+        title: 'Connection timeout',
+        type: notificationTypes.error,
+      });
+
+      updateTab({
+        ...currentTab,
+        inProgress: false,
+      });
+    }
+  }, 5000);
+
+  // Make the actual request
+  client[methodName](payload, reqMetadata, (err: Error, results: object) => {
+    if (err) {
+      reqEnded = performance.now();
+
+      logger.warn('gRPC request failed with error ', err);
+
+      updateTab({
+        ...currentTab,
+        inProgress: false,
+        results: err,
+      });
+
+      return;
+    }
+
+    reqEnded = performance.now();
+    updateTab({
+      ...currentTab,
+      inProgress: false,
+      meta: {
+        status: ITabStatus.success,
+        timestamp: reqEnded - reqStarted,
+      },
+      results,
+    });
+
+    client.close();
+  });
 };
 
 const QueryPane: React.SFC<IQueryPaneProps> = ({

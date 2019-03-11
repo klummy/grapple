@@ -3,7 +3,7 @@ import React from 'react';
 import TabList from '../TabList';
 import Logo from '../Logo';
 
-import { Input as SearchInput } from '../GenericComponents';
+import { Input } from '../GenericComponents';
 
 import { LogoContainer, TopbarContainer } from './Topbar.components';
 
@@ -15,7 +15,7 @@ const Topbar: React.SFC<{}> = () => {
 
         {/* Search */}
         {/* TODO: Implement functionality */}
-        <SearchInput
+        <Input
           name="search"
           placeholder="Search"
           type="search"
