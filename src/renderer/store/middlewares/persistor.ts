@@ -17,6 +17,11 @@ const persistMiddleware: ReduxMiddlewareType = ({ getState }) => {
         notifications: [],
         tabs: currentState.layout.tabs.map(tab => omit(tab, ['inProgress', 'meta', 'results'])),
       },
+      projects: {
+        ...currentState.projects,
+        filteredProtos: [],
+        searchTerm: '',
+      },
     };
 
     storage.setItem(config.storage.main, filteredStateData);

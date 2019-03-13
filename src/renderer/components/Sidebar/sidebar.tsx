@@ -19,6 +19,7 @@ import {
   attachIndividualShortcut,
   shortcutModifiers,
 } from '../../services/shortcuts';
+import { loadProtoServices } from '../../services/grpc';
 import { humanFriendlyProtoName, validateProto } from '../../services/protos';
 import logger from '../../libs/logger';
 
@@ -169,15 +170,18 @@ class Sidebar extends React.Component<ISidebarProps, ISidebarState> {
           return;
         }
 
+        const protoWithServices = loadProtoServices(protoItem);
+
         // Add a new proto to the project
-        addProtoToProject(protoItem);
+        addProtoToProject(protoWithServices);
       })
       .catch((err) => {
         logger.warn('Proto validation failed: ', err);
 
         notify({
           id: cuid(),
-          message: `Error validating "${proto.name}", please check that the proto file is accurate Protocol Buffers`,
+          message: `Error validating "${proto.name}",
+          please check that the file is a valid Protocol Buffer file`,
           rawErr: err,
           title: 'Unable to add file',
           type: notificationTypes.error,
