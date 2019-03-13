@@ -9,7 +9,7 @@ export const HeaderTabContainer = styled.div`
 const HeaderItemButton = styled.button`
   background-color: transparent;
   border: 1px solid${(props: { active: boolean }) => (
-    props.active ? 'var(--color-lines-default)' : 'transparent'
+    props.active ? ' var(--color-lines-default)' : ' transparent'
   )};
   border-radius: 3px;
   color: #fff;
