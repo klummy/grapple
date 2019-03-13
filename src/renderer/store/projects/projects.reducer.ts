@@ -3,11 +3,12 @@ import {
   ADD_PROTO_TO_PROJECT,
   NEW_PROJECT,
   REMOVE_PROTO_FROM_PROJECT,
+  SEARCH_PROTO_LIST,
   UPDATE_PROTO,
 } from './projects.types';
 
 import { IReduxAction } from '../../types';
-import { IProject } from '../../types/projects';
+import { IProject, ISearchProtoPayload } from '../../types/projects';
 import { IProto } from '../../types/protos';
 
 const projectsReducer = (
@@ -47,6 +48,16 @@ const projectsReducer = (
       return {
         ...state,
         protos,
+      };
+    }
+
+    case SEARCH_PROTO_LIST: {
+      const { filteredProtos, searchTerm } = payload as ISearchProtoPayload;
+
+      return {
+        ...state,
+        filteredProtos: (filteredProtos as IProto[]),
+        searchTerm,
       };
     }
 

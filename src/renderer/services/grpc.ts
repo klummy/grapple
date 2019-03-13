@@ -230,3 +230,80 @@ export const loadFields = (
     });
   });
 };
+
+
+/**
+ * Load the services for a given proto file
+ * @param proto Proto item
+ * @returns Proto with services
+ */
+export const loadProtoServices = (proto: IProto): IProto => {
+  const { pkgDef } = proto;
+
+  if (!pkgDef) {
+    logger.error('No package definition in proto', proto);
+    return proto;
+  }
+
+  const serviceDefs = Object.keys(pkgDef)
+    .map((key) => {
+      const item = pkgDef[key];
+
+      // The pkgDef contains all types in the proto file,
+      // get the services which don't have a type property
+      return item.type
+        ? null
+        : item;
+    })
+    .filter(item => item);
+
+  const services = serviceDefs
+    .map((service) => {
+      if (!service) {
+        return null;
+      }
+
+      return Object.keys(service)
+        .map((key) => {
+          const item = service[key];
+          return {
+            ...item,
+            formattedPath: (item.path.match(/\.[^.]*$/)[0] || '').replace('.', ''),
+          };
+        })
+        .sort((a, b) => {
+          const aName = a.formattedPath || '';
+          const bName = b.formattedPath || '';
+
+          return aName.localeCompare(bName, 'en', {
+            sensitivity: 'base',
+          });
+        });
+    })
+    .filter(item => item)
+    .flat()
+    .sort((a, b) => {
+      const aName = a.formattedPath || '';
+      const bName = b.formattedPath || '';
+
+      return aName.localeCompare(bName, 'en', {
+        sensitivity: 'base',
+      });
+    });
+
+  // Flag to know if it's just one service or multiple in the proto file
+  const isMultipleService = Object.keys(serviceDefs).length > 1;
+
+  // If it's a single package, attach the service name to the package name
+  const pkgName = isMultipleService
+    ? proto.name
+    : `${proto.name}.${services[0].formattedPath.split('/')[0]}`;
+
+  return {
+    ...proto,
+    isMultipleService,
+    pkgDef,
+    pkgName,
+    services,
+  };
+};

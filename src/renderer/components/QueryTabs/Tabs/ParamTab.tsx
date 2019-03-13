@@ -54,7 +54,8 @@ const ParamTab: React.SFC<IParamTab> = ({
         .catch((err) => {
           notify({
             id: cuid(),
-            message: 'Unable to load the fields for this tab. This probably shouldn\'t happen, please use the report link below to report this error',
+            message: `Unable to load the fields for this tab.
+            This probably shouldn't happen, please use the report link below to report this error`,
             rawErr: err,
             title: 'Loading error',
             type: notificationTypes.error,

@@ -6,7 +6,14 @@ export interface IProjectConfig {
 }
 
 export interface IProject {
-  name: string;
   config: IProjectConfig;
+  filteredProtos: IProto[];
+  name: string;
   protos: IProto[];
+  searchTerm: string;
+}
+
+export interface ISearchProtoPayload {
+  filteredProtos: IProto[],
+  searchTerm: string
 }

@@ -282,18 +282,16 @@ const handleDispatchRequest = async (params: {
 
       logger.warn('gRPC request failed with error ', err);
 
-      if (currentTab.inProgress) {
-        updateTab({
-          ...currentTab,
-          inProgress: false,
-          meta: {
-            code: err.code,
-            status: ITabStatus.error,
-            timestamp: reqEnded - reqStarted,
-          },
-          results: err,
-        });
-      }
+      updateTab({
+        ...currentTab,
+        inProgress: false,
+        meta: {
+          code: err.code,
+          status: ITabStatus.error,
+          timestamp: reqEnded - reqStarted,
+        },
+        results: err,
+      });
 
       client.close();
 
@@ -301,18 +299,18 @@ const handleDispatchRequest = async (params: {
     }
 
     reqEnded = performance.now();
-    if (currentTab.inProgress) {
-      updateTab({
-        ...currentTab,
-        inProgress: false,
-        meta: {
-          ...results,
-          status: ITabStatus.success,
-          timestamp: reqEnded - reqStarted,
-        },
-        results,
-      });
-    }
+
+
+    updateTab({
+      ...currentTab,
+      inProgress: false,
+      meta: {
+        ...results,
+        status: ITabStatus.success,
+        timestamp: reqEnded - reqStarted,
+      },
+      results,
+    });
 
     client.close();
   });

@@ -1,4 +1,4 @@
-/* eslint-disable sort-keys */
+/* eslint-disable sort-keys, max-len */
 module.exports = {
   moduleFileExtensions: [
     'ts',
