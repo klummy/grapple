@@ -85,7 +85,7 @@
     "protobufjs": "^6.8.8",
     "react": "^16.8.2",
     "react-dom": "^16.8.2",
-    "react-redux": "^7.0.0",
+    "react-redux": "^7.0.3",
     "redux": "^4.0.1",
     "redux-logger": "^3.0.6",
     "source-map-support": "^0.5.9",
