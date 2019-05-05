@@ -37,7 +37,7 @@
     "@typescript-eslint/parser": "^1.7.0",
     "babel-plugin-prismjs": "^1.0.2",
     "electron": "^5.0.1",
-    "electron-builder": "^20.39.0",
+    "electron-builder": "^20.40.2",
     "electron-reload": "^1.4.0",
     "electron-webpack": "^2.6.2",
     "electron-webpack-ts": "^3.1.0",
