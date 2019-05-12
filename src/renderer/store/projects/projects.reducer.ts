@@ -1,4 +1,3 @@
-import initialState from './projects.state';
 import {
   ADD_PROTO_TO_PROJECT,
   NEW_PROJECT,
@@ -12,10 +11,19 @@ import { IProject, ISearchProtoPayload } from '../../types/projects';
 import { IProto } from '../../types/protos';
 
 const projectsReducer = (
-  state: IProject = initialState,
+  state: IProject,
   { payload, type }: IReduxAction,
 ): IProject => {
   switch (type) {
+    case 'REHYDRATE': {
+      if (payload) {
+        return {
+          ...(payload as IProject),
+        };
+      }
+      return state;
+    }
+
     case ADD_PROTO_TO_PROJECT: {
       const payloadProto = payload as IProto;
 

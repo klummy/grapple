@@ -1,28 +1,24 @@
-import * as React from 'react';
-import { connect } from 'react-redux';
-
+import React, { useContext } from 'react';
 import * as layoutActions from '../../store/layout/layout.actions';
-import { IStoreState } from '../../types';
 import { ITab } from '../../types/layout';
 import Tab from '../Tab';
 
 import { TabListContainer } from './TabList.components';
+import { LayoutContext } from '../../contexts';
 
-export interface ITabListProps {
-  activeTab: string;
-  closeTab: (tab: ITab) => void;
-  updateTab: (tab: ITab) => void;
-  switchTab: (tab: ITab) => void;
-  tabs: ITab[];
-}
+const TabList: React.SFC<{}> = () => {
+  const {
+    dispatch: layoutDispatcher,
+    state: {
+      activeTab,
+      tabs,
+    },
+  } = useContext(LayoutContext);
 
-const TabList: React.SFC<ITabListProps> = ({
-  activeTab,
-  closeTab,
-  updateTab,
-  switchTab,
-  tabs,
-}) => {
+  const closeTab = (item: ITab) => layoutDispatcher(layoutActions.closeTab(item));
+  const switchTab = (item: ITab) => layoutDispatcher(layoutActions.switchTab(item));
+  const updateTab = (item: ITab) => layoutDispatcher(layoutActions.updateTab(item));
+
   return (
     <TabListContainer>
       {
@@ -47,18 +43,4 @@ const TabList: React.SFC<ITabListProps> = ({
   );
 };
 
-const mapStateToProps = (state: IStoreState) => ({
-  activeTab: state.layout.activeTab,
-  tabs: state.layout.tabs,
-});
-
-const mapDispatchToProps = {
-  closeTab: (tab: ITab) => layoutActions.closeTab(tab),
-  switchTab: (tab: ITab) => layoutActions.switchTab(tab),
-  updateTab: (tab: ITab) => layoutActions.updateTab(tab),
-};
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(TabList);
+export default TabList;

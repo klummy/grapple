@@ -1,34 +1,36 @@
 import { MethodDefinition } from '@grpc/proto-loader';
-import * as React from 'react';
+import React, { useContext } from 'react';
 
 import { IProto } from '../../types/protos';
 import NavProtoItem from './NavProtoItem';
 import { NavProtoListContainer } from './NavProtoList.components';
-import { connect } from 'react-redux';
-import { IStoreState } from '@/renderer/types';
+import { ProjectContext } from '../../contexts';
 
 export type INavProtoEventHandler = (proto: IProto) => void
 
 
 export interface INavProtoListProps {
-  filteredProtos: IProto[];
   newTabHandler: (
     e: React.MouseEvent,
     proto: IProto,
     service: MethodDefinition<{}, {}>
   ) => void;
-  protos: IProto[];
+  protos: IProto[],
   refreshProto: INavProtoEventHandler
-  searchTerm: string
 }
 
 const NavProtoList: React.SFC<INavProtoListProps> = ({
-  filteredProtos,
-  newTabHandler,
   protos: originalProtos,
+  newTabHandler,
   refreshProto,
-  searchTerm,
 }) => {
+  const {
+    state: {
+      filteredProtos,
+      searchTerm,
+    },
+  } = useContext(ProjectContext);
+
   const protos = searchTerm ? filteredProtos : originalProtos;
 
   return (
@@ -49,9 +51,4 @@ const NavProtoList: React.SFC<INavProtoListProps> = ({
   );
 };
 
-const mapStateToProps = (state: IStoreState) => ({
-  filteredProtos: state.projects.filteredProtos,
-  searchTerm: state.projects.searchTerm,
-});
-
-export default connect(mapStateToProps)(NavProtoList);
+export default NavProtoList;

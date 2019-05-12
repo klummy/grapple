@@ -1,5 +1,5 @@
 import Mousetrap from 'mousetrap';
-import { Dispatch } from 'redux';
+import { Dispatch } from 'react';
 
 import logger from '../libs/logger';
 import { closeTab } from '../store/layout/layout.actions';
@@ -12,6 +12,7 @@ export enum shortcutModifiers {
 const shortcuts = [
   {
     action: closeTab(),
+    actionNamespace: 'layout',
     key: 'w',
     label: 'Close Tab',
     modifier: shortcutModifiers.general,
@@ -19,7 +20,8 @@ const shortcuts = [
 ];
 
 interface IShortcut {
-  action?: IReduxAction;
+  action?: IReduxAction; // Dispatch a store action
+  actionNamespace?: string; // Action namespace from IStoreState
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   handler?: (event?: any) => void;
   key: string;
@@ -32,10 +34,15 @@ interface IShortcut {
  */
 export const attachIndividualShortcut = (
   shortcut: IShortcut,
-  dispatch?: Dispatch,
+  dispatchers?: IDispatchers,
 ) => {
   const {
-    action, handler, label, key, modifier,
+    action,
+    actionNamespace,
+    handler,
+    label,
+    key,
+    modifier,
   } = shortcut;
 
   Mousetrap.bind(`${modifier}+${key}`, () => {
@@ -46,10 +53,14 @@ export const attachIndividualShortcut = (
       return false;
     }
 
-    if (dispatch && action) {
-      // Dispatch Redux action
-      dispatch(action);
-      return false;
+    if (dispatchers && actionNamespace) {
+      const dispatch = dispatchers[actionNamespace];
+
+      if (dispatch && action) {
+        // Dispatch Redux action
+        dispatch(action);
+        return false;
+      }
     }
 
     // NOTE: Returning "false" prevents default behaviour and stops the event from bubbling
@@ -57,11 +68,15 @@ export const attachIndividualShortcut = (
   });
 };
 
+export interface IDispatchers {
+  [key: string]: Dispatch<IReduxAction>
+}
+
 /**
  * Attach application shortcuts to the application
  * @param {Dispatch} dispatch Redux dispatch action
  */
-export const registerGlobalShortcuts = (dispatch: Dispatch) => {
+export const registerGlobalShortcuts = (dispatch: IDispatchers) => {
   shortcuts.forEach(shortcut => attachIndividualShortcut(shortcut, dispatch));
 };
 

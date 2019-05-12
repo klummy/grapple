@@ -10,7 +10,3 @@ export interface ISidebarProps {
   protos: IProto[];
   updateProto: (proto: IProto) => void
 }
-
-export interface ISidebarState {
-  dragInProgress: boolean;
-}

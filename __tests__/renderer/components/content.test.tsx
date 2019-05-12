@@ -2,7 +2,6 @@ import React from 'react';
 import { cleanup, render } from 'react-testing-library';
 
 import { Content } from '@/renderer/components/Content/Content';
-import MockStore from '../../helpers/mock-store';
 
 describe('<Content />', () => {
   afterEach(cleanup);
@@ -36,17 +35,15 @@ describe('<Content />', () => {
     const tabID = 'tab';
 
     const { queryByTestId } = render(
-      <MockStore>
-        <Content
-          activeTab={tabID}
-          notifications={[]}
-          tabs={[
-            {
-              id: tabID,
-            },
-          ]}
-        />
-      </MockStore>,
+      <Content
+        activeTab={tabID}
+        notifications={[]}
+        tabs={[
+          {
+            id: tabID,
+          },
+        ]}
+      />,
     );
 
     expect(queryByTestId('queryPane')).toBeTruthy();
