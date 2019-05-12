@@ -1,9 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { connect } from 'react-redux';
-
-import { ITab } from '@/renderer/types/layout';
-import { IStoreState } from '@/renderer/types';
-
+import React, { useState, useEffect, useContext } from 'react';
+import { LayoutContext } from '../../../contexts';
 import {
   TableHead, TableRow,
   QueryParamTable, TableTh, TableBody, QueryInput, QueryInputIcon, TableCellWithIcon,
@@ -12,12 +8,7 @@ import { IQueryTabItemProps, QueryTabItemWrapper } from './shared';
 
 import cuid = require('cuid');
 
-interface IMetadataTabProps extends IQueryTabItemProps {
-  activeTab: string,
-  currentTab: ITab
-}
-
-// Simple key value pair interface, used here for row
+// Simple key value pair interface, used here for row data
 export interface IKeyValue {
   id: string,
   key: string,
@@ -30,9 +21,18 @@ const newKeyValuePair = (): IKeyValue => ({
   value: '',
 });
 
-const MetadataTab: React.SFC<IMetadataTabProps> = ({
-  activeTab, currentTab, visible,
+const MetadataTab: React.SFC<IQueryTabItemProps> = ({
+  visible,
 }) => {
+  const {
+    state: {
+      activeTab,
+      tabs,
+    },
+  } = useContext(LayoutContext);
+
+  const currentTab = tabs.find(tab => tab.id === activeTab);
+
   const [rows, setRows] = useState<IKeyValue[]>([newKeyValuePair()]);
 
   // Load previously saved metadata
@@ -129,11 +129,4 @@ const MetadataTab: React.SFC<IMetadataTabProps> = ({
   );
 };
 
-const mapStateToProps = (state: IStoreState) => ({
-  activeTab: state.layout.activeTab,
-  currentTab:
-    state.layout.tabs.find(tab => tab.id === state.layout.activeTab) || {},
-  tabs: state.layout.tabs,
-});
-
-export default connect(mapStateToProps)(MetadataTab);
+export default MetadataTab;

@@ -10,7 +10,7 @@ export const createStorage = () => {
   return {
     getItem: (key: string) => {
       logger.info(`Retrieving item with key: ${key}: `);
-      return new Promise((resolve) => {
+      return new Promise<unknown>((resolve) => {
         resolve(store.get(key));
       });
     },

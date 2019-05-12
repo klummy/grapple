@@ -1,9 +1,8 @@
-import styled from 'styled-components';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import styled from '@emotion/styled';
 
-import { ISidebarState } from './sidebar.types';
-
-export const Nav = styled.nav`
-  background-color: ${(props: ISidebarState) => (props.dragInProgress
+export const Nav = styled('nav')`
+  background-color: ${(props: any) => (props.dragInProgress
     ? 'rgba(87, 167, 115, .3)'
     : 'var(--color-black-default)')};
   border-top: 1px solid var(--color-lines-default);

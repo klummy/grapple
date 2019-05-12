@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from 'react';
-import { connect } from 'react-redux';
+import React, { useEffect, useState, useContext } from 'react';
 import Fuse from 'fuse.js';
 
 import TabList from '../TabList';
@@ -10,17 +9,20 @@ import { LogoContainer, TopbarContainer } from './Topbar.components';
 
 import * as projectActions from '../../store/projects/projects.actions';
 
-import { IStoreState } from '@/renderer/types';
-import { IProto } from '@/renderer/types/protos';
+// import { IStoreState } from '@/renderer/types';
+// import { IProto } from '@/renderer/types/protos';
 import { ISearchProtoPayload } from '@/renderer/types/projects';
+import { ProjectContext } from '../../contexts';
 
-export interface ITopbarProps {
-  protos: IProto[]
-  searchProtoList: (payload: ISearchProtoPayload) => void,
-}
-
-const Topbar: React.SFC<ITopbarProps> = ({ protos, searchProtoList }) => {
+const Topbar: React.SFC<{}> = () => {
   const [searchTerm, setSearchTerm] = useState<string>('');
+
+  const {
+    dispatch: projectDispatcher,
+    state: { protos },
+  } = useContext(ProjectContext);
+
+  const searchProtoList = (payload: ISearchProtoPayload) => projectDispatcher(projectActions.searchProtoList(payload));
 
   const searchOptions = {
     keys: ['services.path'],
@@ -65,12 +67,4 @@ const Topbar: React.SFC<ITopbarProps> = ({ protos, searchProtoList }) => {
   );
 };
 
-const mapStateToProps = (state: IStoreState) => ({
-  protos: state.projects.protos,
-});
-
-const mapDispatchToProps = {
-  searchProtoList: (payload: ISearchProtoPayload) => projectActions.searchProtoList(payload),
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(Topbar);
+export default Topbar;

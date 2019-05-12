@@ -16,11 +16,7 @@
     "noUnusedLocals": true,
     "declaration": true,
     "jsx": "react",
-    "strict": true,
-
-    "paths": {
-      "@/*": ["./src/*"]
-    }
+    "strict": true
   },
 
   "extends": "./node_modules/electron-webpack/tsconfig-base.json"

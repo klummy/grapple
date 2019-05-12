@@ -2,16 +2,24 @@ import cuid from 'cuid';
 
 import { IReduxAction } from '../../types';
 import { ILayout, ITab, INotification } from '../../types/layout';
-import initialState from './layout.state';
 import {
   CLOSE_TAB, NEW_TAB, SWITCH_TAB, UPDATE_TAB, ADD_NOTIFICATION, REMOVE_NOTIFICATION,
 } from './layout.types';
 
 const layoutReducer = (
-  state: ILayout = initialState,
+  state: ILayout,
   { payload, type }: IReduxAction,
 ): ILayout => {
   switch (type) {
+    case 'REHYDRATE': {
+      if (payload) {
+        return {
+          ...(payload as ILayout),
+        };
+      }
+      return state;
+    }
+
     case NEW_TAB: {
       const tabData = payload as ITab;
 

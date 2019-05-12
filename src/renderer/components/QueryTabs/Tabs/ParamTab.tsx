@@ -1,17 +1,12 @@
-import React, { useEffect, useState } from 'react';
-
-import { connect } from 'react-redux';
+import React, { useEffect, useState, useContext } from 'react';
 import QueryParamBuilder from '../../QueryParamBuilder/QueryParamBuilder';
 import { ICustomFields, loadFields } from '../../../services/grpc';
 import { IQueryTabItemProps, QueryTabItemWrapper } from './shared';
-import { IStoreState } from '../../../types';
-import { notificationTypes, ITab, INotification } from '../../../types/layout';
+import { notificationTypes, ITab } from '../../../types/layout';
 import logger from '../../../libs/logger';
-import * as layoutActions from '../../../store/layout/layout.actions';
+import { LayoutContext } from '../../../contexts';
 
 import cuid = require('cuid');
-
-// requestFields?: ICustomFields[];
 
 /**
 * Load the data for a specified tab
@@ -35,15 +30,19 @@ const loadFieldsForTab = (tab: ITab): Promise<ICustomFields[]> => {
   });
 };
 
-interface IParamTab extends IQueryTabItemProps {
-  activeTab: string,
-  currentTab: ITab,
-  notify: (item: INotification) => void
-}
-
-const ParamTab: React.SFC<IParamTab> = ({
-  activeTab, currentTab, notify, visible,
+const ParamTab: React.SFC<IQueryTabItemProps> = ({
+  visible,
 }) => {
+  const {
+    notify,
+    state: {
+      activeTab,
+      tabs,
+    },
+  } = useContext(LayoutContext);
+
+  const currentTab = tabs.find(tab => tab.id === activeTab);
+
   const [requestFields, setRequestFields] = useState<ICustomFields[] | undefined>(undefined);
 
   // Load the fields for the request on first load and when the active tab changes
@@ -67,21 +66,15 @@ const ParamTab: React.SFC<IParamTab> = ({
 
   return (
     <QueryTabItemWrapper visible={visible}>
-      {requestFields && <QueryParamBuilder fields={requestFields} />}
+      {requestFields && (
+        <QueryParamBuilder
+          currentTab={currentTab}
+          fields={requestFields}
+        />
+      )}
     </QueryTabItemWrapper>
 
   );
 };
 
-const mapStateToProps = (state: IStoreState) => ({
-  activeTab: state.layout.activeTab,
-  currentTab:
-    state.layout.tabs.find(tab => tab.id === state.layout.activeTab) || {},
-});
-
-const mapDispatchToProps = {
-  notify: (item: INotification) => layoutActions.addNotification(item),
-  updateTab: (tab: ITab) => layoutActions.updateTab(tab),
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(ParamTab);
+export default ParamTab;

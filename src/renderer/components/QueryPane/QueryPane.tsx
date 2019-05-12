@@ -1,15 +1,10 @@
 import * as grpc from '@grpc/grpc-js';
-import React, { useEffect, useState } from 'react';
-import { connect } from 'react-redux';
-import styled from 'styled-components';
-
+import React, { useEffect, useState, useContext } from 'react';
+import styled from '@emotion/styled';
 import * as layoutActions from '../../store/layout/layout.actions';
-import { IStoreState } from '../../types';
 import {
-  ITab, INotification, notificationTypes, ITabStatus,
+  ITab, INotification, notificationTypes, ITabStatus, ILayout,
 } from '../../types/layout';
-
-
 import logger from '../../libs/logger';
 import { getClientInstance } from '../../services/grpc';
 import {
@@ -17,7 +12,6 @@ import {
   shortcutModifiers,
   unregisterShortcut,
 } from '../../services/shortcuts';
-
 import {
   Button,
   Form,
@@ -28,20 +22,13 @@ import {
   ParamBuilderContainer,
 } from './QueryPane.components';
 import QueryTabs from '../QueryTabs';
+import { LayoutContext } from '../../contexts';
 
 import cuid = require('cuid');
 
 const AddressBarContainer = styled(Form)`
   flex-shrink: 0;
 `;
-
-export interface IQueryPaneProps {
-  activeTab: string;
-  currentTab: ITab;
-  notify: (item: INotification) => void
-  tabs: ITab[];
-  updateTab: (tab: ITab) => void;
-}
 export interface IQueryPaneState {
   serviceAddress: string
 }
@@ -316,12 +303,21 @@ const handleDispatchRequest = async (params: {
   });
 };
 
-const QueryPane: React.SFC<IQueryPaneProps> = ({
-  activeTab,
-  currentTab,
-  notify,
-  updateTab,
-}) => {
+const QueryPane: React.SFC<{}> = () => {
+  const {
+    dispatch: layoutDispatcher,
+    notify,
+    state: layoutState,
+  } = useContext(LayoutContext);
+
+  const {
+    activeTab,
+    tabs,
+  } = layoutState as ILayout;
+  const currentTab = tabs.find(tab => tab.id === activeTab) || {};
+
+  const updateTab = (tab: ITab) => layoutDispatcher(layoutActions.updateTab(tab));
+
   const [serviceAddress, setServiceAddress] = useState((currentTab && currentTab.address) || '');
 
   // Update the service address when the active tab changes
@@ -364,11 +360,11 @@ const QueryPane: React.SFC<IQueryPaneProps> = ({
     };
   }, []);
 
+  const AddressContainer = AddressBarContainer.withComponent('div');
+
   return (
     <QueryPaneContainer data-testid="queryPane">
-      <AddressBarContainer
-        as="div"
-      >
+      <AddressContainer>
         <Input
           name="address"
           onChange={event => setServiceAddress(event.target.value || '')}
@@ -392,7 +388,7 @@ const QueryPane: React.SFC<IQueryPaneProps> = ({
               : 'Send Request'
           }
         </Button>
-      </AddressBarContainer>
+      </AddressContainer>
 
       <ParamBuilderContainer>
         <QueryTabs />
@@ -402,19 +398,4 @@ const QueryPane: React.SFC<IQueryPaneProps> = ({
   );
 };
 
-const mapStateToProps = (state: IStoreState) => ({
-  activeTab: state.layout.activeTab,
-  currentTab:
-    state.layout.tabs.find(tab => tab.id === state.layout.activeTab) || {},
-  tabs: state.layout.tabs,
-});
-
-const mapDispatchToProps = {
-  notify: (item: INotification) => layoutActions.addNotification(item),
-  updateTab: (tab: ITab) => layoutActions.updateTab(tab),
-};
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(QueryPane);
+export default QueryPane;

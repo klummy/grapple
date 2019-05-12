@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled from '@emotion/styled';
 
 export const TopbarContainer = styled.div`
   background-color: var(--color-black-default);

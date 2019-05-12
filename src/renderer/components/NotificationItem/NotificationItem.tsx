@@ -1,24 +1,27 @@
-import React, { useEffect } from 'react';
-
-import { connect } from 'react-redux';
+import React, { useEffect, useContext } from 'react';
 import { INotification } from '../../types/layout';
-
+import * as layoutActions from '../../store/layout/layout.actions';
 import {
   NotificationWrapper, Message, Title, RawErrLink, DismissIcon,
 } from './NotificationItem.components';
 import CloseIcon from '../Icons/close';
-import * as layoutActions from '../../store/layout/layout.actions';
+import { LayoutContext } from '../../contexts';
 
 const DEFAULT_NOTIFICATION_DURATION = 10000;
 
 export interface INotificationItemProps {
   notification: INotification
-  removeNotification: (item: INotification) => void
 }
 
 const NotificationItem: React.SFC<INotificationItemProps> = ({
-  notification, removeNotification,
+  notification,
 }) => {
+  const {
+    dispatch: layoutDispatcher,
+  } = useContext(LayoutContext);
+
+  const removeNotification = () => layoutDispatcher(layoutActions.removeNotification(notification));
+
   const {
     message,
     rawErr,
@@ -28,7 +31,7 @@ const NotificationItem: React.SFC<INotificationItemProps> = ({
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      removeNotification(notification);
+      removeNotification();
     }, DEFAULT_NOTIFICATION_DURATION);
 
     return () => {
@@ -55,17 +58,10 @@ const NotificationItem: React.SFC<INotificationItemProps> = ({
       }
 
       <DismissIcon>
-        <CloseIcon onClick={() => removeNotification(notification)} />
+        <CloseIcon onClick={() => removeNotification()} />
       </DismissIcon>
     </NotificationWrapper>
   );
 };
 
-const mapDispatchToProps = {
-  removeNotification: (item: INotification) => layoutActions.removeNotification(item),
-};
-
-export default connect(
-  null,
-  mapDispatchToProps,
-)(NotificationItem);
+export default NotificationItem;

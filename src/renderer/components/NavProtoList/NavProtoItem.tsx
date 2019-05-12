@@ -1,6 +1,5 @@
 import { MethodDefinition } from '@grpc/proto-loader';
-import * as React from 'react';
-import { connect } from 'react-redux';
+import React, { useContext } from 'react';
 
 import logger from '../../libs/logger';
 import { IProto } from '../../types/protos';
@@ -14,8 +13,8 @@ import {
   NavProtoItemServicesList,
 } from './NavProtoList.components';
 import { INotification, notificationTypes } from '../../types/layout';
-import { addNotification } from '../../store/layout/layout.actions';
 import { removeProtoFromProject } from '../../store/projects/projects.actions';
+import { ProjectContext, LayoutContext } from '../../contexts';
 
 import cuid = require('cuid');
 
@@ -25,10 +24,8 @@ export interface INavProtoItemProps {
     proto: IProto,
     service: MethodDefinition<{}, {}>
   ) => void;
-  notify: (item: INotification) => void
   proto: IProto;
   refreshProto: (proto: IProto) => void;
-  removeProto: (proto: IProto) => void
 }
 
 enum INavProtoActions {
@@ -79,11 +76,14 @@ const dispatchNavProtoAction = (
 
 const NavProtoItem: React.SFC<INavProtoItemProps> = ({
   newTabHandler,
-  notify,
   proto,
   refreshProto,
-  removeProto,
 }) => {
+  const { notify } = useContext(LayoutContext);
+  const { dispatch: projectDispatcher } = useContext(ProjectContext);
+
+  const removeProto = () => projectDispatcher(removeProtoFromProject(proto));
+
   const {
     pkgDef, pkgName, services, isMultipleService,
   } = proto;
@@ -149,9 +149,5 @@ const NavProtoItem: React.SFC<INavProtoItemProps> = ({
   );
 };
 
-const mapDispatchToProps = {
-  notify: (item: INotification) => addNotification(item),
-  removeProto: (proto: IProto) => removeProtoFromProject(proto),
-};
 
-export default connect(null, mapDispatchToProps)(NavProtoItem);
+export default NavProtoItem;

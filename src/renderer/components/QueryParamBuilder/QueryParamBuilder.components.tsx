@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled from '@emotion/styled';
 
 import { Input } from '../GenericComponents';
 import { IFieldProps } from '../QueryPane/shared';
@@ -59,7 +59,7 @@ export const TableHead = styled.thead`
 
 export const TableBody = styled.tbody``;
 
-export const TableRow = styled.tr`
+export const TableRow = styled('tr')`
   align-items: center;
   border-bottom: ${(props: IFieldProps) => (props.isNested ? '' : tableBorder)};
   border-top: ${(props: IFieldProps) => (props.isNested ? '' : tableBorder)};

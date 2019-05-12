@@ -1,13 +1,17 @@
-import styled from 'styled-components';
+import styled from '@emotion/styled';
 
-export const TabItemComponent = styled.li`
+export interface ITabItemComponentProps {
+  active: boolean
+}
+
+export const TabItemComponent = styled('li')`
   align-items: center;
   color: var(--text-color-default);
   cursor: pointer;
   display: flex;
   flex-shrink: 0;
   height: 100%;
-  opacity: ${(props: { active: boolean }) => (props.active ? '1' : '.5')};
+  opacity: ${({ active }: ITabItemComponentProps) => (active ? '1' : '.5')};
   padding-left: 20px;
   transition: opacity 0.3s ease-in-out;
   max-width: 200px;

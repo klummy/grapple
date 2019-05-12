@@ -1,12 +1,8 @@
 import * as React from 'react';
 import omit from 'lodash.omit';
-import { connect } from 'react-redux';
-
 import { ICustomFields as ICustomField } from '../../services/grpc';
 import { grpcTypes } from '../../services/grpc-constants';
 import { Select } from '../GenericComponents';
-
-import { IStoreState } from '../../types';
 import { ITab } from '../../types/layout';
 import {
   QueryInput,
@@ -24,8 +20,7 @@ class QueryParamBuilder extends React.Component<
     currentTab?: ITab;
     fields: ICustomField[];
   },
-  {}
-  > {
+  {}> {
   renderInput(field: ICustomField, parentName: string | undefined) {
     const {
       defaultValue, fullName, name, type, values,
@@ -179,8 +174,4 @@ class QueryParamBuilder extends React.Component<
   }
 }
 
-const mapStateToProps = (state: IStoreState) => ({
-  currentTab: state.layout.tabs.find(tab => tab.id === state.layout.activeTab),
-});
-
-export default connect(mapStateToProps)(QueryParamBuilder);
+export default QueryParamBuilder;
