@@ -38,7 +38,7 @@
     "electron": "^5.0.0",
     "electron-builder": "^20.38.3",
     "electron-reload": "^1.4.0",
-    "electron-webpack": "^2.6.2",
+    "electron-webpack": "^2.7.1",
     "electron-webpack-ts": "^3.1.0",
     "eslint": "5.15.2",
     "eslint-config-airbnb": "^17.1.0",
