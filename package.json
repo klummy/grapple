@@ -81,7 +81,7 @@
     "lodash.omit": "^4.5.0",
     "lodash.throttle": "^4.1.1",
     "mousetrap": "^1.6.2",
-    "prismjs": "^1.15.0",
+    "prismjs": "^1.17.1",
     "protobufjs": "^6.8.8",
     "react": "^16.8.2",
     "react-dom": "^16.8.2",
