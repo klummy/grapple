@@ -1,0 +1,16 @@
+{
+  "plugins": [
+    ["module-resolver", {
+      "root": ["./"],
+      "alias": {
+        "~": "./"
+      }
+    }]
+  ],
+
+  "presets": [
+    ["preact-cli/babel", {
+      "modules": "commonjs"
+    }]
+  ]
+}

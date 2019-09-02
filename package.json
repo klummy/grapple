@@ -4,10 +4,12 @@
   "description": "A Postman-like UI client to interact with gRPC services",
   "main": "main.js",
   "scripts": {
-    "build": "npm run compile && npm run dist",
-    "compile": "electron-webpack",
-    "dist": "electron-builder",
-    "dev": "electron-webpack dev",
+    "start": "per-env",
+    "start:production": "npm run -s serve",
+    "start:development": "npm run -s dev",
+    "build": "preact build",
+    "serve": "preact build && preact serve",
+    "dev": "preact watch",
     "ci:test": "npm run test -- --coverage",
     "ci:lint": "npm run lint",
     "lint": "eslint . --ext .js,.ts,.tsx",
@@ -17,10 +19,13 @@
   "author": "Yekeen Ajeigbe <aayekeen@gmail.com>",
   "license": "ISC",
   "devDependencies": {
-    "@babel/preset-react": "^7.0.0",
     "@testing-library/jest-dom": "^4.1.0",
+    "@types/jest": "^24.0.18",
+    "@types/webpack-env": "^1.14.0",
     "@typescript-eslint/eslint-plugin": "^2.1.0",
     "@typescript-eslint/parser": "^2.1.0",
+    "babel-plugin-module-resolver": "^3.2.0",
+    "css-loader": "^3.2.0",
     "eslint": "^6.3.0",
     "eslint-config-airbnb": "^18.0.1",
     "eslint-import-resolver-typescript": "^1.1.1",
@@ -31,12 +36,23 @@
     "eslint-plugin-react": "^7.12.4",
     "eslint-plugin-react-hooks": "^2.0.1",
     "eslint-plugin-typescript": "^0.14.0",
+    "husky": "^3.0.5",
     "identity-obj-proxy": "^3.0.0",
-    "jest": "^24.1.0",
-    "parcel-bundler": "^1.12.3"
+    "jest": "^24.9.0",
+    "parcel-bundler": "^1.12.3",
+    "per-env": "^1.0.2",
+    "preact-cli": "^3.0.0-rc.5",
+    "preact-render-spy": "^1.3.0",
+    "ts-jest": "^24.0.2",
+    "ts-loader": "^6.0.4",
+    "typescript": "^3.6.2",
+    "typings-for-css-modules-loader": "^1.7.0"
   },
   "dependencies": {
-    "react": "^16.9.0",
-    "react-dom": "^16.9.0"
+    "preact": "^10.0.0-rc.1",
+    "preact-router": "^3.0.1"
+  },
+  "alias": {
+    "~": "./src/"
   }
 }
