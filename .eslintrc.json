@@ -2,12 +2,17 @@
   "parser": "@typescript-eslint/parser",
 
   "plugins": [
+    "fp",
     "react-hooks",
     "@typescript-eslint",
     "jest"
   ],
 
-  "extends": "airbnb",
+  "extends": [
+    "plugin:fp/recommended",
+    "airbnb"
+  ],
+
   "rules": {
     "arrow-body-style": "off",
     "no-unused-vars": "off",

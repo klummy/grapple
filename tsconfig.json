@@ -19,9 +19,7 @@
     "strict": true,
 
     "paths": {
-      "@/*": ["./src/*"]
+      "~/*": ["./src/*"]
     }
-  },
-
-  "extends": "./node_modules/electron-webpack/tsconfig-base.json"
+  }
 }
