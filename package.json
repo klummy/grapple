@@ -80,7 +80,7 @@
     "lodash.get": "^4.4.2",
     "lodash.omit": "^4.5.0",
     "lodash.throttle": "^4.1.1",
-    "mousetrap": "^1.6.2",
+    "mousetrap": "^1.6.4",
     "prismjs": "^1.15.0",
     "protobufjs": "^6.8.8",
     "react": "^16.8.2",
