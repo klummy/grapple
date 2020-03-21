@@ -17,7 +17,7 @@
   "author": "Yekeen Ajeigbe <aayekeen@gmail.com>",
   "license": "ISC",
   "devDependencies": {
-    "@babel/preset-react": "^7.0.0",
+    "@babel/preset-react": "^7.9.1",
     "@types/cuid": "^1.3.0",
     "@types/electron-store": "^1.3.0",
     "@types/jest": "^24.0.5",
