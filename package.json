@@ -54,7 +54,7 @@
     "jest": "^24.1.0",
     "jest-dom": "^3.1.2",
     "react-testing-library": "^7.0.0",
-    "ts-jest": "^24.0.0",
+    "ts-jest": "^25.5.0",
     "typescript": "^3.3.3",
     "typescript-eslint-parser": "^22.0.0",
     "webpack": "^4.28.4",
