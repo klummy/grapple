@@ -1,8 +1,4 @@
 import React, { Fragment } from 'react';
-import { connect } from 'react-redux';
-
-import { IStoreState } from '../../types';
-import { ITab, INotification } from '../../types/layout';
 
 import logger from '../../libs/logger';
 
@@ -10,18 +6,12 @@ import QueryPane from '../QueryPane';
 import Results from '../Results';
 import { EmptyStateContainer, OuterWrapper } from './Content.components';
 import NotificationList from '../NotificationList';
+import { LayoutContext } from '../../contexts';
+import { ILayout } from '../../types/layout';
 
-export interface IContentProps {
-  activeTab: string;
-  notifications: INotification[],
-  tabs: ITab[];
-}
-
-export interface IContentState {
+export class Content extends React.Component<{}, {
   isErrored: boolean
-}
-
-export class Content extends React.Component<IContentProps, IContentState> {
+}> {
   state = {
     // TODO: Implement error views
     // eslint-disable-next-line react/no-unused-state
@@ -39,38 +29,39 @@ export class Content extends React.Component<IContentProps, IContentState> {
   }
 
   render() {
-    const { notifications, tabs, activeTab } = this.props;
-
-    const tab = tabs.find(t => t.id === activeTab);
-
-    const results = tab && tab.results;
-
     return (
-      <OuterWrapper>
-        {tab
-          ? (
-            <Fragment>
-              <QueryPane />
-              <Results
-                inProgress={tab.inProgress}
-                meta={tab && tab.meta}
-                queryResult={results ? JSON.stringify(tab.results, null, 2) : ''}
-              />
-            </Fragment>
-          )
-          : <EmptyStateContainer data-testid="emptyState">Empty</EmptyStateContainer>
-        }
+      <LayoutContext.Consumer>
+        {({ state: layoutState }) => {
+          const { notifications, tabs, activeTab } = layoutState as ILayout;
 
-        <NotificationList notifications={notifications} />
-      </OuterWrapper>
+          const tab = tabs.find(t => t.id === activeTab);
+
+          const results = tab && tab.results;
+
+          return (
+            <OuterWrapper>
+              {tab
+                ? (
+                  <Fragment>
+                    <QueryPane />
+                    <Results
+                      inProgress={tab.inProgress}
+                      meta={tab && tab.meta}
+                      queryResult={results ? JSON.stringify(tab.results, null, 2) : ''}
+                    />
+                  </Fragment>
+                )
+                : <EmptyStateContainer data-testid="emptyState">Empty</EmptyStateContainer>
+              }
+
+              <NotificationList notifications={notifications} />
+            </OuterWrapper>
+
+          );
+        }}
+      </LayoutContext.Consumer>
     );
   }
 }
 
-const mapStateToProps = (state: IStoreState) => ({
-  activeTab: state.layout.activeTab,
-  notifications: state.layout.notifications,
-  tabs: state.layout.tabs,
-});
-
-export default connect(mapStateToProps)(Content);
+export default Content;
